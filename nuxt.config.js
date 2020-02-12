@@ -2,13 +2,23 @@ const colors = require('vuetify/es5/util/colors').default
 
 module.exports = {
   mode: 'spa',
+
+  env: {
+    api_url: 'http://15.185.79.134:1062',
+  },
+
+  server: {
+    port: 3000, // default: 3000
+    host: '0.0.0.0' // default: localhost
+  },
+
   /*
   ** Headers of the page
   */
   head: {
     titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',
-    meta: [
+    meta: [9
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
@@ -25,11 +35,16 @@ module.exports = {
   ** Global CSS
   */
   css: [
+    '~/assets/css/style.scss',
   ],
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
+    {
+      src: '~/plugins/vuetify',
+      ssr: false
+    },
   ],
   /*
   ** Nuxt.js dev-modules
@@ -55,9 +70,9 @@ module.exports = {
   ** https://github.com/nuxt-community/vuetify-module
   */
   vuetify: {
-    customVariables: ['~/assets/variables.scss'],
+    customVariables: ['~/assets/css/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,

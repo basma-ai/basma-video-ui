@@ -1,0 +1,59 @@
+.agent_call_box {
+  border:1px solid silver;
+  //padding:5px;
+  margin-bottom:5px;
+  border-radius:10px;
+  height:80px;
+  line-height:80px;
+}
+.agent_call_box:hover {
+  background: #f3f5db;
+}
+
+.agent_call_box #text {
+  float:left;
+  margin-left:10px;
+}
+.agent_call_box #text #title {
+  font-weight:bold;
+}
+.agent_call_box #service {
+  margin-left:10px;
+}
+.agent_call_box #text div{
+  display:inline-block;
+}
+.agent_call_box #answer {
+  float:right;
+  margin-top:20px;
+  margin-right:10px;
+}
+.call_box {
+  width:inherit;
+  background:#DDD;
+  border:1px solid #DDD;
+  position:relative;
+  height:inherit;
+  background:#000;
+  display:inline-block;
+  min-height: 300px;
+}
+#local-media {
+  position:absolute;
+  width:100%;
+}
+#local-media video {
+  max-width:25%;
+  max-height:25%;
+  float:left;
+  left:0;
+  border-bottom:1px solid #DDD;
+  border-right:1px solid #DDD;
+}
+#remote-media-div video {
+  width:100%;
+  margin:0;
+  padding:0;
+  height:100%;
+  margin-bottom:-6px;
+}
