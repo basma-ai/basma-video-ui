@@ -3,7 +3,9 @@
 
 
     <div class="call_box">
-      <div id="local-media"></div>
+      <div id="local-media" v-if="!isItIos">
+        <CamPreview></CamPreview>
+      </div>
       <div id="remote-media-div"></div>
     </div>
 
@@ -14,36 +16,64 @@
 <script>
   import axios from 'axios';
 
+  import Vue from 'vue'
+  import CamPreview from '@/components/CamPreview.vue';
+  import { isIOS } from 'mobile-device-detect';
+
+
+
   const {connect, createLocalTracks, createLocalVideoTrack} = require('twilio-video');
 
 
   export default {
     props: ['connection_token', 'room_name'],
     data: () => ({
-      found_remote_track: false
+      found_remote_track: false,
+      isItIos: isIOS
     }),
-    components: {},
+    components: { CamPreview },
     methods: {
       check_remote: function (room) {
 
         let this_app = this;
         room.participants.forEach(participant => {
+
+          console.log("PARTICIPANT");
+          console.log(JSON.stringify(participant));
+
+
           if (!this_app.found_remote_track) {
           }
           console.log(`Participant "${participant.identity}" is connected to the Room`);
 
           setTimeout(function () {
             participant.tracks.forEach(publication => {
+
+              console.log("PUBLICATION");
+              console.log(JSON.stringify(publication));
+
               if (publication.isSubscribed) {
+
+                console.log("I am inside IF(publication.isSubscribed)");
                 const track = publication.track;
-                this_app.found_remote_track = true;
-                document.getElementById('remote-media-div').innerHTML = "";
-                document.getElementById('remote-media-div').appendChild(track.attach());
+
+                if(track == null) {
+                  console.log("track is null");
+                  this_app.check_remote(room);
+                } else {
+                  console.log("track is not null");
+                  this_app.found_remote_track = true;
+                  //document.getElementById('remote-media-div').innerHTML = "";
+                  document.getElementById('remote-media-div').appendChild(track.attach());
+                }
+
+
               } else {
+                console.log("I am inside ELSE(publication.isSubscribed)");
                 this_app.check_remote(room);
               }
             });
-          }, 2500);
+          }, 5000);
 
         });
       }
@@ -51,11 +81,18 @@
     ,
     created() {
 
-      createLocalVideoTrack().then(track => {
-        const localMediaContainer = document.getElementById('local-media');
-        document.getElementById('local-media').innerHTML = "";
-        localMediaContainer.appendChild(track.attach());
-      });
+      // check if isIos
+      if(process.client) {
+        this.isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      }
+
+
+
+      // createLocalVideoTrack().then(track => {
+      //   const localMediaContainer = document.getElementById('local-media');
+      //   document.getElementById('local-media').innerHTML = "";
+      //   localMediaContainer.appendChild(track.attach());
+      // });
 
       let token = this.connection_token;
 
@@ -85,7 +122,7 @@
           participant.tracks.forEach(publication => {
             if (publication.isSubscribed) {
               const track = publication.track;
-              document.getElementById('remote-media-div').innerHTML = "";
+              // document.getElementById('remote-media-div').innerHTML = "";
               document.getElementById('remote-media-div').appendChild(track.attach());
             }
           });

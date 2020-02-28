@@ -4,7 +4,7 @@ module.exports = {
   mode: 'spa',
 
   env: {
-    api_url: 'http://15.185.79.134:1062',
+    api_url: 'https://apps.aleecode.dev/video_api',
   },
 
   server: {
@@ -18,7 +18,7 @@ module.exports = {
   head: {
     titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',
-    meta: [9
+    meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
@@ -57,7 +57,8 @@ module.exports = {
   */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    'vue-web-cam/nuxt'
   ],
   /*
   ** Axios module configuration
