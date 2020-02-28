@@ -4,11 +4,11 @@ module.exports = {
   mode: 'spa',
 
   env: {
-    api_url: 'https://apps.aleecode.dev/video_api',
+    api_url: 'https://video-api.basma.ai',
   },
 
   server: {
-    port: 3000, // default: 3000
+    port: 3300, // default: 3000
     host: '0.0.0.0' // default: localhost
   },
 
