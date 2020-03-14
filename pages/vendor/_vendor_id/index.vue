@@ -8,16 +8,16 @@
         <v-card :loading="loading" style="width:100%;max-width: 900px;display:inline-block">
           <div class="text-center" style="padding: 20px">
 
-            <img :src="vendor.logo_url" style="max-width: 500px; height: auto"/>
+            <img :src="vendor.logo_url" style="max-width: 160px; height: auto"/>
             <br/><br/>
 
             <!-- Main Screen -->
             <div v-if="screen_status == 'main'">
               <!--          <h1>{{vendor.name}}</h1>-->
 
-              <v-btn large>
+              <!-- <v-btn large>
                 <v-icon top>fas fa-comment-dots</v-icon>
-              </v-btn>
+              </v-btn> -->
               <div style="display:inline-block;width:10px"></div>
               <v-btn large @click="request_video_token">
                 <v-icon top>fas fa-video</v-icon>
