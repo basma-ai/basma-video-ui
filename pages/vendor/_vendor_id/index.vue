@@ -8,7 +8,7 @@
         <v-card :loading="loading" style="width:100%;max-width: 900px;display:inline-block">
           <div class="text-center" style="padding: 20px">
 
-            <img :src="vendor.logo_url" style="max-width: 160px; height: auto"/>
+            <img id="vendor-logo" :src="vendor.logo_url"/>
             <br/><br/>
 
             <!-- Main Screen -->
