@@ -298,11 +298,11 @@
       end_call: function (service = null) {
 
         this.$refs.call_box.end_call();
-        if (service != null) {
-          this.selected_service = service;
-        }
+        // if (service != null) {
+        //   this.selected_service = service;
+        // }
 
-        this.screen_status = 'starting_call';
+        // this.screen_status = 'starting_call';
         this.loading = true;
 
         let thisApp = this;
@@ -314,7 +314,7 @@
 
             if (response.data.success) {
 
-              thisApp.screen_status = 'main';
+              // thisApp.screen_status = 'main';
 
             } else {
               // console.log("it's a failure!");
