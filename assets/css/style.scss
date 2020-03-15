@@ -38,6 +38,12 @@
   display:inline-block;
   min-height: 300px;
 }
+.call_box #controls {
+  bottom:0;
+  position:absolute;
+  right:0;
+  margin:10px;
+}
 #local-media {
   position:absolute;
   width:100%;

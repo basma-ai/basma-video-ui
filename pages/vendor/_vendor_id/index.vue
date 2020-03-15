@@ -68,15 +68,31 @@
             <!-- In Call -->
             <div v-if="screen_status == 'in_call'">
 
-              You are being served by: {{call.vu.name}}
-              <div styte="height:10px"></div>
 
-              <div v-if="call.status == 'started' && call.connection_guest_token != null">
-                <CallBox :connection_token="call.connection_guest_token" :room_name="'call-'+call.id" style="width:100%"></CallBox>
+
+              <div v-if="call != null && call.status == 'started' && call.connection_guest_token != null">
+                You are being served by: {{call.vu.name}}
+                <div styte="height:10px"></div>
+
+                <CallBox ref="call_box" :connection_token="call.connection_guest_token" :room_name="'call-'+call.id" style="width:100%"></CallBox>
+
+                <br /><br />
+                <v-btn @click="end_call">End Call</v-btn>
+
               </div>
 
-              <br /><br />
-              <v-btn @click="end_call">End Call</v-btn>
+              <div v-if="call == null || call.status == 'ended'">
+
+                <div style="text-align:center;font-size:15px">
+
+                  <h3>Call Ended, Good Bye!</h3>
+                  <br /><br />
+                  <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]" />
+
+                </div>
+
+              </div>
+
 
 <!--              <div style="width:100%;direction: ltr;text-align:left">-->
 <!--                <pre>{{call}}</pre>-->
@@ -115,7 +131,12 @@
       vendor_id: 0,
       selected_service: null,
       call_id: 0,
-      call: null
+      call: null,
+      bye_gifs: [
+        'https://media.giphy.com/media/SV0q8t76HtGi9W9WQu/giphy.gif',
+        'https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif',
+        'https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif',
+      ]
     }),
     components: {
       CallBox
@@ -275,6 +296,8 @@
 
       },
       end_call: function (service = null) {
+
+        this.$refs.call_box.end_call();
         if (service != null) {
           this.selected_service = service;
         }

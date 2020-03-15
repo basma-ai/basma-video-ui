@@ -67,7 +67,7 @@
                 <v-row>
 
                   <v-col cols="12" sm="7">
-                    <CallBox :connection_token="call.connection_agent_token" :room_name="'call-'+call.id" style="width:100%;"></CallBox>
+                    <CallBox ref="call_box" :connection_token="call.connection_agent_token" :room_name="'call-'+call.id" style="width:100%;"></CallBox>
                   </v-col>
                   <v-col>
                     Some notes and other cool stuff goes here<br />
@@ -204,6 +204,8 @@
         this.screen_status = 'loading';
         this.loading = true;
 
+        this.$refs.call_box.end_call();
+
         let thisApp = this;
         axios.post(process.env.api_url + '/agent/end_call', {
           vu_token: this.vu_token,
@@ -271,6 +273,8 @@
 
         this.loading = true;
         this.screen_status = 'loading';
+
+        this.call_id = selected_call.id;
 
 
         let thisApp = this;

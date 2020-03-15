@@ -4,10 +4,24 @@
 
     <div class="call_box">
       <div id="local-media" v-if="!isItIos">
-        <CamPreview></CamPreview>
+        <CamPreview v-if="localCamIsEnabled"></CamPreview>
       </div>
       <div id="remote-media-div"></div>
+
+      <div id="controls">
+        <v-btn @click="toggle_mute_camera">
+          <span v-if="localCamIsEnabled"><v-icon>fas fa-video</v-icon></span>
+          <span v-if="!localCamIsEnabled"><v-icon>fas fa-video-slash</v-icon></span>
+        </v-btn>
+
+        <v-btn @click="toggle_mute_mic">
+          <span v-if="localMicIsEnabled"><v-icon>fas fa-microphone</v-icon></span>
+          <span v-if="!localMicIsEnabled"><v-icon>fas fa-microphone-slash</v-icon></span>
+        </v-btn>
+      </div>
     </div>
+
+
 
   </div>
 </template>
@@ -18,21 +32,94 @@
 
   import Vue from 'vue'
   import CamPreview from '@/components/CamPreview.vue';
-  import { isIOS } from 'mobile-device-detect';
+  import {isIOS} from 'mobile-device-detect';
 
 
-
-  const {connect, createLocalTracks, createLocalVideoTrack} = require('twilio-video');
+  const {connect, createLocalTracks, createLocalVideoTrack, LocalVideoTrack} = require('twilio-video');
 
 
   export default {
     props: ['connection_token', 'room_name'],
     data: () => ({
       found_remote_track: false,
-      isItIos: isIOS
+      isItIos: isIOS,
+      localTrack: false,
+      remoteTrack: '',
+      activeRoom: '',
+      previewTracks: '',
+      room: null,
+      localCamIsEnabled: true,
+      localMicIsEnabled: true
     }),
-    components: { CamPreview },
+    components: {CamPreview},
     methods: {
+      toggle_mute_camera: function () {
+
+        let thisApp = this;
+
+        this.localTracks.forEach((track) => {
+          console.log('In mute function code');
+          console.log(JSON.stringify(track));
+          try{
+            if(track.kind == 'video') {
+              if (track.isEnabled) {
+                track.disable();
+                thisApp.localCamIsEnabled = false;
+              } else {
+                track.enable();
+                thisApp.localCamIsEnabled = true;
+              }
+            }
+          } catch(ex) {
+            console.log(ex.toString());
+          }
+        })
+
+      },
+      toggle_mute_mic: function () {
+
+        let thisApp = this;
+
+        this.localTracks.forEach((track) => {
+          console.log('In mute function code');
+          console.log(JSON.stringify(track));
+          try{
+            if(track.kind == 'audio') {
+              if (track.isEnabled) {
+                track.disable();
+                thisApp.localMicIsEnabled = false;
+              } else {
+                track.enable();
+                thisApp.localMicIsEnabled = true;
+              }
+            }
+          } catch(ex) {
+            console.log(ex.toString());
+          }
+        })
+
+      },
+      end_call: function () {
+
+        let thisApp = this;
+
+        this.localTracks.forEach((track) => {
+          console.log('In mute function code');
+          console.log(JSON.stringify(track));
+          try{
+              if (track.isEnabled) {
+                track.disable();
+                thisApp.localMicIsEnabled = false;
+              } else {
+                track.enable();
+                thisApp.localMicIsEnabled = true;
+              }
+          } catch(ex) {
+            console.log(ex.toString());
+          }
+        })
+
+      },
       check_remote: function (room) {
 
         let this_app = this;
@@ -57,7 +144,7 @@
                 console.log("I am inside IF(publication.isSubscribed)");
                 const track = publication.track;
 
-                if(track == null) {
+                if (track == null) {
                   console.log("track is null");
                   this_app.check_remote(room);
                 } else {
@@ -82,10 +169,9 @@
     created() {
 
       // check if isIos
-      if(process.client) {
+      if (process.client) {
         this.isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
       }
-
 
 
       // createLocalVideoTrack().then(track => {
@@ -102,15 +188,20 @@
         audio: true,
         video: {width: 640}
       }).then(localTracks => {
+
+        thisApp.localTracks = localTracks;
         return connect(token, {
           name: this.room_name,
           tracks: localTracks
         });
+
+
       }).then(room => {
         console.log(`Connected to Room: ${room.name}`);
         // console.log(JSON.stringify(room));
 
         console.log("PARTICIPANTS");
+        thisApp.room = room;
         thisApp.check_remote(room);
 
 
