@@ -11,12 +11,12 @@
       <div id="controls">
         <v-btn @click="toggle_mute_camera">
           <span v-if="localCamIsEnabled"><v-icon>fas fa-video</v-icon></span>
-          <span v-if="!localCamIsEnabled"><v-icon>fas fa-video-slash</v-icon></span>
+          <span v-if="!localCamIsEnabled"><v-icon color="red">fas fa-video-slash</v-icon></span>
         </v-btn>
 
         <v-btn @click="toggle_mute_mic">
           <span v-if="localMicIsEnabled"><v-icon>fas fa-microphone</v-icon></span>
-          <span v-if="!localMicIsEnabled"><v-icon>fas fa-microphone-slash</v-icon></span>
+          <span v-if="!localMicIsEnabled"><v-icon color="red">fas fa-microphone-slash</v-icon></span>
         </v-btn>
       </div>
     </div>
