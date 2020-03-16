@@ -65,6 +65,19 @@
 
             </div>
 
+            <!-- Call Ended -->
+            <div v-if="screen_status == 'call_ended'">
+
+              <div style="text-align:center;font-size:15px">
+
+                <h3>Call Ended, Good Bye!</h3>
+                <br /><br />
+                <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]" />
+
+              </div>
+
+            </div>
+
             <!-- In Call -->
             <div v-if="screen_status == 'in_call'">
 
@@ -81,17 +94,11 @@
 
               </div>
 
-              <div v-if="call == null || call.status == 'ended'">
+<!--              <div v-if="call == null || call.status == 'ended'">-->
 
-                <div style="text-align:center;font-size:15px">
+<!--               -->
 
-                  <h3>Call Ended, Good Bye!</h3>
-                  <br /><br />
-                  <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]" />
-
-                </div>
-
-              </div>
+<!--              </div>-->
 
 
 <!--              <div style="width:100%;direction: ltr;text-align:left">-->
@@ -150,7 +157,7 @@
 
         let thisApp = this;
         axios.post(process.env.api_url + '/guest/get_vendor', {
-          vendor_id: 1
+          vendor_id: this.$route.params.vendor_id
         })
           .then(function (response) {
 
@@ -272,6 +279,17 @@
 
               if(thisApp.call.status == 'started') {
                 thisApp.screen_status = 'in_call';
+              } else if(thisApp.call.status == 'ended') {
+
+                thisApp.screen_status = 'main';
+                thisApp.call = null;
+                thisApp.call_id = 0;
+                thisApp.guest_token = null;
+                thisApp.selected_service = null;
+
+                thisApp.$refs.call_box.end_call();
+
+
               }
 
             } else {
@@ -314,7 +332,7 @@
 
             if (response.data.success) {
 
-              // thisApp.screen_status = 'main';
+              thisApp.screen_status = 'call_ended';
 
             } else {
               // console.log("it's a failure!");

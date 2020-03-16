@@ -2,7 +2,7 @@
   <div>
 
 
-    <div class="call_box">
+    <div class="call_box" v-if="!call_ended">
       <div id="local-media" v-if="!isItIos">
         <CamPreview v-if="localCamIsEnabled"></CamPreview>
       </div>
@@ -20,7 +20,6 @@
         </v-btn>
       </div>
     </div>
-
 
 
   </div>
@@ -49,7 +48,8 @@
       previewTracks: '',
       room: null,
       localCamIsEnabled: true,
-      localMicIsEnabled: true
+      localMicIsEnabled: true,
+      call_ended: false
     }),
     components: {CamPreview},
     methods: {
@@ -60,8 +60,8 @@
         this.localTracks.forEach((track) => {
           console.log('In mute function code');
           console.log(JSON.stringify(track));
-          try{
-            if(track.kind == 'video') {
+          try {
+            if (track.kind == 'video') {
               if (track.isEnabled) {
                 track.disable();
                 thisApp.localCamIsEnabled = false;
@@ -70,7 +70,7 @@
                 thisApp.localCamIsEnabled = true;
               }
             }
-          } catch(ex) {
+          } catch (ex) {
             console.log(ex.toString());
           }
         })
@@ -83,8 +83,8 @@
         this.localTracks.forEach((track) => {
           console.log('In mute function code');
           console.log(JSON.stringify(track));
-          try{
-            if(track.kind == 'audio') {
+          try {
+            if (track.kind == 'audio') {
               if (track.isEnabled) {
                 track.disable();
                 thisApp.localMicIsEnabled = false;
@@ -93,7 +93,7 @@
                 thisApp.localMicIsEnabled = true;
               }
             }
-          } catch(ex) {
+          } catch (ex) {
             console.log(ex.toString());
           }
         })
@@ -101,28 +101,39 @@
       },
       end_call: function () {
 
+        console.log("here i am, in endcall of CallBox");
+
         let thisApp = this;
+
+        this.call_ended = true;
+        // this.connection_token = false;
+
 
         this.localTracks.forEach((track) => {
           console.log('In mute function code');
           console.log(JSON.stringify(track));
-          try{
-              if (track.isEnabled) {
-                track.disable();
-                thisApp.localMicIsEnabled = false;
-              } else {
-                track.enable();
-                thisApp.localMicIsEnabled = true;
-              }
-          } catch(ex) {
+          try {
+            track.disable();
+
+          } catch (ex) {
             console.log(ex.toString());
           }
-        })
+        });
+
+        this.room.disconnect();
+
+        this.room = null;
+
 
       },
       check_remote: function (room) {
 
         let this_app = this;
+
+        if (this.call_ended) {
+          return true;
+        }
+
         room.participants.forEach(participant => {
 
           console.log("PARTICIPANT");
@@ -168,6 +179,8 @@
     ,
     created() {
 
+      console.log("here me, in created");
+
       // check if isIos
       if (process.client) {
         this.isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -183,6 +196,10 @@
       let token = this.connection_token;
 
       var thisApp = this;
+
+      if (this.call_ended) {
+        return true;
+      }
 
       createLocalTracks({
         audio: true,
@@ -207,20 +224,22 @@
 
         // Attach the Participant's Media to a <div> element.
         room.on('participantConnected', participant => {
-          console.log("A participant has been connected");
-          console.log(`Participant "${participant.identity}" connected`);
+          if (!thisApp.call_ended) {
+            console.log("A participant has been connected");
+            console.log(`Participant "${participant.identity}" connected`);
 
-          participant.tracks.forEach(publication => {
-            if (publication.isSubscribed) {
-              const track = publication.track;
-              // document.getElementById('remote-media-div').innerHTML = "";
+            participant.tracks.forEach(publication => {
+              if (publication.isSubscribed) {
+                const track = publication.track;
+                // document.getElementById('remote-media-div').innerHTML = "";
+                document.getElementById('remote-media-div').appendChild(track.attach());
+              }
+            });
+
+            participant.on('trackSubscribed', track => {
               document.getElementById('remote-media-div').appendChild(track.attach());
-            }
-          });
-
-          participant.on('trackSubscribed', track => {
-            document.getElementById('remote-media-div').appendChild(track.attach());
-          });
+            });
+          }
         });
 
       });
