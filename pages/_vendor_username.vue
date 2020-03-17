@@ -56,8 +56,12 @@
             <div v-if="screen_status == 'call_waiting_for_agent'">
 
               <v-progress-linear indeterminate></v-progress-linear>
-              waiting for an agent
               <br/>
+              Your place in line, you'll be answered as soon as an agent is available..
+              <br/>
+              <h1 v-if="queue_count != 0">#{{queue_count}}</h1>
+              <br/>
+              <!-- <span v-if="estimated_waiting_time != 0">The average waiting time is {{estimated_waiting_time}}</span> -->
 <!--              <div style="width:100%;direction: ltr;text-align:left">-->
 <!--                <pre>{{call}}</pre>-->
 <!--              </div>-->
@@ -132,8 +136,8 @@
       guest_token: null,
       services_list: [],
       vendor_username: 0,
-      queue_number: 0,
-      avg_duration_until_answer: 0,
+      queue_count: 0,
+      estimated_waiting_time: 0,
       selected_service: null,
       call_id: 0,
       call: null,
@@ -244,6 +248,7 @@
           .then(function (response) {
 
             if (response.data.success) {
+              console.log(response.data.data);
 
               thisApp.call_id = response.data.data.call_id;
               thisApp.screen_status = 'call_waiting_for_agent';
@@ -274,19 +279,21 @@
             if (response.data.success) {
 
               thisApp.call = response.data.data.call;
+              thisApp.queue_count = response.data.data.queue_count;
+              thisApp.estimated_waiting_time = response.data.data.estimated_waiting_time;
 
-              if(thisApp.call.status == 'started') {
+              if(null != thisApp.call && thisApp.call.status == 'started') {
                 thisApp.screen_status = 'in_call';
-              } else if(thisApp.call.status == 'ended') {
+              } else if(null != response.data.data.errors && response.data.data.errors.length > 0) {
+                if (response.data.data.errors[0] == 'call_ended') {
+                  thisApp.screen_status = 'call_ended';
+                  thisApp.call = null;
+                  thisApp.call_id = 0;
+                  thisApp.guest_token = null;
+                  thisApp.selected_service = null;
 
-                thisApp.screen_status = 'main';
-                thisApp.call = null;
-                thisApp.call_id = 0;
-                thisApp.guest_token = null;
-                thisApp.selected_service = null;
-
-                thisApp.$refs.call_box.end_call();
-
+                  thisApp.$refs.call_box.end_call();
+                }
 
               }
 
