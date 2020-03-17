@@ -1,7 +1,6 @@
 <template>
   <div>
 
-
     <v-container>
 
       <div style="text-align:center">
@@ -120,13 +119,10 @@
 
   </div>
 </template>
-
-
 <script>
   import axios from 'axios';
   // const { connect } = require('twilio-video');
   import CallBox from '@/components/CallBox.vue';
-
 
   export default {
     data: () => ({
@@ -135,7 +131,9 @@
       screen_status: 'main',
       guest_token: null,
       services_list: [],
-      vendor_id: 0,
+      vendor_username: 0,
+      queue_number: 0,
+      avg_duration_until_answer: 0,
       selected_service: null,
       call_id: 0,
       call: null,
@@ -157,7 +155,7 @@
 
         let thisApp = this;
         axios.post(process.env.api_url + '/guest/get_vendor', {
-          vendor_id: this.$route.params.vendor_id
+          vendor_username: this.vendor_username
         })
           .then(function (response) {
 
@@ -209,7 +207,7 @@
         let thisApp = this;
         axios.post(process.env.api_url + '/calls/get_services', {
           guest_token: this.guest_token,
-          vendor_id: this.vendor_id
+          vendor_id: this.vendor.id
         })
           .then(function (response) {
 
@@ -296,6 +294,7 @@
               // console.log("it's a failure!");
             }
 
+            // TODO: switch to socket.io 
             setTimeout(function () {
               if (thisApp.screen_status == 'call_waiting_for_agent' || thisApp.screen_status == 'in_call') {
                 thisApp.refresh_call();
@@ -308,9 +307,6 @@
           .catch(function (error) {
             console.log(error);
           });
-
-      },
-      setup_twilio: function() {
 
       },
       end_call: function (service = null) {
@@ -349,10 +345,10 @@
 
     },
     created() {
+      this.vendor_username = this.$route.params.vendor_username;
 
-      this.vendor_id = this.$route.params.vendor_id;
+      // TODO: verify the vendor username first before getting the vendor data
       this.load_data();
-
     }
   }
 </script>

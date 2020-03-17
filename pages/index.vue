@@ -1,16 +1,7 @@
-<template>
-
-  <div>hello there</div>
-
-</template>
-
 <script>
-
-
-  export default {
-    components: {
-
-
+    export default {
+        asyncData (context) {
+            context.redirect("https://basma.ai")
+        }
     }
-  }
 </script>
