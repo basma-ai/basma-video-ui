@@ -194,7 +194,7 @@
       ],
       customerPhone: '',
       phoneRules: [
-        v => /[^0-9]/.test(v) || 'Phone is invalid, enter digits only',
+        v => /[0-9]/.test(v) || 'Phone is invalid, enter digits only',
         v => v.length == 8 || 'Phone must be 8 digits only',
         v => !!v || 'Phone is required!'
       ],
