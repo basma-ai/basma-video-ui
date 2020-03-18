@@ -249,42 +249,6 @@
           });
       },
 
-      send_user_data: function (service = null) {
-        if (service != null) {
-          this.selected_service = service;
-        }
-
-        this.screen_status = 'starting_call';
-        this.loading = true;
-
-        let thisApp = this;
-        axios.post(process.env.api_url + '/calls/start_call', {
-          guest_token: this.guest_token,
-          service_id: this.selected_service.id
-        })
-          .then(function (response) {
-
-            if (response.data.success) {
-              console.log(response.data.data);
-
-              thisApp.call_id = response.data.data.call_id;
-              thisApp.screen_status = 'call_waiting_for_agent';
-              thisApp.refresh_call();
-
-            } else {
-              // console.log("it's a failure!");
-            }
-
-            thisApp.loading = false;
-
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-
-      },
-
-
       request_video_token: function () {
 
         this.screen_status = 'video_connecting';
@@ -294,7 +258,7 @@
         axios.post(process.env.api_url + '/guest/request_token', {
           first_name: this.firstName,
           last_name: this.lastName,
-          phone: customerPhone
+          phone: this.customerPhone
         })
           .then(function (response) {
             if (response.data.success) {
