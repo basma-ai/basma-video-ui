@@ -1,6 +1,10 @@
 <template>
   <div>
 
+    <input type="text" v-model="test_variable">
+    {{test_variable}}
+
+
     <v-container>
 
       <div style="text-align:center">
@@ -17,10 +21,47 @@
               <!-- <v-btn large>
                 <v-icon top>fas fa-comment-dots</v-icon>
               </v-btn> -->
-              <div style="display:inline-block;width:10px"></div>
-              <v-btn large @click="request_video_token">
-                <v-icon top>fas fa-video</v-icon>
-              </v-btn>
+
+              <!-- user input data -->
+              <v-form v-model="formValid" ref="form">
+                <v-container style="text-align: center">
+
+                  <div style="display: inline-block; width:100%; max-width: 200px">
+
+                    <v-text-field
+                      v-model="firstName"
+                      :rules="nameRules"
+                      label="First Name"
+                      required
+                    >
+                    </v-text-field>
+
+                    <v-text-field
+                      v-model="lastName"
+                      :rules="nameRules"
+                      label="Last Name"
+                      required
+                    >
+
+                    </v-text-field>
+                    <v-text-field
+                      v-model="customerPhone"
+                      :rules="phoneRules"
+                      label="Customer Phone"
+                      required
+                    ></v-text-field>
+
+                    <br>
+
+                    <v-btn large :disabled="!formValid" color="success" @click="request_video_token">
+                      <v-icon top>fas fa-video</v-icon>
+                    </v-btn>
+
+                  </div>
+
+                </v-container>
+              </v-form>
+
 
             </div>
 
@@ -57,14 +98,20 @@
 
               <v-progress-linear indeterminate></v-progress-linear>
               <br/>
-              Your place in line, you'll be answered as soon as an agent is available..
+              You are placed in line!!
               <br/>
-              <h1 v-if="queue_count != 0">#{{queue_count}}</h1>
+              You'll be answered as soon as an agent is available.
               <br/>
+              <h3 v-if="queue_count != 0"> You are #{{queue_count+1}} in the waiting queue, kindly wait! </h3>
+              <br/>
+
+              <v-btn @click="end_call">
+                Cancel Call
+              </v-btn>
               <!-- <span v-if="estimated_waiting_time != 0">The average waiting time is {{estimated_waiting_time}}</span> -->
-<!--              <div style="width:100%;direction: ltr;text-align:left">-->
-<!--                <pre>{{call}}</pre>-->
-<!--              </div>-->
+              <!--              <div style="width:100%;direction: ltr;text-align:left">-->
+              <!--                <pre>{{call}}</pre>-->
+              <!--              </div>-->
 
             </div>
 
@@ -74,8 +121,14 @@
               <div style="text-align:center;font-size:15px">
 
                 <h3>Call Ended, Good Bye!</h3>
-                <br /><br />
-                <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]" />
+                <br>
+
+                <v-btn @click="screen_status = 'services_list'">
+                  Back to Home
+                </v-btn>
+
+                <br/><br/>
+                <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]"/>
 
               </div>
 
@@ -85,28 +138,28 @@
             <div v-if="screen_status == 'in_call'">
 
 
-
               <div v-if="call != null && call.status == 'started' && call.connection_guest_token != null">
                 You are being served by: {{call.vu.name}}
                 <div styte="height:10px"></div>
 
-                <CallBox ref="call_box" :connection_token="call.connection_guest_token" :room_name="'call-'+call.id" style="width:100%"></CallBox>
+                <CallBox ref="call_box" :connection_token="call.connection_guest_token" :room_name="'call-'+call.id"
+                         style="width:100%"></CallBox>
 
-                <br /><br />
+                <br/><br/>
                 <v-btn @click="end_call">End Call</v-btn>
 
               </div>
 
-<!--              <div v-if="call == null || call.status == 'ended'">-->
+              <!--              <div v-if="call == null || call.status == 'ended'">-->
 
-<!--               -->
+              <!--               -->
 
-<!--              </div>-->
+              <!--              </div>-->
 
 
-<!--              <div style="width:100%;direction: ltr;text-align:left">-->
-<!--                <pre>{{call}}</pre>-->
-<!--              </div>-->
+              <!--              <div style="width:100%;direction: ltr;text-align:left">-->
+              <!--                <pre>{{call}}</pre>-->
+              <!--              </div>-->
             </div>
 
           </div>
@@ -130,11 +183,28 @@
 
   export default {
     data: () => ({
+
+      //user input data
+      formValid: false,
+      firstName: '',
+      lastName: '',
+      nameRules: [
+        v => !!v || 'Customer Name is required!',
+        // v => v.length <= 10 || 'Name must be less than 10 characters',
+      ],
+      customerPhone: '',
+      phoneRules: [
+        v => /[^0-9]/.test(v) || 'Phone is invalid, enter digits only',
+        v => v.length == 8 || 'Phone must be 8 digits only',
+        v => !!v || 'Phone is required!'
+      ],
+
       loading: false,
       vendor: {},
       screen_status: 'main',
       guest_token: null,
       services_list: [],
+      test_variable: null,
       vendor_username: 0,
       queue_count: 0,
       estimated_waiting_time: 0,
@@ -178,17 +248,56 @@
             console.log(error);
           });
       },
-      request_video_token: function () {
-        this.screen_status = 'video_connecting';
+
+      send_user_data: function (service = null) {
+        if (service != null) {
+          this.selected_service = service;
+        }
+
+        this.screen_status = 'starting_call';
         this.loading = true;
 
-
         let thisApp = this;
-        axios.post(process.env.api_url + '/guest/request_token', {})
+        axios.post(process.env.api_url + '/calls/start_call', {
+          guest_token: this.guest_token,
+          service_id: this.selected_service.id
+        })
           .then(function (response) {
 
             if (response.data.success) {
+              console.log(response.data.data);
 
+              thisApp.call_id = response.data.data.call_id;
+              thisApp.screen_status = 'call_waiting_for_agent';
+              thisApp.refresh_call();
+
+            } else {
+              // console.log("it's a failure!");
+            }
+
+            thisApp.loading = false;
+
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+      },
+
+
+      request_video_token: function () {
+
+        this.screen_status = 'video_connecting';
+        this.loading = true;
+        let thisApp = this;
+
+        axios.post(process.env.api_url + '/guest/request_token', {
+          first_name: this.firstName,
+          last_name: this.lastName,
+          phone: customerPhone
+        })
+          .then(function (response) {
+            if (response.data.success) {
               thisApp.guest_token = response.data.data.token;
               thisApp.get_services();
 
@@ -232,6 +341,8 @@
           });
 
       },
+
+
       start_call: function (service = null) {
         if (service != null) {
           this.selected_service = service;
@@ -282,9 +393,9 @@
               thisApp.queue_count = response.data.data.queue_count;
               thisApp.estimated_waiting_time = response.data.data.estimated_waiting_time;
 
-              if(null != thisApp.call && thisApp.call.status == 'started') {
+              if (null != thisApp.call && thisApp.call.status == 'started') {
                 thisApp.screen_status = 'in_call';
-              } else if(null != response.data.data.errors && response.data.data.errors.length > 0) {
+              } else if (null != response.data.data.errors && response.data.data.errors.length > 0) {
                 if (response.data.data.errors[0] == 'call_ended') {
                   thisApp.screen_status = 'call_ended';
                   thisApp.call = null;
@@ -301,7 +412,7 @@
               // console.log("it's a failure!");
             }
 
-            // TODO: switch to socket.io 
+            // TODO: switch to socket.io
             setTimeout(function () {
               if (thisApp.screen_status == 'call_waiting_for_agent' || thisApp.screen_status == 'in_call') {
                 thisApp.refresh_call();
@@ -318,7 +429,12 @@
       },
       end_call: function (service = null) {
 
-        this.$refs.call_box.end_call();
+        try {
+          this.$refs.call_box.end_call();
+        } catch (ex) {
+          // console.log("Call ending erro!!")
+        }
+        // this.$refs.call_box.end_call();
         // if (service != null) {
         //   this.selected_service = service;
         // }
