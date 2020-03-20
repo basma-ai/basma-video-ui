@@ -17,6 +17,7 @@
     "mobile-device-detect": "^0.3.3",
     "nuxt": "^2.0.0",
     "twilio-video": "^2.2.0",
+    "vue-feedback-reaction": "^1.2.0",
     "vue-web-cam": "^1.9.0"
   },
   "devDependencies": {

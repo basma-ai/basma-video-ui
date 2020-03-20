@@ -1,26 +1,40 @@
 <template>
   <div>
 
-
     <div class="call_box" v-if="!call_ended">
+
+      <div
+        align="center"
+        v-if="!isVideoLoaded"
+        style=" position: absolute; width: 100%; max-width:100%; height: 100%; max-height: 100%;
+                z-index: 0; display: flex; align-items: center; justify-content: center"
+      >
+        <v-progress-circular
+          :size="100"
+          color="amber"
+          indeterminate
+        ></v-progress-circular>
+      </div>
+
       <div id="local-media" v-if="!isItIos">
         <CamPreview v-if="localCamIsEnabled"></CamPreview>
       </div>
-      <div id="remote-media-div"></div>
+
+      <div id="remote-media-div" style="z-index: 1"></div>
 
       <div id="controls">
-        <v-btn @click="toggle_mute_camera">
+        <v-btn @click="toggle_mute_camera" v-if="isVideoLoaded">
           <span v-if="localCamIsEnabled"><v-icon>fas fa-video</v-icon></span>
           <span v-if="!localCamIsEnabled"><v-icon color="red">fas fa-video-slash</v-icon></span>
         </v-btn>
 
-        <v-btn @click="toggle_mute_mic">
+        <v-btn @click="toggle_mute_mic" v-if="isVideoLoaded">
           <span v-if="localMicIsEnabled"><v-icon>fas fa-microphone</v-icon></span>
           <span v-if="!localMicIsEnabled"><v-icon color="red">fas fa-microphone-slash</v-icon></span>
         </v-btn>
       </div>
-    </div>
 
+    </div>
 
   </div>
 </template>
@@ -28,16 +42,14 @@
 
 <script>
   import axios from 'axios';
-
   import Vue from 'vue'
   import CamPreview from '@/components/CamPreview.vue';
   import {isIOS} from 'mobile-device-detect';
-
-
   const {connect, createLocalTracks, createLocalVideoTrack, LocalVideoTrack} = require('twilio-video');
 
 
   export default {
+    inject: ['theme'],
     props: ['connection_token', 'room_name'],
     data: () => ({
       found_remote_track: false,
@@ -49,7 +61,8 @@
       room: null,
       localCamIsEnabled: true,
       localMicIsEnabled: true,
-      call_ended: false
+      call_ended: false,
+      isVideoLoaded: false
     }),
     components: {CamPreview},
     methods: {
@@ -163,6 +176,7 @@
                   this_app.found_remote_track = true;
                   //document.getElementById('remote-media-div').innerHTML = "";
                   document.getElementById('remote-media-div').appendChild(track.attach());
+                  this_app.isVideoLoaded = true;
                 }
 
 
@@ -233,11 +247,13 @@
                 const track = publication.track;
                 // document.getElementById('remote-media-div').innerHTML = "";
                 document.getElementById('remote-media-div').appendChild(track.attach());
+                thisApp.isVideoLoaded = true;
               }
             });
 
             participant.on('trackSubscribed', track => {
               document.getElementById('remote-media-div').appendChild(track.attach());
+              thisApp.isVideoLoaded = true;
             });
           }
         });

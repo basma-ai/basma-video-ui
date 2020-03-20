@@ -1,9 +1,6 @@
 <template>
   <div>
 
-    <input type="text" v-model="test_variable">
-    {{test_variable}}
-
 
     <v-container>
 
@@ -47,7 +44,7 @@
                     <v-text-field
                       v-model="customerPhone"
                       :rules="phoneRules"
-                      label="Customer Phone"
+                      label="Mobile Number"
                       required
                     ></v-text-field>
 
@@ -65,15 +62,12 @@
 
             </div>
 
-            <!-- Video Connecting Screen -->
-            <div v-if="screen_status == 'video_connecting'">
-              connecting you
-            </div>
 
             <!-- Getting Vendor Screen -->
             <div v-if="screen_status == 'getting_services'">
               getting services list
             </div>
+
 
             <!-- Services List -->
             <div v-if="screen_status == 'services_list'">
@@ -87,6 +81,12 @@
               <v-btn @click="screen_status = 'main'">Start Again</v-btn>
 
             </div>
+
+            <!-- Video Connecting Screen -->
+            <div v-if="screen_status == 'video_connecting'">
+              connecting you
+            </div>
+
 
             <!-- Starting a Call -->
             <div v-if="screen_status == 'starting_call'">
@@ -123,6 +123,11 @@
                 <h3>Call Ended, Good Bye!</h3>
                 <br>
 
+                <div class="app">
+                  <vue-feedback-reaction v-model="feedback"/>
+                </div>
+
+                <br>
                 <v-btn @click="screen_status = 'services_list'">
                   Back to Home
                 </v-btn>
@@ -180,10 +185,10 @@
   import axios from 'axios';
   // const { connect } = require('twilio-video');
   import CallBox from '@/components/CallBox.vue';
+  import VueFeedbackReaction from 'vue-feedback-reaction';
 
   export default {
     data: () => ({
-
       //user input data
       formValid: false,
       firstName: '',
@@ -215,10 +220,12 @@
         'https://media.giphy.com/media/SV0q8t76HtGi9W9WQu/giphy.gif',
         'https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif',
         'https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif',
-      ]
+      ],
+      feedback: ''
     }),
     components: {
-      CallBox
+      CallBox,
+      VueFeedbackReaction
     },
     methods: {
 
