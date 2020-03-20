@@ -65,7 +65,7 @@
 
             <!-- Getting Vendor Screen -->
             <div v-if="screen_status == 'getting_services'">
-              getting services list
+              Getting Services List
             </div>
 
 
@@ -84,13 +84,13 @@
 
             <!-- Video Connecting Screen -->
             <div v-if="screen_status == 'video_connecting'">
-              connecting you
+              Connecting You
             </div>
 
 
             <!-- Starting a Call -->
             <div v-if="screen_status == 'starting_call'">
-              starting a call
+              Starting a Call
             </div>
 
             <!-- Waiting for an Agent -->
@@ -122,10 +122,6 @@
 
                 <h3>Call Ended, Good Bye!</h3>
                 <br>
-
-                <div class="app">
-                  <vue-feedback-reaction v-model="feedback"/>
-                </div>
 
                 <br>
                 <v-btn @click="screen_status = 'services_list'">
@@ -185,7 +181,6 @@
   import axios from 'axios';
   // const { connect } = require('twilio-video');
   import CallBox from '@/components/CallBox.vue';
-  import VueFeedbackReaction from 'vue-feedback-reaction';
 
   export default {
     data: () => ({
@@ -221,11 +216,9 @@
         'https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif',
         'https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif',
       ],
-      feedback: ''
     }),
     components: {
-      CallBox,
-      VueFeedbackReaction
+      CallBox
     },
     methods: {
 
