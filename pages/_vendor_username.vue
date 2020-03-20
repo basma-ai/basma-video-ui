@@ -8,7 +8,6 @@
         <v-card :loading="loading" style="width:100%;max-width: 900px;display:inline-block">
           <div class="text-center" style="padding: 20px">
 
-
             <img id="vendor-logo" :src="vendor.logo_url"/>
             <br/><br/>
 
@@ -120,7 +119,7 @@
 
                 </CallBox>
                 <br/><br/>
-                <v-btn @click="end_call">End Call</v-btn>
+                <v-btn @click="end_call()">End Call</v-btn>
               </div>
             </div>
 
@@ -133,22 +132,22 @@
                 <h3>Kindly rate our service :)</h3>
                 <br>
 
-                <!-- feedback component -->
-                <awesome-rating @rating_set="sendFeedback($event)" v-if="feedback === 0"></awesome-rating>
+                <!-- rating component -->
+                <awesome-rating @rating_set="submitRating($event)" v-if="rating === 0"></awesome-rating>
                 <br>
 
-                <!-- show the message once the user completes the feedback-->
-                <h3 v-if="feedback !== 0">Call Ended, Good Bye!</h3>
+                <!-- show the message once the user completes the rating-->
+                <h3 v-if="rating !== 0">Call Ended, Good Bye!</h3>
                 <br>
 
                 <br>
-                <!-- show back to home button once the user completes the feedback-->
-                <v-btn @click="screen_status = 'services_list'" v-if="feedback !== 0">
+                <!-- show back to home button once the user completes the rating-->
+                <v-btn @click="screen_status = 'services_list'" v-if="rating !== 0">
                   Back to Home
                 </v-btn>
 
                 <br/><br/>
-                <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]"/>
+                <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]" style="width: 100%"/>
 
               </div>
 
@@ -208,7 +207,7 @@
         'https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif',
         'https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif',
       ],
-      feedback: 0
+      rating: 0
     }),
     components: {
       CallBox,
@@ -216,9 +215,22 @@
     },
     methods: {
 
-      sendFeedback: function (event) {
-        this.feedback = event.rating;
-        console.log(this.feedback);
+      submitRating: function (event) {
+        this.rating = event.rating;
+        // console.log(this.rating);
+        let thisApp = this;
+        axios.post(process.env.api_url + '/calls/submit_rating', {
+          guest_token: thisApp.guest_token,
+          call_id: thisApp.call_id,
+          rating: thisApp.rating,
+          feedback_text: ''
+        }).then(function (response) {
+            thisApp.guest_token = null;
+            thisApp.call_id = 0;
+          }
+        ).catch(function (error) {
+          // console.log(error);
+        })
       },
 
       load_data: function () {
@@ -237,14 +249,14 @@
               thisApp.vendor = response.data.data.vendor;
 
             } else {
-              // console.log("it's a failure!");
+              // // console.log("it's a failure!");
             }
 
             thisApp.loading = false;
 
           })
           .catch(function (error) {
-            console.log(error);
+            // console.log(error);
           });
       },
 
@@ -265,14 +277,14 @@
               thisApp.get_services();
 
             } else {
-              // console.log("it's a failure!");
+              // // console.log("it's a failure!");
             }
 
             thisApp.loading = false;
 
           })
           .catch(function (error) {
-            console.log(error);
+            // console.log(error);
           });
 
       },
@@ -293,14 +305,14 @@
               thisApp.screen_status = 'services_list';
 
             } else {
-              // console.log("it's a failure!");
+              // // console.log("it's a failure!");
             }
 
             thisApp.loading = false;
 
           })
           .catch(function (error) {
-            console.log(error);
+            // console.log(error);
           });
 
       },
@@ -322,21 +334,21 @@
           .then(function (response) {
 
             if (response.data.success) {
-              console.log(response.data.data);
+              // console.log(response.data.data);
 
               thisApp.call_id = response.data.data.call_id;
               thisApp.screen_status = 'call_waiting_for_agent';
               thisApp.refresh_call();
 
             } else {
-              // console.log("it's a failure!");
+              // // console.log("it's a failure!");
             }
 
             thisApp.loading = false;
 
           })
           .catch(function (error) {
-            console.log(error);
+            // console.log(error);
           });
 
       },
@@ -362,17 +374,14 @@
                 if (response.data.data.errors[0] == 'call_ended') {
                   thisApp.screen_status = 'call_ended';
                   thisApp.call = null;
-                  thisApp.call_id = 0;
-                  thisApp.guest_token = null;
                   thisApp.selected_service = null;
-
                   thisApp.$refs.call_box.end_call();
                 }
 
               }
 
             } else {
-              // console.log("it's a failure!");
+              // // console.log("it's a failure!");
             }
 
             // TODO: switch to socket.io
@@ -386,7 +395,7 @@
 
           })
           .catch(function (error) {
-            console.log(error);
+            // console.log(error);
           });
 
       },
@@ -396,7 +405,7 @@
         try {
           this.$refs.call_box.end_call();
         } catch (ex) {
-          // console.log("Call ending erro!!")
+          // // console.log("Call ending erro!!")
         }
         // this.$refs.call_box.end_call();
         // if (service != null) {
@@ -418,14 +427,14 @@
               thisApp.screen_status = 'services_list';
 
             } else {
-              // console.log("it's a failure!");
+              // // console.log("it's a failure!");
             }
 
             thisApp.loading = false;
 
           })
           .catch(function (error) {
-            console.log(error);
+            // console.log(error);
           });
 
       },
@@ -436,7 +445,7 @@
       try {
         this.$refs.call_box.end_call();
       } catch (ex) {
-        // console.log("Call ending error!!")
+        // // console.log("Call ending error!!")
       }
       // this.$refs.call_box.end_call();
       // if (service != null) {
@@ -458,14 +467,14 @@
             thisApp.screen_status = 'call_ended';
 
           } else {
-            // console.log("it's a failure!");
+            // // console.log("it's a failure!");
           }
 
           thisApp.loading = false;
 
         })
         .catch(function (error) {
-          console.log(error);
+          // console.log(error);
         });
 
     },
