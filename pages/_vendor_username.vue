@@ -8,17 +8,12 @@
         <v-card :loading="loading" style="width:100%;max-width: 900px;display:inline-block">
           <div class="text-center" style="padding: 20px">
 
+
             <img id="vendor-logo" :src="vendor.logo_url"/>
             <br/><br/>
 
             <!-- Main Screen -->
             <div v-if="screen_status == 'main'">
-              <!--          <h1>{{vendor.name}}</h1>-->
-
-              <!-- <v-btn large>
-                <v-icon top>fas fa-comment-dots</v-icon>
-              </v-btn> -->
-
               <!-- user input data -->
               <v-form v-model="formValid" ref="form">
                 <v-container style="text-align: center">
@@ -74,7 +69,7 @@
 
               <v-btn v-for="service in services_list" :key="service.id" @click="start_call(service)"
                      style="margin:10px">
-                {{service.service_name}}
+                {{service.name}}
               </v-btn>
 
               <br/><br/>
@@ -95,7 +90,6 @@
 
             <!-- Waiting for an Agent -->
             <div v-if="screen_status == 'call_waiting_for_agent'">
-
               <v-progress-linear indeterminate></v-progress-linear>
               <br/>
               You are placed in line!!
@@ -105,14 +99,29 @@
               <h3 v-if="queue_count != 0"> You are #{{queue_count+1}} in the waiting queue, kindly wait! </h3>
               <br/>
 
-              <v-btn @click="end_call">
+              <v-btn @click="cancel_call">
                 Cancel Call
               </v-btn>
-              <!-- <span v-if="estimated_waiting_time != 0">The average waiting time is {{estimated_waiting_time}}</span> -->
-              <!--              <div style="width:100%;direction: ltr;text-align:left">-->
-              <!--                <pre>{{call}}</pre>-->
-              <!--              </div>-->
 
+              <span v-if="estimated_waiting_time != 0">The average waiting time is {{estimated_waiting_time}}</span>
+              <div style="width:100%;direction: ltr;text-align:left">
+                <!--                                <pre>{{call}}</pre>-->
+              </div>
+            </div>
+
+            <!-- In Call -->
+            <div v-if="screen_status == 'in_call'">
+              <div v-if="call != null && call.status == 'started' && call.connection_guest_token != null">
+                You are being served by: {{call.vu.name}}
+                <div styte="height:10px"></div>
+
+                <CallBox ref="call_box" :connection_token="call.connection_guest_token" :room_name="'call-'+call.id"
+                         style="width:100%">
+
+                </CallBox>
+                <br/><br/>
+                <v-btn @click="end_call">End Call</v-btn>
+              </div>
             </div>
 
             <!-- Call Ended -->
@@ -120,11 +129,21 @@
 
               <div style="text-align:center;font-size:15px">
 
-                <h3>Call Ended, Good Bye!</h3>
+                <h3>Thanks for calling!</h3>
+                <h3>Kindly rate our service :)</h3>
+                <br>
+
+                <!-- feedback component -->
+                <awesome-rating @rating_set="sendFeedback($event)" v-if="feedback === 0"></awesome-rating>
+                <br>
+
+                <!-- show the message once the user completes the feedback-->
+                <h3 v-if="feedback !== 0">Call Ended, Good Bye!</h3>
                 <br>
 
                 <br>
-                <v-btn @click="screen_status = 'services_list'">
+                <!-- show back to home button once the user completes the feedback-->
+                <v-btn @click="screen_status = 'services_list'" v-if="feedback !== 0">
                   Back to Home
                 </v-btn>
 
@@ -133,34 +152,6 @@
 
               </div>
 
-            </div>
-
-            <!-- In Call -->
-            <div v-if="screen_status == 'in_call'">
-
-
-              <div v-if="call != null && call.status == 'started' && call.connection_guest_token != null">
-                You are being served by: {{call.vu.name}}
-                <div styte="height:10px"></div>
-
-                <CallBox ref="call_box" :connection_token="call.connection_guest_token" :room_name="'call-'+call.id"
-                         style="width:100%"></CallBox>
-
-                <br/><br/>
-                <v-btn @click="end_call">End Call</v-btn>
-
-              </div>
-
-              <!--              <div v-if="call == null || call.status == 'ended'">-->
-
-              <!--               -->
-
-              <!--              </div>-->
-
-
-              <!--              <div style="width:100%;direction: ltr;text-align:left">-->
-              <!--                <pre>{{call}}</pre>-->
-              <!--              </div>-->
             </div>
 
           </div>
@@ -181,6 +172,7 @@
   import axios from 'axios';
   // const { connect } = require('twilio-video');
   import CallBox from '@/components/CallBox.vue';
+  import AwesomeRating from "../components/AwesomeRating";
 
   export default {
     data: () => ({
@@ -216,11 +208,18 @@
         'https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif',
         'https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif',
       ],
+      feedback: 0
     }),
     components: {
-      CallBox
+      CallBox,
+      AwesomeRating
     },
     methods: {
+
+      sendFeedback: function (event) {
+        this.feedback = event.rating;
+        console.log(this.feedback);
+      },
 
       load_data: function () {
         this.loading = true;
@@ -391,7 +390,8 @@
           });
 
       },
-      end_call: function (service = null) {
+
+      cancel_call: function (service = null) {
 
         try {
           this.$refs.call_box.end_call();
@@ -415,7 +415,7 @@
 
             if (response.data.success) {
 
-              thisApp.screen_status = 'call_ended';
+              thisApp.screen_status = 'services_list';
 
             } else {
               // console.log("it's a failure!");
@@ -429,6 +429,44 @@
           });
 
       },
+
+    },
+    end_call: function (service = null) {
+
+      try {
+        this.$refs.call_box.end_call();
+      } catch (ex) {
+        // console.log("Call ending error!!")
+      }
+      // this.$refs.call_box.end_call();
+      // if (service != null) {
+      //   this.selected_service = service;
+      // }
+
+      // this.screen_status = 'starting_call';
+      this.loading = true;
+
+      let thisApp = this;
+      axios.post(process.env.api_url + '/calls/end_call', {
+        guest_token: this.guest_token,
+        call_id: this.call_id
+      })
+        .then(function (response) {
+
+          if (response.data.success) {
+
+            thisApp.screen_status = 'call_ended';
+
+          } else {
+            // console.log("it's a failure!");
+          }
+
+          thisApp.loading = false;
+
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
 
     },
     created() {
