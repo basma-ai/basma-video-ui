@@ -45,6 +45,7 @@
   import Vue from 'vue'
   import CamPreview from '@/components/CamPreview.vue';
   import {isIOS} from 'mobile-device-detect';
+
   const {connect, createLocalTracks, createLocalVideoTrack, LocalVideoTrack} = require('twilio-video');
 
 
@@ -114,24 +115,31 @@
       },
       end_call: function () {
 
-        // console.log("here i am, in endcall of CallBox");
+        console.log("here i am, in endcall of CallBox");
 
         let thisApp = this;
 
         this.call_ended = true;
         // this.connection_token = false;
 
-
         this.localTracks.forEach((track) => {
           // console.log('In mute function code');
-          // console.log(JSON.stringify(track));
+          console.log(JSON.stringify(track));
           try {
             track.disable();
 
           } catch (ex) {
-            // console.log(ex.toString());
+            console.log(ex.toString());
           }
         });
+
+        // this.room.on('disconnected', room => {
+        //   // Detach the local media elements
+        //   room.localParticipant.tracks.forEach(publication => {
+        //     const attachedElements = publication.track.detach();
+        //     attachedElements.forEach(element => element.remove());
+        //   });
+        // });
 
         this.room.disconnect();
 

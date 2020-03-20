@@ -119,7 +119,7 @@
 
                 </CallBox>
                 <br/><br/>
-                <v-btn @click="end_call()">End Call</v-btn>
+                <v-btn @click="cancel_call">End Call</v-btn>
               </div>
             </div>
 
@@ -147,7 +147,8 @@
                 </v-btn>
 
                 <br/><br/>
-                <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]" style="width: 100%"/>
+                <img :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]"
+                     style="width: 100%; max-width: 300px"/>
 
               </div>
 
@@ -288,6 +289,7 @@
           });
 
       },
+
       get_services: function () {
         this.screen_status = 'getting_services';
         this.loading = true;
@@ -316,7 +318,6 @@
           });
 
       },
-
 
       start_call: function (service = null) {
         if (service != null) {
@@ -352,6 +353,7 @@
           });
 
       },
+
       refresh_call: function () {
         // this.loading = true;
 
@@ -400,12 +402,11 @@
 
       },
 
-      cancel_call: function (service = null) {
-
+      cancel_call: function () {
         try {
           this.$refs.call_box.end_call();
         } catch (ex) {
-          // // console.log("Call ending erro!!")
+          console.log("Call ending erro!!")
         }
         // this.$refs.call_box.end_call();
         // if (service != null) {
@@ -427,20 +428,20 @@
               thisApp.screen_status = 'services_list';
 
             } else {
-              // // console.log("it's a failure!");
+              console.log("it's a failure!");
             }
 
             thisApp.loading = false;
 
           })
           .catch(function (error) {
-            // console.log(error);
+            console.log(error);
           });
 
       },
 
     },
-    end_call: function (service = null) {
+    end_call: function () {
 
       try {
         this.$refs.call_box.end_call();
