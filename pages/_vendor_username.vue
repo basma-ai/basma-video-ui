@@ -19,28 +19,13 @@
 
                   <div style="display: inline-block; width:100%; max-width: 200px">
 
-                    <v-text-field
-                      v-model="firstName"
-                      :rules="nameRules"
-                      label="First Name"
-                      required
-                    >
-                    </v-text-field>
-
-                    <v-text-field
-                      v-model="lastName"
-                      :rules="nameRules"
-                      label="Last Name"
-                      required
+                    <v-text-field v-for="(field, index) in vendor.custom_fields"
+                                  v-model="field.value"
+                                  :label="field.label"
+                                  :rules="field.is_mandatory ? requiredRules : []"
                     >
 
                     </v-text-field>
-                    <v-text-field
-                      v-model="customerPhone"
-                      :rules="phoneRules"
-                      label="Mobile Number"
-                      required
-                    ></v-text-field>
 
                     <br>
 
@@ -88,7 +73,6 @@
 
             <!-- Waiting for an Agent -->
             <div v-if="screen_status == 'call_waiting_for_agent'">
-              <v-progress-linear indeterminate></v-progress-linear>
               <br/>
 
               <p>You are now in line</p>
@@ -195,6 +179,10 @@
         v => !!v || 'Customer Name is required!',
         // v => v.length <= 10 || 'Name must be less than 10 characters',
       ],
+      requiredRules: [
+        v => !!v || 'This field is required!',
+        // v => v.length <= 10 || 'Name must be less than 10 characters',
+      ],
       customerPhone: '',
       phoneRules: [
         v => /[0-9]/.test(v) || 'Phone is invalid, enter digits only',
@@ -259,8 +247,8 @@
           .then(function (response) {
 
             if (response.data.success) {
-
               thisApp.vendor = response.data.data.vendor;
+              console.log(thisApp.vendor);
 
             } else {
               // // console.log("it's a failure!");
@@ -343,7 +331,8 @@
         let thisApp = this;
         axios.post(process.env.api_url + '/calls/start_call', {
           guest_token: this.guest_token,
-          service_id: this.selected_service.id
+          service_id: this.selected_service.id,
+          custom_fields_values: this.vendor.custom_fields
         })
           .then(function (response) {
 
