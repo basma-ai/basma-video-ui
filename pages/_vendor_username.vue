@@ -19,13 +19,36 @@
 
                   <div style="display: inline-block; width:100%; max-width: 200px">
 
-                    <v-text-field v-for="(field, index) in vendor.custom_fields"
+                    <!-- read the fields from the db, and then show them according to their type -->
+                    <div v-for="(field, index) in vendor.custom_fields" v-bind:key="field.id"
+                    >
+
+                      <v-text-field v-if="field.type === 'text' || field.type === 'number'"
+                                    v-model="field.value"
+                                    :label="field.label"
+                                    :rules="field.is_mandatory ? requiredRules : []"
+                      >
+
+                      </v-text-field>
+
+                      <v-checkbox v-if="field.type === 'boolean'"
                                   v-model="field.value"
                                   :label="field.label"
                                   :rules="field.is_mandatory ? requiredRules : []"
-                    >
+                      >
 
-                    </v-text-field>
+                      </v-checkbox>
+
+                    </div>
+
+                    <!-- v-bind is just to follow the guidelines of vue -->
+                    <!--                    <v-text-field v-for="(field, index) in vendor.custom_fields" v-bind:key="field.id"-->
+                    <!--                                  v-model="field.value"-->
+                    <!--                                  :label="field.label"-->
+                    <!--                                  :rules="field.is_mandatory ? requiredRules : []"-->
+                    <!--                    >-->
+
+                    <!--                    </v-text-field>-->
 
                     <br>
 
@@ -248,7 +271,7 @@
 
             if (response.data.success) {
               thisApp.vendor = response.data.data.vendor;
-              console.log(thisApp.vendor);
+              // console.log(thisApp.vendor);
 
             } else {
               // // console.log("it's a failure!");
@@ -356,10 +379,10 @@
                 user_type: 'guest',
                 user_token: thisApp.guest_token,
                 call_id: thisApp.call_id
-              }
+              };
 
-              thisApp.$socket.emit('start_socket', params)
-              console.log("start_socket", params);
+              thisApp.$socket.emit('start_socket', params);
+              // console.log("start_socket", params);
 
             } else {
               // // console.log("it's a failure!");
@@ -392,7 +415,10 @@
                 thisApp.screen_status = 'main';
                 thisApp.call = null;
                 thisApp.selected_service = null;
-                thisApp.$refs.call_box.end_call();
+                if (thisApp.$refs.call_box) {
+                  thisApp.$refs.call_box.end_call();
+                }
+
               } catch (ex) {
                 console.log("Call ending error!!: ", ex)
                 thisApp.loading = false;
@@ -463,7 +489,7 @@
       this.sockets.subscribe('on_update', (data) => {
         let thisApp = this;
 
-        console.log('on_update', data)
+        // console.log('on_update', data)
 
         thisApp.call = data.data.call;
         thisApp.queue_count = data.data.queue_count;
@@ -489,7 +515,7 @@
 
     sockets: {
       connect: function () {
-        console.log('connected!')
+        // console.log('connected!')
       },
       // call_refreshed: function (data) {
       //   console.log('call_refreshed:', data)
