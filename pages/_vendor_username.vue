@@ -56,7 +56,6 @@
 
             </div>
 
-
             <!-- Getting Vendor Screen -->
             <div v-if="screen_status == 'getting_services'">
               Getting Services List
@@ -93,19 +92,17 @@
               <br/>
               You are placed in line!!
               <br/>
+              <br/>
               You'll be answered as soon as an agent is available.
+              <br/>
               <br/>
               <h3 v-if="queue_count != 0"> You are #{{queue_count+1}} in the waiting queue, kindly wait! </h3>
               <br/>
-
+              <br/>
               <v-btn @click="cancel_call">
                 Cancel Call
               </v-btn>
-
               <span v-if="estimated_waiting_time != 0">The average waiting time is {{estimated_waiting_time}}</span>
-              <div style="width:100%;direction: ltr;text-align:left">
-                <!--                                <pre>{{call}}</pre>-->
-              </div>
             </div>
 
             <!-- In Call -->
@@ -210,10 +207,12 @@
       ],
       rating: 0
     }),
+
     components: {
       CallBox,
       AwesomeRating
     },
+
     methods: {
 
       submitRating: function (event) {
@@ -338,8 +337,22 @@
               // console.log(response.data.data);
 
               thisApp.call_id = response.data.data.call_id;
+
+              thisApp.call = response.data.data.call_info.call;
+              thisApp.queue_count = response.data.data.call_info.queue_count;
+              thisApp.estimated_waiting_time = response.data.data.call_info.estimated_waiting_time;
+
               thisApp.screen_status = 'call_waiting_for_agent';
-              thisApp.refresh_call();
+
+              // call the socket
+              const params = {
+                user_type: 'guest',
+                user_token: thisApp.guest_token,
+                call_id: thisApp.call_id
+              }
+
+              thisApp.$socket.emit('start_socket', params)
+              console.log("start_socket", params);
 
             } else {
               // // console.log("it's a failure!");
@@ -354,11 +367,13 @@
 
       },
 
-      refresh_call: function () {
-        // this.loading = true;
+      cancel_call: function () {
 
         let thisApp = this;
-        axios.post(process.env.api_url + '/calls/refresh_call', {
+
+        thisApp.loading = true;
+
+        axios.post(process.env.api_url + '/calls/end_call', {
           guest_token: this.guest_token,
           call_id: this.call_id
         })
@@ -366,47 +381,36 @@
 
             if (response.data.success) {
 
-              thisApp.call = response.data.data.call;
-              thisApp.queue_count = response.data.data.queue_count;
-              thisApp.estimated_waiting_time = response.data.data.estimated_waiting_time;
-
-              if (null != thisApp.call && thisApp.call.status == 'started') {
-                thisApp.screen_status = 'in_call';
-              } else if (null != response.data.data.errors && response.data.data.errors.length > 0) {
-                if (response.data.data.errors[0] == 'call_ended') {
-                  thisApp.screen_status = 'call_ended';
-                  thisApp.call = null;
-                  thisApp.selected_service = null;
-                  thisApp.$refs.call_box.end_call();
-                }
-
+              try {
+                thisApp.screen_status = 'main';
+                thisApp.call = null;
+                thisApp.selected_service = null;
+                thisApp.$refs.call_box.end_call();
+              } catch (ex) {
+                console.log("Call ending error!!: ", ex)
+                thisApp.loading = false;
               }
 
             } else {
-              // // console.log("it's a failure!");
+              console.log("it's a failure!");
             }
 
-            // TODO: switch to socket.io
-            setTimeout(function () {
-              if (thisApp.screen_status == 'call_waiting_for_agent' || thisApp.screen_status == 'in_call') {
-                thisApp.refresh_call();
-              }
-            }, 500);
-
-            // thisApp.loading = false;
+            thisApp.loading = false;
 
           })
           .catch(function (error) {
-            // console.log(error);
+            console.log(error);
+            thisApp.loading = false;
           });
 
       },
 
-      cancel_call: function () {
+      /*end_call: function () {
+
         try {
           this.$refs.call_box.end_call();
         } catch (ex) {
-          console.log("Call ending erro!!")
+          // // console.log("Call ending error!!")
         }
         // this.$refs.call_box.end_call();
         // if (service != null) {
@@ -425,65 +429,60 @@
 
             if (response.data.success) {
 
-              thisApp.screen_status = 'services_list';
+              thisApp.screen_status = 'call_ended';
 
             } else {
-              console.log("it's a failure!");
+              // // console.log("it's a failure!");
             }
 
             thisApp.loading = false;
 
           })
           .catch(function (error) {
-            console.log(error);
+            // console.log(error);
           });
 
-      },
-
+      },*/
     },
-    end_call: function () {
 
-      try {
-        this.$refs.call_box.end_call();
-      } catch (ex) {
-        // // console.log("Call ending error!!")
-      }
-      // this.$refs.call_box.end_call();
-      // if (service != null) {
-      //   this.selected_service = service;
-      // }
-
-      // this.screen_status = 'starting_call';
-      this.loading = true;
-
-      let thisApp = this;
-      axios.post(process.env.api_url + '/calls/end_call', {
-        guest_token: this.guest_token,
-        call_id: this.call_id
-      })
-        .then(function (response) {
-
-          if (response.data.success) {
-
-            thisApp.screen_status = 'call_ended';
-
-          } else {
-            // // console.log("it's a failure!");
-          }
-
-          thisApp.loading = false;
-
-        })
-        .catch(function (error) {
-          // console.log(error);
-        });
-
-    },
     created() {
       this.vendor_username = this.$route.params.vendor_username;
 
       // TODO: verify the vendor username first before getting the vendor data
       this.load_data();
-    }
+    },
+
+    mounted() {
+      this.sockets.subscribe('on_update', (data) => {
+        let thisApp = this;
+
+        console.log('on_update', data)
+
+        thisApp.call = data.data.call;
+        thisApp.queue_count = data.data.queue_count;
+        thisApp.estimated_waiting_time = data.data.estimated_waiting_time;
+
+        if (null != thisApp.call && thisApp.call.status == 'started') {
+          thisApp.screen_status = 'in_call';
+        } else if (null != data.data.errors && data.data.errors.length > 0) {
+          if (data.data.errors[0] == 'call_ended') {
+            thisApp.screen_status = 'call_ended';
+            thisApp.call = null;
+            thisApp.selected_service = null;
+            thisApp.$refs.call_box.end_call();
+          }
+        }
+
+      });
+    },
+
+    sockets: {
+      connect: function () {
+        console.log('connected!')
+      },
+      // call_refreshed: function (data) {
+      //   console.log('call_refreshed:', data)
+      // }
+    },
   }
 </script>

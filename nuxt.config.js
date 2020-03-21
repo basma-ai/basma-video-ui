@@ -4,7 +4,9 @@ module.exports = {
   mode: 'spa',
 
   env: {
-    api_url: 'https://video-api.basma.ai',
+    // api_url: 'https://video-api.basma.ai',
+    // api_url: 'http://localhost:1061',
+    api_url: 'https://3cf5a986.ngrok.io',
   },
 
   server: {
@@ -19,18 +21,18 @@ module.exports = {
     titleTemplate: '%s',
     title: 'Basma Video',
     meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Chat via Video' }
+      {charset: 'utf-8'},
+      {name: 'viewport', content: 'width=device-width, initial-scale=1'},
+      {hid: 'description', name: 'description', content: 'Chat via Video'}
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      {rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'}
     ]
   },
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: {color: '#fff'},
   /*
   ** Global CSS
   */
@@ -43,6 +45,10 @@ module.exports = {
   plugins: [
     {
       src: '~/plugins/vuetify',
+      ssr: false
+    },
+    {
+      src: '~/plugins/socket.io',
       ssr: false
     },
   ],
@@ -58,14 +64,45 @@ module.exports = {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    'vue-web-cam/nuxt'
+    'vue-web-cam/nuxt',
+    // 'nuxt-socket-io'
   ],
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
-  axios: {
-  },
+  axios: {},
+  /*
+  ** Socket.io module configuration
+  ** See https://github.com/richardeschloss/nuxt-socket-io#configuration-io-sockets-
+  */
+  // io: {
+  //   sockets: [
+  //     {
+  //       name: 'home',
+  //       url: 'http://localhost:1061',
+  //       default: true,
+  //       vuex: { // optional
+  //         mutations: [{progress: 'examples/SET_PROGRESS'}], // pass in the evt --> mutation map OR array of actions
+  //         actions: [{chatMessage: 'FORMAT_MESSAGE'}, 'SOMETHING_ELSE'], // pass in the evt --> action map OR array of actions or mixed!,
+  //         emitBacks: ['examples/sample', {'examples/sample2': 'sample2'}] // pass in the state props you want to listen for changes on. When those props thance, they'll fire these "emitBack" events. If the emitBack is a string, it will send the string, otherwise, if it's an object, it will send the mapped string. (see the updated examples in the page/examples.vue, where I also use a "mapState2Way" function in the component).
+  //       },
+  //       namespaces: {
+  //         '/index': {
+  //           emitters: ['getMessage2 + testMsg --> message2Rxd'],
+  //           listeners: ['chatMessage2', 'chatMessage3 --> message3Rxd']
+  //         },
+  //         '/examples': {
+  //           emitBacks: ['sample3', 'sample4 <-- myObj.sample4'],
+  //           emitters: [
+  //             'reset] getProgress + refreshInfo --> progress [handleDone'
+  //           ],
+  //           listeners: ['progress']
+  //         }
+  //       }
+  //     }
+  //   ]
+  // },
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module
@@ -94,7 +131,7 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
-    extend (config, ctx) {
+    extend(config, ctx) {
     }
   }
 }
