@@ -90,19 +90,30 @@
             <div v-if="screen_status == 'call_waiting_for_agent'">
               <v-progress-linear indeterminate></v-progress-linear>
               <br/>
-              You are placed in line!!
-              <br/>
-              <br/>
-              You'll be answered as soon as an agent is available.
-              <br/>
-              <br/>
-              <h3 v-if="queue_count != 0"> You are #{{queue_count+1}} in the waiting queue, kindly wait! </h3>
-              <br/>
-              <br/>
+
+              <p>You are now in line</p>
+              <h1 style="margin-bottom: 20px"> #{{queue_count+1}} </h1>
+
+              <!-- This is to show the queue line -->
+              <div v-if="queue_count != 0">
+                <div style="margin-bottom: 20px">
+                  <b style="font-size: 23px" v-for="n in queue_count">
+                    😁
+                  </b>
+                  <b style="font-size: 23px">
+                    😇
+                  </b>
+                </div>
+
+                <p v-if="estimated_waiting_time != 0">
+                <p>
+                  <b style="font-size: 30px">⏳</b> <span>{{estimated_waiting_time}}</span>
+                </p>
+              </div>
+
               <v-btn @click="cancel_call">
                 Cancel Call
               </v-btn>
-              <span v-if="estimated_waiting_time != 0">The average waiting time is {{estimated_waiting_time}}</span>
             </div>
 
             <!-- In Call -->
@@ -171,6 +182,9 @@
   import CallBox from '@/components/CallBox.vue';
   import AwesomeRating from "../components/AwesomeRating";
 
+  const humanizeDuration = require('humanize-duration')
+
+
   export default {
     data: () => ({
       //user input data
@@ -195,7 +209,7 @@
       services_list: [],
       test_variable: null,
       vendor_username: 0,
-      queue_count: 0,
+      queue_count: 100,
       estimated_waiting_time: 0,
       selected_service: null,
       call_id: 0,
@@ -341,6 +355,10 @@
               thisApp.call = response.data.data.call_info.call;
               thisApp.queue_count = response.data.data.call_info.queue_count;
               thisApp.estimated_waiting_time = response.data.data.call_info.estimated_waiting_time;
+              thisApp.estimated_waiting_time = humanizeDuration(thisApp.estimated_waiting_time, {
+                round: true,
+                units: ['h', 'm']
+              });
 
               thisApp.screen_status = 'call_waiting_for_agent';
 
@@ -461,6 +479,10 @@
         thisApp.call = data.data.call;
         thisApp.queue_count = data.data.queue_count;
         thisApp.estimated_waiting_time = data.data.estimated_waiting_time;
+        thisApp.estimated_waiting_time = humanizeDuration(thisApp.estimated_waiting_time, {
+          round: true,
+          units: ['h', 'm']
+        });
 
         if (null != thisApp.call && thisApp.call.status == 'started') {
           thisApp.screen_status = 'in_call';
