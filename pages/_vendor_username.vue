@@ -440,43 +440,44 @@
 
       },
 
-    },
-    end_call: function () {
+      end_call: function () {
 
-      try {
-        this.$refs.call_box.end_call();
-      } catch (ex) {
-        // // console.log("Call ending error!!")
-      }
-      // this.$refs.call_box.end_call();
-      // if (service != null) {
-      //   this.selected_service = service;
-      // }
+        try {
+          this.$refs.call_box.end_call();
+        } catch (ex) {
+          // // console.log("Call ending error!!")
+        }
+        // this.$refs.call_box.end_call();
+        // if (service != null) {
+        //   this.selected_service = service;
+        // }
 
-      // this.screen_status = 'starting_call';
-      this.loading = true;
+        // this.screen_status = 'starting_call';
+        this.loading = true;
 
-      let thisApp = this;
-      axios.post(process.env.api_url + '/calls/end_call', {
-        guest_token: this.guest_token,
-        call_id: this.call_id
-      })
-        .then(function (response) {
-
-          if (response.data.success) {
-
-            thisApp.screen_status = 'call_ended';
-
-          } else {
-            // // console.log("it's a failure!");
-          }
-
-          thisApp.loading = false;
-
+        let thisApp = this;
+        axios.post(process.env.api_url + '/calls/end_call', {
+          guest_token: this.guest_token,
+          call_id: this.call_id
         })
-        .catch(function (error) {
-          // console.log(error);
-        });
+          .then(function (response) {
+
+            if (response.data.success) {
+
+              thisApp.screen_status = 'call_ended';
+
+            } else {
+              // // console.log("it's a failure!");
+            }
+
+            thisApp.loading = false;
+
+          })
+          .catch(function (error) {
+            // console.log(error);
+          });
+
+      },
 
     },
     created() {
