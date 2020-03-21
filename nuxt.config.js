@@ -4,9 +4,9 @@ module.exports = {
   mode: 'spa',
 
   env: {
-    //api_url: 'https://video-api.basma.ai',
+    api_url: 'https://video-api.basma.ai',
     // api_url: 'http://localhost:1061',
-    api_url: 'https://3cf5a986.ngrok.io',
+    // api_url: 'https://3cf5a986.ngrok.io',
   },
 
   server: {
