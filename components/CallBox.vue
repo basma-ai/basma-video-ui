@@ -114,13 +114,17 @@
 
       },
       end_call: function () {
-        console.log("Entered END CALL ASH")
         let thisApp = this;
-        this.call_ended = true;
+
+        if (this.room != null) {
+          this.room.disconnect();
+          this.room = null;
+        }
 
         this.localTracks.forEach((track) => {
-          // console.log(JSON.stringify(track));
-          try {
+          console.log('In mute function code');
+          console.log(JSON.stringify(track));
+          try{
             if (track.isEnabled) {
               track.disable();
               track.stop();
@@ -132,18 +136,10 @@
               track.enable();
               thisApp.localMicIsEnabled = true;
             }
-          } catch (ex) {
-            console.log('In CallBox Error!!');
+          } catch(ex) {
             console.log(ex.toString());
           }
-        });
-
-        if (this.room != null) {
-          this.room.disconnect();
-          this.room = null;
-        }
-
-
+        })
       },
       check_remote: function (room) {
 
