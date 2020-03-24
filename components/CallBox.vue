@@ -124,6 +124,7 @@
             if (track.isEnabled) {
               track.disable();
               track.stop();
+              // track.unpublishTrack();
               const attachedElements = track.detach();
               attachedElements.forEach(element => element.remove());
               thisApp.localMicIsEnabled = false;
@@ -260,6 +261,8 @@
               document.getElementById('remote-media-div').appendChild(track.attach());
               thisApp.isVideoLoaded = true;
             });
+
+
           }
         });
 
