@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import { WebCam } from "vue-web-cam";
+  import {WebCam} from "vue-web-cam";
 
   export default {
     name: "App",
@@ -31,15 +31,15 @@
       };
     },
     computed: {
-      device: function() {
+      device: function () {
         return this.devices.find(n => n.deviceId === this.deviceId);
       }
     },
     watch: {
-      camera: function(id) {
+      camera: function (id) {
         this.deviceId = id;
       },
-      devices: function() {
+      devices: function () {
         // Once we have a list select the first one
         const [first, ...tail] = this.devices;
         if (first) {
