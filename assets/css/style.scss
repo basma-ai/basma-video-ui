@@ -1,68 +1,117 @@
 .agent_call_box {
-  border:1px solid silver;
+  border: 1px solid silver;
   //padding:5px;
-  margin-bottom:5px;
-  border-radius:10px;
-  height:80px;
-  line-height:80px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  height: 80px;
+  line-height: 80px;
 }
+
 .agent_call_box:hover {
   background: #f3f5db;
 }
 
 .agent_call_box #text {
-  float:left;
-  margin-left:10px;
+  float: left;
+  margin-left: 10px;
 }
+
 .agent_call_box #text #title {
-  font-weight:bold;
+  font-weight: bold;
 }
+
 .agent_call_box #service {
-  margin-left:10px;
+  margin-left: 10px;
 }
-.agent_call_box #text div{
-  display:inline-block;
+
+.agent_call_box #text div {
+  display: inline-block;
 }
+
 .agent_call_box #answer {
-  float:right;
-  margin-top:20px;
-  margin-right:10px;
+  float: right;
+  margin-top: 20px;
+  margin-right: 10px;
 }
+
 .call_box {
-  width:inherit;
-  border:1px solid #DDD;
-  position:relative;
-  height:inherit;
+  width: inherit;
+  border: 1px solid #DDD;
+  position: relative;
+  height: inherit;
   background: #ffffff;
-  display:inline-block;
+  display: inline-block;
   min-height: 300px;
 }
+
 .call_box #controls {
-  bottom:0;
-  position:absolute;
-  right:0;
-  margin:10px;
+  bottom: 0;
+  position: absolute;
+  right: 0;
+  margin: 10px;
 }
+
 #local-media {
-  position:absolute;
-  width:100%;
+  position: absolute;
+  width: 100%;
 }
+
 #local-media video {
-  max-width:25%;
-  max-height:25%;
-  float:left;
-  left:0;
-  border-bottom:1px solid #DDD;
-  border-right:1px solid #DDD;
+  max-width: 25%;
+  max-height: 25%;
+  float: left;
+  left: 0;
+  border-bottom: 1px solid #DDD;
+  border-right: 1px solid #DDD;
 }
+
 #remote-media-div video {
-  width:100%;
-  margin:0;
-  padding:0;
-  height:100%;
-  margin-bottom:-6px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  margin-bottom: -6px;
 }
+
 #vendor-logo {
   max-width: 160px;
   height: auto
 }
+
+#breathing {
+  height: 100%;
+  width: 180px;
+  //padding: 12px;
+  margin: 50px auto;
+  border: 1px solid #fff;
+  animation: breathing 2s ease-out infinite normal;
+  font-size: 20px;
+  background: #fff;
+  color: #fff;
+  border-radius: 2px;
+  text-align: center;
+}
+
+#breathing img {
+  max-width: 100%;
+}
+
+@keyframes breathing {
+  0% {
+    transform: scale(1.2);
+  }
+
+  25% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  60% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1.2);
+  }
+}
+

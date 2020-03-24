@@ -8,8 +8,11 @@
         <v-card :loading="loading" style="width:100%;max-width: 900px;display:inline-block">
           <div class="text-center" style="padding: 20px">
 
-            <img id="vendor-logo" :src="vendor.logo_url"/>
-            <br/><br/>
+            <div v-if="screen_status != 'call_waiting_for_agent'">
+              <img id="vendor-logo" :src="vendor.logo_url"/>
+              <br/><br/>
+            </div>
+
 
             <!-- Main Screen -->
             <div v-if="screen_status == 'main'">
@@ -25,7 +28,7 @@
 
                       <v-text-field v-if="field.type === 'text' || field.type === 'number'"
                                     v-model="field.value"
-                                    :label="field.label"
+                                    :label="field.label + (field.is_mandatory? '*' : '')"
                                     :rules="field.is_mandatory ? requiredRules : []"
                       >
 
@@ -33,7 +36,7 @@
 
                       <v-checkbox v-if="field.type === 'boolean'"
                                   v-model="field.value"
-                                  :label="field.label"
+                                  :label="field.label + (field.is_mandatory? '*' : '')"
                                   :rules="field.is_mandatory ? requiredRules : []"
                       >
 
@@ -116,6 +119,10 @@
                 <p>
                   <b style="font-size: 30px">⏳</b> <span>{{estimated_waiting_time}}</span>
                 </p>
+              </div>
+
+              <div id="breathing">
+                <img :src="vendor.logo_url"/>
               </div>
 
               <v-btn @click="cancel_call">
@@ -410,17 +417,18 @@
           .then(function (response) {
 
             if (response.data.success) {
-
+              console.log("Entered Cancel Call");
               try {
                 thisApp.screen_status = 'main';
                 thisApp.call = null;
                 thisApp.selected_service = null;
                 if (thisApp.$refs.call_box) {
+                  console.log('Entered try End Call');
                   thisApp.$refs.call_box.end_call();
                 }
 
               } catch (ex) {
-                console.log("Call ending error!!: ", ex)
+                console.log("Call ending error!!: ", ex);
                 thisApp.loading = false;
               }
 
@@ -437,45 +445,6 @@
           });
 
       },
-
-      /*end_call: function () {
-
-        try {
-          this.$refs.call_box.end_call();
-        } catch (ex) {
-          // // console.log("Call ending error!!")
-        }
-        // this.$refs.call_box.end_call();
-        // if (service != null) {
-        //   this.selected_service = service;
-        // }
-
-        // this.screen_status = 'starting_call';
-        this.loading = true;
-
-        let thisApp = this;
-        axios.post(process.env.api_url + '/calls/end_call', {
-          guest_token: this.guest_token,
-          call_id: this.call_id
-        })
-          .then(function (response) {
-
-            if (response.data.success) {
-
-              thisApp.screen_status = 'call_ended';
-
-            } else {
-              // // console.log("it's a failure!");
-            }
-
-            thisApp.loading = false;
-
-          })
-          .catch(function (error) {
-            // console.log(error);
-          });
-
-      },*/
     },
 
     created() {
