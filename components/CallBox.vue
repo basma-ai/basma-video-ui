@@ -114,38 +114,31 @@
 
       },
       end_call: function () {
-
-        console.log("here i am, in endcall of CallBox");
-
         let thisApp = this;
 
-        this.call_ended = true;
-        // this.connection_token = false;
+        if (this.room != null) {
+          this.room.disconnect();
+          this.room = null;
+        }
 
         this.localTracks.forEach((track) => {
-          // console.log('In mute function code');
+          console.log('In mute function code');
           console.log(JSON.stringify(track));
-          try {
-            track.disable();
-
-          } catch (ex) {
+          try{
+            if (track.isEnabled) {
+              track.disable();
+              track.stop();
+              const attachedElements = track.detach();
+              attachedElements.forEach(element => element.remove());
+              thisApp.localMicIsEnabled = false;
+            } else {
+              track.enable();
+              thisApp.localMicIsEnabled = true;
+            }
+          } catch(ex) {
             console.log(ex.toString());
           }
-        });
-
-        // this.room.on('disconnected', room => {
-        //   // Detach the local media elements
-        //   room.localParticipant.tracks.forEach(publication => {
-        //     const attachedElements = publication.track.detach();
-        //     attachedElements.forEach(element => element.remove());
-        //   });
-        // });
-
-        this.room.disconnect();
-
-        this.room = null;
-
-
+        })
       },
       check_remote: function (room) {
 
