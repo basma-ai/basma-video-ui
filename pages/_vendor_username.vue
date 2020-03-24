@@ -20,7 +20,7 @@
               <v-form v-model="formValid" ref="form">
                 <v-container style="text-align: center">
 
-                  <div style="display: inline-block; width:100%; max-width: 200px">
+                  <div style="display: inline-block; width:100%;">
 
                     <!-- read the fields from the db, and then show them according to their type -->
                     <div v-for="(field, index) in vendor.custom_fields" v-bind:key="field.id"
