@@ -124,7 +124,7 @@
         this.localTracks.forEach((track) => {
           console.log('In mute function code');
           console.log(JSON.stringify(track));
-          try{
+          try {
             if (track.isEnabled) {
               track.disable();
               track.stop();
@@ -136,7 +136,7 @@
               track.enable();
               thisApp.localMicIsEnabled = true;
             }
-          } catch(ex) {
+          } catch (ex) {
             console.log(ex.toString());
           }
         })

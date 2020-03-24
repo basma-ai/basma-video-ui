@@ -18,7 +18,7 @@
             <div v-if="screen_status == 'main'">
               <!-- user input data -->
               <v-form v-model="formValid" ref="form">
-                <v-container style="text-align: center">
+                <v-container style="text-align: justify">
 
                   <div style="display: inline-block; width:100%;">
 
@@ -38,10 +38,9 @@
                                   v-model="field.value"
                                   :label="field.label + (field.is_mandatory? '*' : '')"
                                   :rules="field.is_mandatory ? requiredRules : []"
+                                  style="text-align: justify"
                       >
-
                       </v-checkbox>
-
                     </div>
 
                     <!-- v-bind is just to follow the guidelines of vue -->
@@ -53,15 +52,20 @@
 
                     <!--                    </v-text-field>-->
 
-                    <br>
-
-                    <v-btn large :disabled="!formValid" color="success" @click="request_video_token">
-                      <v-icon top>fas fa-video</v-icon>
-                    </v-btn>
-
                   </div>
 
                 </v-container>
+
+                <div style="padding-top: 50%; width:100%; display: inline-block;">
+                  <v-btn
+                    large
+                    :disabled="!formValid"
+                    color="success"
+                    @click="request_video_token">
+                    <v-icon top>fas fa-video</v-icon>
+                  </v-btn>
+                </div>
+
               </v-form>
 
 
@@ -72,7 +76,6 @@
               Getting Services List
             </div>
 
-
             <!-- Services List -->
             <div v-if="screen_status == 'services_list'">
 
@@ -82,7 +85,7 @@
               </v-btn>
 
               <br/><br/>
-              <v-btn @click="screen_status = 'main'">Start Again</v-btn>
+              <v-btn @click="screen_status = 'main'" style="background-color: #ff3a47">Start Again</v-btn>
 
             </div>
 
