@@ -56,7 +56,7 @@
 
                 </v-container>
 
-                <div style="padding-top: 50%; width:100%; display: inline-block;">
+                <div style="padding-top: 50px; width:100%; display: inline-block;">
                   <v-btn
                     large
                     :disabled="!formValid"
