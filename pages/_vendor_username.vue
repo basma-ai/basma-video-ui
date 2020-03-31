@@ -413,8 +413,6 @@
 
         thisApp.loading = true;
 
-
-
         axios.post(process.env.api_url + '/calls/end_call', {
           guest_token: this.guest_token,
           call_id: this.call_id
@@ -424,17 +422,12 @@
             if (response.data.success) {
               console.log("Entered Cancel Call");
               try {
-                // thisApp.screen_status = 'main';
-                // thisApp.call = null;
-                // thisApp.selected_service = null;
-                if (thisApp.$refs.call_box != null) {
+                thisApp.screen_status = 'main';
+                thisApp.call = null;
+                thisApp.selected_service = null;
+                if (thisApp.$refs.call_box) {
                   console.log('Entered try End Call');
-
-                  thisApp.screen_status = 'call_ended';
-                  thisApp.call = null;
-                  thisApp.selected_service = null;
                   thisApp.$refs.call_box.end_call();
-
                 }
 
               } catch (ex) {
