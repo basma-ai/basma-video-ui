@@ -164,27 +164,27 @@
             <!-- Call Ended -->
             <div v-if="screen_status == 'call_ended'">
               <div style="text-align: center; font-size: 15px;">
-                <h3>Thanks for calling!</h3>
-                <h3>Kindly rate our service :)</h3>
-                <br />
+                <div v-if="rating == 0">
+                  <h3>Kindly rate our service :)</h3>
+                  <br />
 
-                <!-- rating component -->
-                <awesome-rating
-                  @rating_set="submitRating($event)"
-                  v-if="rating === 0"
-                ></awesome-rating>
-                <br />
+                  <!-- rating component -->
+                  <awesome-rating
+                    @rating_set="submitRating($event)"
+                  ></awesome-rating>
+                  <br />
+                </div>
 
-                <!-- show the message once the user completes the rating-->
-                <h3 v-if="rating !== 0">Call Ended, Good Bye!</h3>
-                <br />
+                <!-- show the message & button once the user completes the rating-->
+                <div v-if="rating != 0">
+                  <h3>Thanks for calling .. Goodbye!</h3>
+                  <br />
+                  <v-btn @click="screen_status = 'main'">
+                    Back to Home
+                  </v-btn>
+                </div>
 
                 <br />
-                <!-- show back to home button once the user completes the rating-->
-                <v-btn @click="screen_status = 'main'" v-if="rating !== 0">
-                  Back to Home
-                </v-btn>
-
                 <br /><br />
                 <img
                   :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]"
@@ -260,7 +260,7 @@ export default {
   methods: {
     submitRating: function (event) {
       this.rating = event.rating;
-      // console.log(this.rating);
+      console.log("submit rating:", this.rating);
       let thisApp = this;
       axios
         .post(process.env.api_url + "/calls/submit_rating", {
@@ -279,6 +279,7 @@ export default {
     },
 
     load_data: function () {
+      console.log("in load_data");
       this.loading = true;
 
       // const { sortBy, descending, page, rowsPerPage } = this.pagination;
@@ -442,6 +443,8 @@ export default {
 
     // end_call is used when both parties are actually in the call.
     end_call: function () {
+      console.log("rating: ", this.rating);
+      this.rating = 0;
       this.loading = true;
       this.call = null;
       this.$refs.call_box.end_call();
@@ -496,12 +499,16 @@ export default {
         }
       );
 
+      console.log(data);
       if (thisApp.call != null && thisApp.call.status == "started") {
         thisApp.screen_status = "in_call";
       } else if (data.data.errors != null && data.data.errors.length > 0) {
         if (data.data.errors[0] == "call_ended") {
-          thisApp.$refs.call_box.end_call();
+          if (thisApp.$refs.call_box.end_call() != undefined) {
+            thisApp.$refs.call_box.end_call();
+          }
           thisApp.screen_status = "call_ended";
+          thisApp.rating = 0;
           thisApp.call = null;
           thisApp.selected_service = null;
         }
