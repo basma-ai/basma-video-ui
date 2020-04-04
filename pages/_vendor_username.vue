@@ -181,10 +181,7 @@
 
                 <br />
                 <!-- show back to home button once the user completes the rating-->
-                <v-btn
-                  @click="screen_status = 'services_list'"
-                  v-if="rating !== 0"
-                >
+                <v-btn @click="screen_status = 'main'" v-if="rating !== 0">
                   Back to Home
                 </v-btn>
 
@@ -412,11 +409,11 @@ export default {
         });
     },
 
-//cancel call is used only when the call has not been connected yet.
+    //cancel call is used only when the call has not been connected yet.
     cancel_call: function () {
       this.loading = true;
       this.call = null;
-      this.$refs.call_box.end_call();
+      // this.$refs.call_box.end_call();
 
       let thisApp = this;
 
@@ -430,7 +427,7 @@ export default {
           console.log(response);
           if (response.data.success) {
             console.log("Entered Cancel Call");
-            thisApp.screen_status = "main";
+            thisApp.screen_status = "services_list";
             thisApp.loading = false;
             thisApp.selected_service = null;
           } else {
@@ -443,7 +440,7 @@ export default {
         });
     },
 
-// end_call is used when both parties are actually in the call.
+    // end_call is used when both parties are actually in the call.
     end_call: function () {
       this.loading = true;
       this.call = null;
@@ -461,7 +458,7 @@ export default {
           console.log(response);
           if (response.data.success) {
             console.log("Entered Cancel Call");
-            thisApp.screen_status = 'call_ended';
+            thisApp.screen_status = "call_ended";
             thisApp.loading = false;
             thisApp.selected_service = null;
           } else {
@@ -486,7 +483,7 @@ export default {
     this.sockets.subscribe("on_update", (data) => {
       let thisApp = this;
 
-      // console.log('on_update', data)
+      console.log("on_update", data);
 
       thisApp.call = data.data.call;
       thisApp.queue_count = data.data.queue_count;
@@ -499,14 +496,14 @@ export default {
         }
       );
 
-      if (null != thisApp.call && thisApp.call.status == "started") {
+      if (thisApp.call != null && thisApp.call.status == "started") {
         thisApp.screen_status = "in_call";
-      } else if (null != data.data.errors && data.data.errors.length > 0) {
+      } else if (data.data.errors != null && data.data.errors.length > 0) {
         if (data.data.errors[0] == "call_ended") {
+          thisApp.$refs.call_box.end_call();
           thisApp.screen_status = "call_ended";
           thisApp.call = null;
           thisApp.selected_service = null;
-          thisApp.$refs.call_box.end_call();
         }
       }
     });
