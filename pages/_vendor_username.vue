@@ -15,9 +15,43 @@
             <!-- Main Screen -->
             <div v-if="screen_status == 'main'">
               <!-- user input data -->
-              <div>
-                {{ msg }}
-              </div>
+
+              <!-- Check if the user is using iOS but not Safari -->
+              <v-overlay :value="!isItIOS && !isItMobileSafari">
+                <v-card class="mx-auto" color="#fcbc25" dark max-width="400">
+                  <v-card-title class="justify-center">
+                    <!-- <v-icon large left>
+                      mdi-apple-safari
+                    </v-icon> -->
+                    <span
+                      style="text-align: center;"
+                      class="title font-weight-bold"
+                      >😁 Basma Alert 😁
+                    </span>
+                  </v-card-title>
+
+                  <v-card-text class="headline">
+                    <p style="text-align: justify;">Dear Customer,</p>
+                    <p style="text-align: justify;">
+                      On iOS devices, Basma can be used only in Safari browser.
+                      Kindly use Safari for full compatibility.
+                    </p>
+                  </v-card-text>
+
+                  <v-layout justify-center>
+                    <v-card-actions class="justify-center">
+                      <v-list-item class="grow">
+                        <v-list-item-avatar size="100">
+                          <v-img
+                            class="elevation-6"
+                            src="https://www.apple.com/v/safari/k/images/overview/safari_icon__ep64chrczuky_large_2x.jpg"
+                          ></v-img>
+                        </v-list-item-avatar>
+                      </v-list-item>
+                    </v-card-actions>
+                  </v-layout>
+                </v-card>
+              </v-overlay>
 
               <v-form v-model="formValid" ref="form">
                 <v-container style="text-align: justify;">
@@ -221,10 +255,6 @@ export default {
     //user input data
     isItIOS: isIOS,
     isItMobileSafari: isMobileSafari,
-    msg:
-      isIOS & !isMobileSafari
-        ? "Ooops, on iOS, you can only use Safari browser!!"
-        : "Helllloooo!!!",
     formValid: false,
     firstName: "",
     lastName: "",
