@@ -27,6 +27,10 @@
         <CamPreview v-if="localCamIsEnabled"></CamPreview>
       </div>
 
+      <div id="local-media" v-else>
+        <CamPreview v-if="localCamIsEnabled"></CamPreview>
+      </div>
+
       <div id="remote-media-div" style="z-index: 1;"></div>
 
       <div id="controls">
@@ -81,7 +85,6 @@ export default {
   }),
   components: { CamPreview },
   methods: {
-
     toggle_mute_camera: function () {
       let thisApp = this;
 
