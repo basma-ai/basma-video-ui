@@ -17,7 +17,7 @@
               <!-- user input data -->
 
               <!-- Check if the user is using iOS but not Safari -->
-              <v-overlay :value="!isItIOS && !isItMobileSafari">
+              <v-overlay :value="isItIOS && !isItMobileSafari">
                 <v-card class="mx-auto" color="#fcbc25" dark max-width="400">
                   <v-card-title class="justify-center">
                     <!-- <v-icon large left>
