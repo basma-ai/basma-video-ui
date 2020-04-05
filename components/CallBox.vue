@@ -27,10 +27,6 @@
         <CamPreview v-if="localCamIsEnabled"></CamPreview>
       </div>
 
-      <div id="local-media" v-else>
-        <CamPreview v-if="localCamIsEnabled"></CamPreview>
-      </div>
-
       <div id="remote-media-div" style="z-index: 1;"></div>
 
       <div id="controls">

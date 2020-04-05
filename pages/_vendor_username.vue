@@ -15,6 +15,10 @@
             <!-- Main Screen -->
             <div v-if="screen_status == 'main'">
               <!-- user input data -->
+              <div>
+                {{ msg }}
+              </div>
+
               <v-form v-model="formValid" ref="form">
                 <v-container style="text-align: justify;">
                   <div style="display: inline-block; width: 100%;">
@@ -208,12 +212,19 @@ import axios from "axios";
 // const { connect } = require('twilio-video');
 import CallBox from "@/components/CallBox.vue";
 import AwesomeRating from "../components/AwesomeRating";
+import { isIOS, isMobileSafari } from "mobile-device-detect";
 
 const humanizeDuration = require("humanize-duration");
 
 export default {
   data: () => ({
     //user input data
+    isItIOS: isIOS,
+    isItMobileSafari: isMobileSafari,
+    msg:
+      isIOS & !isMobileSafari
+        ? "Ooops, on iOS, you can only use Safari browser!!"
+        : "Helllloooo!!!",
     formValid: false,
     firstName: "",
     lastName: "",
