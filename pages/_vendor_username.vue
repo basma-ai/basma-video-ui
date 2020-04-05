@@ -18,22 +18,22 @@
 
               <!-- Check if the user is using iOS but not Safari -->
               <v-overlay :value="isItIOS && !isItMobileSafari">
-                <v-card class="mx-auto" color="#fcbc25" dark max-width="400">
-                  <v-card-title class="justify-center">
+                <v-card color="#FFFFFF" height="100%" width="100%">
+                  <!-- <v-card-title class="justify-center"> -->
                     <!-- <v-icon large left>
                       mdi-apple-safari
                     </v-icon> -->
-                    <span
-                      style="text-align: center;"
+                    <!-- <span -->
+                      <!-- style="text-align: center;"
                       class="title font-weight-bold"
-                      >😁 Basma Alert 😁
-                    </span>
-                  </v-card-title>
+                      >😁 Basma Alert 😁 -->
+                    <!-- </span> -->
+                  <!-- </v-card-title> -->
 
                   <v-card-text class="headline">
-                    <p style="text-align: justify;">Dear Customer,</p>
-                    <p style="text-align: justify;">
-                      On iOS devices, Basma can be used only in Safari browser.
+                    <p style="text-align: justify; color: black">Dear Customer,</p>
+                    <p style="text-align: justify; color: black">
+                      On iOS devices, the platform can be used only in Safari browser.
                       Kindly use Safari for full compatibility.
                     </p>
                   </v-card-text>
