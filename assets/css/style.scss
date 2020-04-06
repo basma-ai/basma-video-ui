@@ -73,6 +73,10 @@
   margin-bottom: -6px;
 }
 
+#remote-media-div video:not(:first-child) {
+  //display:none;
+}
+
 #vendor-logo {
   max-width: 160px;
   height: auto

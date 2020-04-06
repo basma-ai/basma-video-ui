@@ -184,7 +184,7 @@ export default {
                 //document.getElementById('remote-media-div').innerHTML = "";
                 document
                   .getElementById("remote-media-div")
-                  .appendChild(track.attach());
+                  .prepend(track.attach());
                 this_app.isVideoLoaded = true;
               }
             } else {
@@ -208,7 +208,7 @@ export default {
     // createLocalVideoTrack().then((track) => {
     //   const localMediaContainer = document.getElementById("local-media");
     //   document.getElementById("local-media").innerHTML = "";
-    //   localMediaContainer.appendChild(track.attach());
+    //   localMediaContainer.prepend(track.attach());
     // });
 
     let token = this.connection_token;
@@ -251,7 +251,7 @@ export default {
                 // document.getElementById('remote-media-div').innerHTML = "";
                 document
                   .getElementById("remote-media-div")
-                  .appendChild(track.attach());
+                  .prepend(track.attach());
                 thisApp.isVideoLoaded = true;
               }
             });
@@ -259,11 +259,18 @@ export default {
             participant.on("trackSubscribed", (track) => {
               document
                 .getElementById("remote-media-div")
-                .appendChild(track.attach());
+                .prepend(track.attach());
               thisApp.isVideoLoaded = true;
             });
           }
         });
+
+        // Attach the Participant's Media to a <div> element.
+        room.on("participantDisconnected", (participant) => {
+          console.log(`Participant disconnected: ${participant.identity}`);
+          document.getElementById("remote-media-div").innerHTML = ""
+        });
+
       });
   },
 };

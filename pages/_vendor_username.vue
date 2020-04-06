@@ -302,17 +302,17 @@ export default {
     submitRating: function (event) {
       this.rating = event.rating;
       console.log("submit rating:", this.rating);
-      let thisApp = this;
+      let this_app = this;
       axios
         .post(process.env.api_url + "/calls/submit_rating", {
-          guest_token: thisApp.guest_token,
-          call_id: thisApp.call_id,
-          rating: thisApp.rating,
+          guest_token: this_app.guest_token,
+          call_id: this_app.call_id,
+          rating: this_app.rating,
           feedback_text: "",
         })
         .then(function (response) {
-          thisApp.guest_token = null;
-          thisApp.call_id = 0;
+          this_app.guest_token = null;
+          this_app.call_id = 0;
         })
         .catch(function (error) {
           // console.log(error);
@@ -325,20 +325,20 @@ export default {
 
       // const { sortBy, descending, page, rowsPerPage } = this.pagination;
 
-      let thisApp = this;
+      let this_app = this;
       axios
         .post(process.env.api_url + "/guest/get_vendor", {
           vendor_username: this.vendor_username,
         })
         .then(function (response) {
           if (response.data.success) {
-            thisApp.vendor = response.data.data.vendor;
-            // console.log(thisApp.vendor);
+            this_app.vendor = response.data.data.vendor;
+            // console.log(this_app.vendor);
           } else {
             // // console.log("it's a failure!");
           }
 
-          thisApp.loading = false;
+          this_app.loading = false;
         })
         .catch(function (error) {
           // console.log(error);
@@ -348,19 +348,19 @@ export default {
     request_video_token: function () {
       this.screen_status = "video_connecting";
       this.loading = true;
-      let thisApp = this;
+      let this_app = this;
 
       axios
         .post(process.env.api_url + "/guest/request_token")
         .then(function (response) {
           if (response.data.success) {
-            thisApp.guest_token = response.data.data.token;
-            thisApp.get_services();
+            this_app.guest_token = response.data.data.token;
+            this_app.get_services();
           } else {
             // // console.log("it's a failure!");
           }
 
-          thisApp.loading = false;
+          this_app.loading = false;
         })
         .catch(function (error) {
           // console.log(error);
@@ -371,7 +371,7 @@ export default {
       this.screen_status = "getting_services";
       this.loading = true;
 
-      let thisApp = this;
+      let this_app = this;
       axios
         .post(process.env.api_url + "/calls/get_services", {
           guest_token: this.guest_token,
@@ -379,13 +379,13 @@ export default {
         })
         .then(function (response) {
           if (response.data.success) {
-            thisApp.services_list = response.data.data.services;
-            thisApp.screen_status = "services_list";
+            this_app.services_list = response.data.data.services;
+            this_app.screen_status = "services_list";
           } else {
             // // console.log("it's a failure!");
           }
 
-          thisApp.loading = false;
+          this_app.loading = false;
         })
         .catch(function (error) {
           // console.log(error);
@@ -400,7 +400,7 @@ export default {
       this.screen_status = "starting_call";
       this.loading = true;
 
-      let thisApp = this;
+      let this_app = this;
       axios
         .post(process.env.api_url + "/calls/start_call", {
           guest_token: this.guest_token,
@@ -411,36 +411,36 @@ export default {
           if (response.data.success) {
             // console.log(response.data.data);
 
-            thisApp.call_id = response.data.data.call_id;
+            this_app.call_id = response.data.data.call_id;
 
-            thisApp.call = response.data.data.call_info.call;
-            thisApp.queue_count = response.data.data.call_info.queue_count;
-            thisApp.estimated_waiting_time =
+            this_app.call = response.data.data.call_info.call;
+            this_app.queue_count = response.data.data.call_info.queue_count;
+            this_app.estimated_waiting_time =
               response.data.data.call_info.estimated_waiting_time;
-            thisApp.estimated_waiting_time = humanizeDuration(
-              thisApp.estimated_waiting_time,
+            this_app.estimated_waiting_time = humanizeDuration(
+              this_app.estimated_waiting_time,
               {
                 round: true,
                 units: ["h", "m"],
               }
             );
 
-            thisApp.screen_status = "call_waiting_for_agent";
+            this_app.screen_status = "call_waiting_for_agent";
 
             // call the socket
             const params = {
               user_type: "guest",
-              user_token: thisApp.guest_token,
-              call_id: thisApp.call_id,
+              user_token: this_app.guest_token,
+              call_id: this_app.call_id,
             };
 
-            thisApp.$socket.emit("start_socket", params);
+            this_app.$socket.emit("start_socket", params);
             // console.log("start_socket", params);
           } else {
             // // console.log("it's a failure!");
           }
 
-          thisApp.loading = false;
+          this_app.loading = false;
         })
         .catch(function (error) {
           // console.log(error);
@@ -453,7 +453,7 @@ export default {
       this.call = null;
       // this.$refs.call_box.end_call();
 
-      let thisApp = this;
+      let this_app = this;
 
       axios
         .post(process.env.api_url + "/calls/end_call", {
@@ -465,16 +465,16 @@ export default {
           console.log(response);
           if (response.data.success) {
             console.log("Entered Cancel Call");
-            thisApp.screen_status = "services_list";
-            thisApp.loading = false;
-            thisApp.selected_service = null;
+            this_app.screen_status = "services_list";
+            this_app.loading = false;
+            this_app.selected_service = null;
           } else {
             // console.log("it's a failure!");
           }
         })
         .catch(function (error) {
           // console.log(error);
-          thisApp.loading = false;
+          this_app.loading = false;
         });
     },
 
@@ -486,7 +486,7 @@ export default {
       this.call = null;
       this.$refs.call_box.end_call();
 
-      let thisApp = this;
+      let this_app = this;
 
       axios
         .post(process.env.api_url + "/calls/end_call", {
@@ -498,16 +498,16 @@ export default {
           console.log(response);
           if (response.data.success) {
             console.log("Entered Cancel Call");
-            thisApp.screen_status = "call_ended";
-            thisApp.loading = false;
-            thisApp.selected_service = null;
+            this_app.screen_status = "call_ended";
+            this_app.loading = false;
+            this_app.selected_service = null;
           } else {
             console.log("it's a failure!");
           }
         })
         .catch(function (error) {
           // console.log(error);
-          thisApp.loading = false;
+          this_app.loading = false;
         });
     },
     join_call_by_token(token) {
@@ -529,11 +529,13 @@ export default {
 
             axios
               .post(process.env.api_url + "/calls/join", params)
-              .then((res) => {
-                console.log(res);
+              .then((response) => {
+                console.log(response);
 
-                this_app.call_id = res.data.data.call_id
                 this_app.screen_status = "call_waiting_for_agent";
+
+                this_app.on_call_update(response.data.data.call_info);
+                this_app.call_id = response.data.data.call_id
 
                 // call the socket
                 const params = {
@@ -543,7 +545,8 @@ export default {
                 };
 
                 this_app.$socket.emit("start_socket", params);
-              
+                console.log("start_socket", params);
+
             }).catch((err) => {
               console.log(err);
             });
@@ -557,9 +560,38 @@ export default {
           // console.log(error);
         });
 
+    },
+    on_call_update(call_info) {
+      const this_app = this;
 
+      console.log("on_call_update:",call_info);
 
+      this_app.call = call_info.call;
+      this_app.queue_count = call_info.queue_count;
+      this_app.estimated_waiting_time = call_info.estimated_waiting_time;
+      this_app.estimated_waiting_time = humanizeDuration(
+        this_app.estimated_waiting_time,
+        {
+          round: true,
+          units: ["h", "m"],
+        }
+      );
 
+      if (this_app.call != null && this_app.call.status === "started") {
+        this_app.screen_status = "in_call";
+        console.log("come here");
+
+      } else if (call_info.errors != null && call_info.errors.length > 0) {
+        if (call_info.errors[0] === "call_ended") {
+          if (undefined !== this_app.$refs.call_box ) {
+            this_app.$refs.call_box.end_call();
+          }
+          this_app.screen_status = "call_ended";
+          this_app.rating = 0;
+          this_app.call = null;
+          this_app.selected_service = null;
+        }
+      }
     }
   },
 
@@ -578,35 +610,11 @@ export default {
 
   mounted() {
     this.sockets.subscribe("on_update", (data) => {
-      let thisApp = this;
+      let this_app = this;
 
       console.log("on_update", data);
 
-      thisApp.call = data.data.call;
-      thisApp.queue_count = data.data.queue_count;
-      thisApp.estimated_waiting_time = data.data.estimated_waiting_time;
-      thisApp.estimated_waiting_time = humanizeDuration(
-        thisApp.estimated_waiting_time,
-        {
-          round: true,
-          units: ["h", "m"],
-        }
-      );
-
-      console.log(data);
-      if (thisApp.call != null && thisApp.call.status == "started") {
-        thisApp.screen_status = "in_call";
-      } else if (data.data.errors != null && data.data.errors.length > 0) {
-        if (data.data.errors[0] == "call_ended") {
-          if (thisApp.$refs.call_box.end_call() != undefined) {
-            thisApp.$refs.call_box.end_call();
-          }
-          thisApp.screen_status = "call_ended";
-          thisApp.rating = 0;
-          thisApp.call = null;
-          thisApp.selected_service = null;
-        }
-      }
+      this_app.on_call_update(data.data);
     });
   },
 
