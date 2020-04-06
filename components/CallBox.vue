@@ -206,11 +206,11 @@ export default {
         /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
 
-    createLocalVideoTrack().then((track) => {
-      const localMediaContainer = document.getElementById("local-media");
-      document.getElementById("local-media").innerHTML = "";
-      localMediaContainer.prepend(track.attach());
-    });
+    // createLocalVideoTrack().then((track) => {
+    //   const localMediaContainer = document.getElementById("local-media");
+    //   document.getElementById("local-media").innerHTML = "";
+    //   localMediaContainer.prepend(track.attach());
+    // });
 
     let token = this.connection_token;
 
@@ -234,7 +234,14 @@ export default {
       })
       .then((room) => {
         console.log(`Connected to Room: ${room.name}`);
-        // console.log(JSON.stringify(room));
+
+        room.localParticipant.tracks.forEach((track)=>{
+          if(track.kind == "video"){
+            const localMediaContainer = document.getElementById("local-media");
+            document.getElementById("local-media").innerHTML = "";
+            localMediaContainer.prepend(track.attach());
+          }
+        })
 
         console.log("PARTICIPANTS");
         thisApp.room = room;
