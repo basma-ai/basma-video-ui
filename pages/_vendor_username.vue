@@ -533,8 +533,6 @@ export default {
                 console.log(response);
 
                 this_app.screen_status = "call_waiting_for_agent";
-
-                this_app.on_call_update(response.data.data.call_info);
                 this_app.call_id = response.data.data.call_id
 
                 // call the socket
@@ -547,17 +545,27 @@ export default {
                 this_app.$socket.emit("start_socket", params);
                 console.log("start_socket", params);
 
-            }).catch((err) => {
+                this_app.on_call_update(response.data.data.call_info);
+                this_app.loading = false;
+              }).catch((err) => {
               console.log(err);
+              this_app.loading = false;
             });
 
+            setTimeout(function () {
+              console.log(this_app.screen_status);
+              // if (this_app.screen_status == 'call_waiting_for_agent' || this_app.screen_status == 'in_call') {
+              this_app.refresh_call();
+              // }
+            }, 1000);
+
           } else {
-            // // console.log("it's a failure!");
+            this_app.loading = false;
           }
-          this_app.loading = false;
+
         })
         .catch(function (error) {
-          // console.log(error);
+          console.log(error);
         });
 
     },
@@ -592,11 +600,44 @@ export default {
           this_app.selected_service = null;
         }
       }
+    },
+    refresh_call() {
+
+      let this_app = this;
+
+      axios.post(process.env.api_url + '/calls/join', {
+        guest_token: this.guest_token,
+        request_call_token: this.$route.query.token
+      }).then((response) => {
+        console.log(response);
+
+        this_app.screen_status = "call_waiting_for_agent";
+        this_app.call_id = response.data.data.call_id
+
+        // call the socket
+        const params = {
+          user_type: "guest",
+          user_token: this_app.guest_token,
+          call_id: this_app.call_id,
+        };
+
+        this_app.$socket.emit("start_socket", params);
+        console.log("start_socket", params);
+
+        this_app.on_call_update(response.data.data.call_info);
+        this_app.loading = false;
+      }).catch((err) => {
+        console.log(err);
+        this_app.loading = false;
+      });
     }
+
   },
 
   created() {
-    console.log('this.token',this.$route.query.token);
+    let this_app = this;
+
+    console.log('this.token', this.$route.query.token);
 
     this.vendor_username = this.$route.params.vendor_username;
 
@@ -605,6 +646,9 @@ export default {
 
     if (this.$route.query.token != null) {
       this.join_call_by_token(this.$route.query.token);
+      console.log('join_call_by_token');
+
+
     }
   },
 
@@ -625,6 +669,6 @@ export default {
     // call_refreshed: function (data) {
     //   console.log('call_refreshed:', data)
     // }
-  },
+},
 };
 </script>
