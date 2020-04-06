@@ -23,8 +23,9 @@
         ></v-progress-circular>
       </div>
 
-      <div id="local-media" v-if="!isItIos">
-        <CamPreview v-if="localCamIsEnabled"></CamPreview>
+<!--      <div id="local-media" v-if="!isItIos">-->
+      <div id="local-media">
+<!--        <CamPreview v-if="localCamIsEnabled"></CamPreview>-->
       </div>
 
       <div id="remote-media-div" style="z-index: 1;"></div>
@@ -205,11 +206,11 @@ export default {
         /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
 
-    // createLocalVideoTrack().then((track) => {
-    //   const localMediaContainer = document.getElementById("local-media");
-    //   document.getElementById("local-media").innerHTML = "";
-    //   localMediaContainer.prepend(track.attach());
-    // });
+    createLocalVideoTrack().then((track) => {
+      const localMediaContainer = document.getElementById("local-media");
+      document.getElementById("local-media").innerHTML = "";
+      localMediaContainer.prepend(track.attach());
+    });
 
     let token = this.connection_token;
 
