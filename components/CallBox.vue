@@ -235,11 +235,12 @@ export default {
       .then((room) => {
         console.log(`Connected to Room: ${room.name}`);
 
-        room.localParticipant.tracks.forEach((track)=>{
-          if(track.kind == "video"){
+        room.localParticipant.tracks.forEach((a)=>{
+          console.log('room.localParticipant.tracks',a)
+          if(a.kind === "video"){
             const localMediaContainer = document.getElementById("local-media");
             document.getElementById("local-media").innerHTML = "";
-            localMediaContainer.prepend(track.attach());
+            localMediaContainer.prepend(a.track.attach());
           }
         })
 
