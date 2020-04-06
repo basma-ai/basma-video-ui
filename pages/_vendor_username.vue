@@ -351,11 +351,7 @@ export default {
       let thisApp = this;
 
       axios
-        .post(process.env.api_url + "/guest/request_token", {
-          first_name: this.firstName,
-          last_name: this.lastName,
-          phone: this.customerPhone,
-        })
+        .post(process.env.api_url + "/guest/request_token")
         .then(function (response) {
           if (response.data.success) {
             thisApp.guest_token = response.data.data.token;
@@ -514,13 +510,70 @@ export default {
           thisApp.loading = false;
         });
     },
+    join_call_by_token(token) {
+      const this_app = this;
+
+      this.screen_status = "video_connecting";
+      this.loading = true;
+
+      axios
+        .post(process.env.api_url + "/guest/request_token")
+        .then(function (response) {
+          if (response.data.success) {
+            this_app.guest_token = response.data.data.token;
+
+            const params = {
+              guest_token: this_app.guest_token,
+              request_call_token: token,
+            };
+
+            axios
+              .post(process.env.api_url + "/calls/join", params)
+              .then((res) => {
+                console.log(res);
+
+                this_app.call_id = res.data.data.call_id
+                this_app.screen_status = "call_waiting_for_agent";
+
+                // call the socket
+                const params = {
+                  user_type: "guest",
+                  user_token: this_app.guest_token,
+                  call_id: this_app.call_id,
+                };
+
+                this_app.$socket.emit("start_socket", params);
+              
+            }).catch((err) => {
+              console.log(err);
+            });
+
+          } else {
+            // // console.log("it's a failure!");
+          }
+          this_app.loading = false;
+        })
+        .catch(function (error) {
+          // console.log(error);
+        });
+
+
+
+
+    }
   },
 
   created() {
+    console.log('this.token',this.$route.query.token);
+
     this.vendor_username = this.$route.params.vendor_username;
 
     // TODO: verify the vendor username first before getting the vendor data
     this.load_data();
+
+    if (this.$route.query.token != null) {
+      this.join_call_by_token(this.$route.query.token);
+    }
   },
 
   mounted() {
