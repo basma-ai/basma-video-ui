@@ -236,10 +236,10 @@ export default {
         console.log(`Connected to Room: ${room.name}`);
 
         room.localParticipant.tracks.forEach((a)=>{
-          console.log('room.localParticipant.tracks',a)
-          if(a.kind === "video"){
+          console.log('room.localParticipant.tracks', a)
+          if (a.kind === "video") {
             const localMediaContainer = document.getElementById("local-media");
-            document.getElementById("local-media").innerHTML = "";
+            localMediaContainer.innerHTML = "";
             localMediaContainer.prepend(a.track.attach());
           }
         })

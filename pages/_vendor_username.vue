@@ -1,6 +1,43 @@
 <template>
   <div>
     <v-container>
+      <!-- Check if the user is using iOS but not Safari -->
+      <v-overlay :value="isItIOS && !isItMobileSafari">
+        <v-card color="#FFFFFF" height="100%" width="100%">
+          <!-- <v-card-title class="justify-center"> -->
+          <!-- <v-icon large left>
+            mdi-apple-safari
+          </v-icon> -->
+          <!-- <span -->
+          <!-- style="text-align: center;"
+          class="title font-weight-bold"
+          >😁 Basma Alert 😁 -->
+          <!-- </span> -->
+          <!-- </v-card-title> -->
+
+          <v-card-text class="headline">
+            <p style="text-align: justify; color: black">Ops!..</p>
+            <p style="text-align: justify; color: black">
+              On iOS devices, the platform can be used only in Safari browser.
+              Kindly use Safari for full compatibility.
+            </p>
+          </v-card-text>
+
+          <v-layout justify-center>
+            <v-card-actions class="justify-center">
+              <v-list-item class="grow">
+                <v-list-item-avatar size="100">
+                  <v-img
+                    class="elevation-6"
+                    src="https://www.apple.com/v/safari/k/images/overview/safari_icon__ep64chrczuky_large_2x.jpg"
+                  ></v-img>
+                </v-list-item-avatar>
+              </v-list-item>
+            </v-card-actions>
+          </v-layout>
+        </v-card>
+      </v-overlay>
+
       <div style="text-align: center;">
         <v-card
           :loading="loading"
@@ -15,44 +52,6 @@
             <!-- Main Screen -->
             <div v-if="screen_status == 'main'">
               <!-- user input data -->
-
-              <!-- Check if the user is using iOS but not Safari -->
-              <v-overlay :value="isItIOS && !isItMobileSafari">
-                <v-card color="#FFFFFF" height="100%" width="100%">
-                  <!-- <v-card-title class="justify-center"> -->
-                  <!-- <v-icon large left>
-                    mdi-apple-safari
-                  </v-icon> -->
-                  <!-- <span -->
-                  <!-- style="text-align: center;"
-                  class="title font-weight-bold"
-                  >😁 Basma Alert 😁 -->
-                  <!-- </span> -->
-                  <!-- </v-card-title> -->
-
-                  <v-card-text class="headline">
-                    <p style="text-align: justify; color: black">Dear Customer,</p>
-                    <p style="text-align: justify; color: black">
-                      On iOS devices, the platform can be used only in Safari browser.
-                      Kindly use Safari for full compatibility.
-                    </p>
-                  </v-card-text>
-
-                  <v-layout justify-center>
-                    <v-card-actions class="justify-center">
-                      <v-list-item class="grow">
-                        <v-list-item-avatar size="100">
-                          <v-img
-                            class="elevation-6"
-                            src="https://www.apple.com/v/safari/k/images/overview/safari_icon__ep64chrczuky_large_2x.jpg"
-                          ></v-img>
-                        </v-list-item-avatar>
-                      </v-list-item>
-                    </v-card-actions>
-                  </v-layout>
-                </v-card>
-              </v-overlay>
-
               <v-form v-model="formValid" ref="form">
                 <v-container style="text-align: justify;">
                   <div style="display: inline-block; width: 100%;">
@@ -62,7 +61,15 @@
                       v-bind:key="field.id"
                     >
                       <v-text-field
-                        v-if="field.type === 'text' || field.type === 'number'"
+                        v-if="field.type === 'text'"
+                        v-model="field.value"
+                        :label="field.label + (field.is_mandatory ? '*' : '')"
+                        :rules="field.is_mandatory ? requiredRules : []"
+                      >
+                      </v-text-field>
+
+                      <v-text-field
+                        v-if="field.type === 'number'"
                         v-model="field.value"
                         :label="field.label + (field.is_mandatory ? '*' : '')"
                         :rules="field.is_mandatory ? requiredRules : []"
@@ -79,35 +86,26 @@
                       </v-checkbox>
                     </div>
 
-                    <!-- v-bind is just to follow the guidelines of vue -->
-                    <!--                    <v-text-field v-for="(field, index) in vendor.custom_fields" v-bind:key="field.id"-->
-                    <!--                                  v-model="field.value"-->
-                    <!--                                  :label="field.label"-->
-                    <!--                                  :rules="field.is_mandatory ? requiredRules : []"-->
-                    <!--                    >-->
-
-                    <!--                    </v-text-field>-->
                   </div>
                 </v-container>
 
-                <div
-                  style="padding-top: 50px; width: 100%; display: inline-block;"
+                <br/><br/>
+
+                <v-btn
+                  large
+                  :disabled="!formValid"
+                  color="success"
+                  @click="request_video_token"
                 >
-                  <v-btn
-                    large
-                    :disabled="!formValid"
-                    color="success"
-                    @click="request_video_token"
-                  >
-                    <v-icon top>fas fa-video</v-icon>
-                  </v-btn>
-                </div>
+                  <v-icon top>fas fa-video</v-icon>
+                </v-btn>
+
               </v-form>
             </div>
 
             <!-- Getting Vendor Screen -->
             <div v-if="screen_status == 'getting_services'">
-              Getting Services List
+              Getting Services List..
             </div>
 
             <!-- Services List -->
@@ -121,10 +119,11 @@
                 {{ service.name }}
               </v-btn>
 
-              <br/><br/>
+              <br/><br/><br/>
+
               <v-btn
                 @click="screen_status = 'main'"
-                style="background-color: #ff3a47;"
+                outlined
               >Start Again
               </v-btn
               >
@@ -132,20 +131,20 @@
 
             <!-- Video Connecting Screen -->
             <div v-if="screen_status == 'video_connecting'">
-              Connecting You
+              Connecting you..
             </div>
 
             <!-- Starting a Call -->
             <div v-if="screen_status == 'starting_call'">
-              Starting a Call
+              Starting a call..
             </div>
 
             <!-- Waiting for an Agent -->
             <div v-if="screen_status == 'call_waiting_for_agent'">
-              <br/>
+
+              <h1 style="margin-bottom: 20px;">#{{ queue_count + 1 }}</h1>
 
               <p>You are now in line</p>
-              <h1 style="margin-bottom: 20px;">#{{ queue_count + 1 }}</h1>
 
               <!-- This is to show the queue line -->
               <div v-if="queue_count != 0">
@@ -183,8 +182,7 @@
                   call.connection_guest_token != null
                 "
               >
-                You are being served by: {{ call.vu.name }}
-                <div styte="height:10px"></div>
+                <v-chip outlined style="margin-bottom: 15px"><v-avatar><v-icon color="#FFB600">mdi-account-circle</v-icon></v-avatar>You are being served by {{ call.vu.name }}</v-chip>
 
                 <CallBox
                   v-if="screen_status == 'in_call'"
@@ -218,7 +216,7 @@
                 <div v-if="rating != 0">
                   <h3>Thanks for calling .. Goodbye!</h3>
                   <br/>
-                  <v-btn @click="screen_status = 'main'">
+                  <v-btn v-if="call_token == null" @click="screen_status = 'main'">
                     Back to Home
                   </v-btn>
                 </div>
@@ -235,16 +233,16 @@
         </v-card>
       </div>
 
-      <br/><br/>
-      <div style="text-align: center;">
-        powered by <a href="http://basma.ai" target="_blank">basma.ai</a>
+      <br/>
+
+      <div style="text-align: center; color: #626262">
+        powered by <a href="http://basma.ai" target="_blank" style="color: #FFB600; text-decoration: none;">basma.ai</a>
       </div>
     </v-container>
   </div>
 </template>
 <script>
   import axios from "axios";
-  // const { connect } = require('twilio-video');
   import CallBox from "@/components/CallBox.vue";
   import AwesomeRating from "../components/AwesomeRating";
   import {isIOS, isMobileSafari} from "mobile-device-detect";
@@ -253,27 +251,20 @@
 
   export default {
     data: () => ({
-      //user input data
       isItIOS: isIOS,
       isItMobileSafari: isMobileSafari,
       formValid: false,
-      firstName: "",
-      lastName: "",
       nameRules: [
         (v) => !!v || "Customer Name is required!",
-        // v => v.length <= 10 || 'Name must be less than 10 characters',
       ],
       requiredRules: [
         (v) => !!v || "This field is required!",
-        // v => v.length <= 10 || 'Name must be less than 10 characters',
       ],
-      customerPhone: "",
       phoneRules: [
         (v) => /[0-9]/.test(v) || "Phone is invalid, enter digits only",
         (v) => v.length == 8 || "Phone must be 8 digits only",
         (v) => !!v || "Phone is required!",
       ],
-
       loading: false,
       vendor: {},
       screen_status: "main",
@@ -292,6 +283,7 @@
         "https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif",
       ],
       rating: 0,
+      call_token: null
     }),
 
     components: {
@@ -383,7 +375,7 @@
               this_app.services_list = response.data.data.services;
               this_app.screen_status = "services_list";
             } else {
-              // // console.log("it's a failure!");
+              // console.log("it's a failure!");
             }
 
             this_app.loading = false;
@@ -601,7 +593,7 @@
           setTimeout(function () {
             console.log(this_app.screen_status);
             if (this_app.call.status != 'started' && this_app.call.status != 'ended') {
-            this_app.refresh_call();
+              this_app.refresh_call();
             }
           }, 1000);
 
@@ -631,7 +623,6 @@
 
         if (this_app.call != null && this_app.call.status === "started") {
           this_app.screen_status = "in_call";
-          console.log("come here");
 
         } else if (call_info.errors != null && call_info.errors.length > 0) {
           if (call_info.errors[0] === "call_ended") {
@@ -650,40 +641,35 @@
 
     created() {
       let this_app = this;
+      this_app.call_token = this_app.$route.query.token
+      console.log('this.token', this_app.call_token);
 
-      console.log('this.token', this.$route.query.token);
-
-      this.vendor_username = this.$route.params.vendor_username;
+      this_app.vendor_username = this_app.$route.params.vendor_username;
 
       // TODO: verify the vendor username first before getting the vendor data
-      this.load_data();
+      this_app.load_data();
 
-      if (this.$route.query.token != null) {
+      if (this_app.call_token != null) {
         this.join_call_by_token(this.$route.query.token);
         console.log('join_call_by_token');
       }
-    }
-    ,
+    },
 
     mounted() {
-      this.sockets.subscribe("on_update", (data) => {
-        let this_app = this;
 
-        console.log("on_update", data);
-
-        this_app.on_call_update(data.data);
-      });
-    }
-    ,
+    },
 
     sockets: {
       connect: function () {
-        // console.log('connected!')
+        console.log('sockets: connected!')
+      },
+      on_update: function (data) {
+        console.log('sockets: on_update:', data)
+
+        let this_app = this;
+
+        this_app.on_call_update(data.data);
       }
-      ,
-      // call_refreshed: function (data) {
-      //   console.log('call_refreshed:', data)
-      // }
     }
     ,
   }
