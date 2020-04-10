@@ -3,10 +3,8 @@ const colors = require('vuetify/es5/util/colors').default
 module.exports = {
   mode: 'spa',
 
-  env: {
-    api_url: 'https://video-api.basma.ai',
-    // api_url: 'http://localhost:1061',
-    // api_url: 'https://3cf5a986.ngrok.io',
+  dotenv: {
+    only: ['api_url']
   },
 
   server: {
@@ -64,6 +62,7 @@ module.exports = {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/dotenv',
     'vue-web-cam/nuxt',
     // 'nuxt-socket-io'
   ],
