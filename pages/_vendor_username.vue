@@ -253,20 +253,9 @@
       </div>
     </v-container>
 
-    <v-container v-if="!inOperation && !initialLoading">
+    <!-- <v-container v-if="!inOperation && !initialLoading">
       <v-overlay>
         <v-card color="#FFFFFF" height="100%" width="100%">
-          <!-- <v-card-title class="justify-center"> -->
-          <!-- <v-icon large left>
-            mdi-apple-safari
-          </v-icon> -->
-          <!-- <span -->
-          <!-- style="text-align: center;"
-          class="title font-weight-bold"
-          >😁 Basma Alert 😁 -->
-          <!-- </span> -->
-          <!-- </v-card-title> -->
-
           <v-card-text class="headline">
             <p style="text-align: justify; color: black">Oooops..!</p>
             <p style="text-align: justify; color: black">
@@ -275,7 +264,7 @@
           </v-card-text>
         </v-card>
       </v-overlay>
-    </v-container>
+    </v-container> -->
 
     <v-container v-if="!isCustomerViewEnabled && !initialLoading">
       <v-overlay>
@@ -356,7 +345,7 @@ export default {
   methods: {
     submitRating: function(event) {
       this.rating = event.rating;
-      ("submit rating:", this.rating);
+      "submit rating:", this.rating;
       let this_app = this;
       axios
         .post(process.env.api_url + "/calls/submit_rating", {
@@ -403,17 +392,12 @@ export default {
     },
 
     checkCustomerView: function() {
-      
-      
       if (this.vendor.is_customer_view_enabled) {
         this.isCustomerViewEnabled = true;
-        
       }
     },
 
     checkWorkingHours: function() {
-      
-
       let workingHours = JSON.parse(this.vendor.working_hours);
       let today = moment()
         .format("dddd")
@@ -427,10 +411,8 @@ export default {
 
       if (!todayVendor["isOpen"] || (todayVendor["isOpen"] && !isNowOpen)) {
         this.inOperation = false;
-        
       } else {
         this.inOperation = true;
-        
       }
     },
 
@@ -446,14 +428,12 @@ export default {
             this_app.guest_token = response.data.data.token;
             this_app.get_services();
           } else {
-            // 
+            //
           }
 
           this_app.loading = false;
         })
-        .catch(function(error) {
-          
-        });
+        .catch(function(error) {});
     },
 
     get_services: function() {
@@ -471,14 +451,11 @@ export default {
             this_app.services_list = response.data.data.services;
             this_app.screen_status = "services_list";
           } else {
-            
           }
 
           this_app.loading = false;
         })
-        .catch(function(error) {
-          
-        });
+        .catch(function(error) {});
     },
 
     start_call: function(service = null) {
@@ -498,8 +475,6 @@ export default {
         })
         .then(function(response) {
           if (response.data.success) {
-            
-
             this_app.call_id = response.data.data.call_id;
 
             this_app.call = response.data.data.call_info.call;
@@ -524,16 +499,13 @@ export default {
             };
 
             this_app.$socket.emit("start_socket", params);
-            
           } else {
-            // 
+            //
           }
 
           this_app.loading = false;
         })
-        .catch(function(error) {
-          
-        });
+        .catch(function(error) {});
     },
 
     //cancel call is used only when the call has not been connected yet.
@@ -550,26 +522,20 @@ export default {
           call_id: this.call_id
         })
         .then(function(response) {
-          
-          
           if (response.data.success) {
-            
             this_app.screen_status = "services_list";
             this_app.loading = false;
             this_app.selected_service = null;
           } else {
-            
           }
         })
         .catch(function(error) {
-          
           this_app.loading = false;
         });
     },
 
     // end_call is used when both parties are actually in the call.
     end_call: function() {
-      
       this.rating = 0;
       this.loading = true;
       this.call = null;
@@ -583,19 +549,14 @@ export default {
           call_id: this.call_id
         })
         .then(function(response) {
-          
-          
           if (response.data.success) {
-            
             this_app.screen_status = "call_ended";
             this_app.loading = false;
             this_app.selected_service = null;
           } else {
-            
           }
         })
         .catch(function(error) {
-          
           this_app.loading = false;
         });
     },
@@ -619,8 +580,6 @@ export default {
             axios
               .post(process.env.api_url + "/calls/join", params)
               .then(response => {
-                
-
                 this_app.screen_status = "call_waiting_for_agent";
                 this_app.call_id = response.data.data.call_id;
 
@@ -632,18 +591,15 @@ export default {
                 };
 
                 this_app.$socket.emit("start_socket", params);
-                
 
                 this_app.on_call_update(response.data.data.call_info);
                 this_app.loading = false;
               })
               .catch(err => {
-                
                 this_app.loading = false;
               });
 
             setTimeout(function() {
-              
               // if (this_app.screen_status == 'call_waiting_for_agent' || this_app.screen_status == 'in_call') {
               this_app.refresh_call();
               // }
@@ -652,9 +608,7 @@ export default {
             this_app.loading = false;
           }
         })
-        .catch(function(error) {
-          
-        });
+        .catch(function(error) {});
     },
 
     refresh_call() {
@@ -666,8 +620,6 @@ export default {
           request_call_token: this.$route.query.token
         })
         .then(response => {
-          
-
           this_app.screen_status = "call_waiting_for_agent";
           this_app.call_id = response.data.data.call_id;
 
@@ -679,13 +631,11 @@ export default {
           };
 
           this_app.$socket.emit("start_socket", params);
-          
 
           this_app.on_call_update(response.data.data.call_info);
           this_app.loading = false;
 
           setTimeout(function() {
-            
             if (
               this_app.call.status != "started" &&
               this_app.call.status != "ended"
@@ -695,14 +645,11 @@ export default {
           }, 1000);
         })
         .catch(err => {
-          
           this_app.loading = false;
         });
     },
     on_call_update(call_info) {
       const this_app = this;
-
-      
 
       this_app.call = call_info.call;
       this_app.queue_count = call_info.queue_count;
@@ -733,7 +680,6 @@ export default {
   created() {
     let this_app = this;
     this_app.call_token = this_app.$route.query.token;
-    
 
     this_app.vendor_username = this_app.$route.params.vendor_username;
 
@@ -742,19 +688,14 @@ export default {
 
     if (this_app.call_token != null) {
       this.join_call_by_token(this.$route.query.token);
-      
     }
   },
 
   mounted() {},
 
   sockets: {
-    connect: function() {
-      
-    },
+    connect: function() {},
     on_update: function(data) {
-      
-
       let this_app = this;
 
       this_app.on_call_update(data.data);
