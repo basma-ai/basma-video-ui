@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-container>
+    <div v-if="loading">
+        LOADING
+    </div>
+    <v-container v-if="inOperation && isCustomerViewEnabled">
       <!-- Check if the user is using iOS but not Safari -->
       <v-overlay :value="isItIOS && !isItMobileSafari">
         <v-card color="#FFFFFF" height="100%" width="100%">
@@ -38,28 +41,6 @@
         </v-card>
       </v-overlay>
 
-      <v-overlay :value="!inOperation">
-        <v-card color="#FFFFFF" height="100%" width="100%">
-          <!-- <v-card-title class="justify-center"> -->
-          <!-- <v-icon large left>
-            mdi-apple-safari
-          </v-icon> -->
-          <!-- <span -->
-          <!-- style="text-align: center;"
-          class="title font-weight-bold"
-          >😁 Basma Alert 😁 -->
-          <!-- </span> -->
-          <!-- </v-card-title> -->
-
-          <v-card-text class="headline">
-            <p style="text-align: justify; color: black">Ops!..</p>
-            <p style="text-align: justify; color: black">
-              The branch is now closed.
-            </p>
-          </v-card-text>
-        </v-card>
-      </v-overlay>
-
       <div style="text-align: center;">
         <v-card
           :loading="loading"
@@ -67,8 +48,8 @@
         >
           <div class="text-center" style="padding: 20px;">
             <div v-if="screen_status != 'call_waiting_for_agent'">
-              <img id="vendor-logo" :src="vendor.logo_url"/>
-              <br/><br/>
+              <img id="vendor-logo" :src="vendor.logo_url" />
+              <br /><br />
             </div>
 
             <!-- Main Screen -->
@@ -107,11 +88,10 @@
                       >
                       </v-checkbox>
                     </div>
-
                   </div>
                 </v-container>
 
-                <br/><br/>
+                <br /><br />
 
                 <v-btn
                   large
@@ -121,7 +101,6 @@
                 >
                   <v-icon top>fas fa-video</v-icon>
                 </v-btn>
-
               </v-form>
             </div>
 
@@ -141,14 +120,11 @@
                 {{ service.name }}
               </v-btn>
 
-              <br/><br/><br/>
+              <br /><br /><br />
 
-              <v-btn
-                @click="screen_status = 'main'"
-                outlined
-              >Start Again
-              </v-btn
-              >
+              <v-btn @click="screen_status = 'main'" outlined
+                >Start Again
+              </v-btn>
             </div>
 
             <!-- Video Connecting Screen -->
@@ -163,7 +139,6 @@
 
             <!-- Waiting for an Agent -->
             <div v-if="screen_status == 'call_waiting_for_agent'">
-
               <h1 style="margin-bottom: 20px;">#{{ queue_count + 1 }}</h1>
 
               <p>You are now in line</p>
@@ -187,7 +162,7 @@
               </div>
 
               <div id="breathing">
-                <img :src="vendor.logo_url"/>
+                <img :src="vendor.logo_url" />
               </div>
 
               <v-btn @click="cancel_call()">
@@ -200,11 +175,17 @@
               <div
                 v-if="
                   call != null &&
-                  call.status == 'started' &&
-                  call.connection_guest_token != null
+                    call.status == 'started' &&
+                    call.connection_guest_token != null
                 "
               >
-                <v-chip outlined style="margin-bottom: 15px"><v-avatar><v-icon color="#FFB600">mdi-account-circle</v-icon></v-avatar>You are being served by {{ call.vu.name }}</v-chip>
+                <v-chip outlined style="margin-bottom: 15px"
+                  ><v-avatar
+                    ><v-icon color="#FFB600"
+                      >mdi-account-circle</v-icon
+                    ></v-avatar
+                  >You are being served by {{ call.vu.name }}</v-chip
+                >
 
                 <CallBox
                   v-if="screen_status == 'in_call'"
@@ -214,7 +195,7 @@
                   style="width: 100%;"
                 >
                 </CallBox>
-                <br/><br/>
+                <br /><br />
 
                 <v-btn @click="end_call()">End Call</v-btn>
               </div>
@@ -225,26 +206,29 @@
               <div style="text-align: center; font-size: 15px;">
                 <div v-if="rating == 0">
                   <h3>Kindly rate our service :)</h3>
-                  <br/>
+                  <br />
 
                   <!-- rating component -->
                   <awesome-rating
                     @rating_set="submitRating($event)"
                   ></awesome-rating>
-                  <br/>
+                  <br />
                 </div>
 
                 <!-- show the message & button once the user completes the rating-->
                 <div v-if="rating != 0">
                   <h3>Thanks for calling .. Goodbye!</h3>
-                  <br/>
-                  <v-btn v-if="call_token == null" @click="screen_status = 'main'">
+                  <br />
+                  <v-btn
+                    v-if="call_token == null"
+                    @click="screen_status = 'main'"
+                  >
                     Back to Home
                   </v-btn>
                 </div>
 
-                <br/>
-                <br/><br/>
+                <br />
+                <br /><br />
                 <img
                   :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]"
                   style="width: 100%; max-width: 300px;"
@@ -255,379 +239,441 @@
         </v-card>
       </div>
 
-      <br/>
+      <br />
 
       <div style="text-align: center; color: #626262">
-        powered by <a href="http://basma.ai" target="_blank" style="color: #FFB600; text-decoration: none;">basma.ai</a>
+        powered by
+        <a
+          href="http://basma.ai"
+          target="_blank"
+          style="color: #FFB600; text-decoration: none;"
+          >basma.ai</a
+        >
       </div>
+    </v-container>
+
+    <v-container v-if="!inOperation">
+      <v-overlay>
+        <v-card color="#FFFFFF" height="100%" width="100%">
+          <!-- <v-card-title class="justify-center"> -->
+          <!-- <v-icon large left>
+            mdi-apple-safari
+          </v-icon> -->
+          <!-- <span -->
+          <!-- style="text-align: center;"
+          class="title font-weight-bold"
+          >😁 Basma Alert 😁 -->
+          <!-- </span> -->
+          <!-- </v-card-title> -->
+
+          <v-card-text class="headline">
+            <p style="text-align: justify; color: black">Ops!..</p>
+            <p style="text-align: justify; color: black">
+              The branch is now closed.
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-overlay>
+    </v-container>
+
+    <v-container v-if="!isCustomerViewEnabled">
+      <v-overlay>
+        <v-card color="#FFFFFF" height="100%" width="100%">
+          <!-- <v-card-title class="justify-center"> -->
+          <!-- <v-icon large left>
+            mdi-apple-safari
+          </v-icon> -->
+          <!-- <span -->
+          <!-- style="text-align: center;"
+          class="title font-weight-bold"
+          >😁 Basma Alert 😁 -->
+          <!-- </span> -->
+          <!-- </v-card-title> -->
+
+          <v-card-text class="headline">
+            <p style="text-align: justify; color: black">Ops!..</p>
+            <p style="text-align: justify; color: black">
+              You can't call {{ vendor_username }}
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-overlay>
     </v-container>
   </div>
 </template>
 <script>
-  import axios from "axios";
-  import CallBox from "@/components/CallBox.vue";
-  import AwesomeRating from "../components/AwesomeRating";
-  import {isIOS, isMobileSafari} from "mobile-device-detect";
+import axios from "axios";
+import CallBox from "@/components/CallBox.vue";
+import AwesomeRating from "../components/AwesomeRating";
+import { isIOS, isMobileSafari } from "mobile-device-detect";
 
-  const humanizeDuration = require("humanize-duration");
-  const moment = require('moment');
+const humanizeDuration = require("humanize-duration");
+const moment = require("moment");
 
-  export default {
-    data: () => ({
-      isItIOS: isIOS,
-      inOperation: false,
-      isItMobileSafari: isMobileSafari,
-      formValid: false,
-      nameRules: [
-        (v) => !!v || "Customer Name is required!",
-      ],
-      requiredRules: [
-        (v) => !!v || "This field is required!",
-      ],
-      phoneRules: [
-        (v) => /[0-9]/.test(v) || "Phone is invalid, enter digits only",
-        (v) => v.length == 8 || "Phone must be 8 digits only",
-        (v) => !!v || "Phone is required!",
-      ],
-      loading: false,
-      vendor: {},
-      screen_status: "main",
-      guest_token: null,
-      services_list: [],
-      test_variable: null,
-      vendor_username: 0,
-      queue_count: 100,
-      estimated_waiting_time: 0,
-      selected_service: null,
-      call_id: 0,
-      call: null,
-      bye_gifs: [
-        // "https://media.giphy.com/media/SV0q8t76HtGi9W9WQu/giphy.gif",
-        // "https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif",
-        "https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif",
-        "https://media.giphy.com/media/IcdTrgVoYTK1PR2B6n/giphy.gif"
-      ],
-      rating: 0,
-      call_token: null
-    }),
+export default {
+  data: () => ({
+    isItIOS: isIOS,
+    inOperation: false,
+    isCustomerViewEnabled: false,
+    isItMobileSafari: isMobileSafari,
+    formValid: false,
+    nameRules: [v => !!v || "Customer Name is required!"],
+    requiredRules: [v => !!v || "This field is required!"],
+    phoneRules: [
+      v => /[0-9]/.test(v) || "Phone is invalid, enter digits only",
+      v => v.length == 8 || "Phone must be 8 digits only",
+      v => !!v || "Phone is required!"
+    ],
+    loading: false,
+    vendor: {},
+    screen_status: "main",
+    guest_token: null,
+    services_list: [],
+    test_variable: null,
+    vendor_username: 0,
+    queue_count: 100,
+    estimated_waiting_time: 0,
+    selected_service: null,
+    call_id: 0,
+    call: null,
+    bye_gifs: [
+      // "https://media.giphy.com/media/SV0q8t76HtGi9W9WQu/giphy.gif",
+      // "https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif",
+      "https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif",
+      "https://media.giphy.com/media/IcdTrgVoYTK1PR2B6n/giphy.gif"
+    ],
+    rating: 0,
+    call_token: null
+  }),
 
-    components: {
-      CallBox,
-      AwesomeRating,
+  components: {
+    CallBox,
+    AwesomeRating
+  },
+
+  methods: {
+    submitRating: function(event) {
+      this.rating = event.rating;
+      console.log("submit rating:", this.rating);
+      let this_app = this;
+      axios
+        .post(process.env.api_url + "/calls/submit_rating", {
+          guest_token: this_app.guest_token,
+          call_id: this_app.call_id,
+          rating: this_app.rating,
+          feedback_text: ""
+        })
+        .then(function(response) {
+          this_app.guest_token = null;
+          this_app.call_id = 0;
+        })
+        .catch(function(error) {
+          // console.log(error);
+        });
     },
 
-    methods: {
-      submitRating: function (event) {
-        this.rating = event.rating;
-        console.log("submit rating:", this.rating);
-        let this_app = this;
-        axios
-          .post(process.env.api_url + "/calls/submit_rating", {
-            guest_token: this_app.guest_token,
-            call_id: this_app.call_id,
-            rating: this_app.rating,
-            feedback_text: "",
-          })
-          .then(function (response) {
-            this_app.guest_token = null;
-            this_app.call_id = 0;
-          })
-          .catch(function (error) {
-            // console.log(error);
-          });
-      },
+    load_data: function() {
+      console.log("in load_data");
+      this.loading = true;
 
-      load_data: function () {
-        console.log("in load_data");
-        this.loading = true;
+      // const { sortBy, descending, page, rowsPerPage } = this.pagination;
 
-        // const { sortBy, descending, page, rowsPerPage } = this.pagination;
-
-        let this_app = this;
-        axios
-          .post(process.env.api_url + "/guest/get_vendor", {
-            vendor_username: this.vendor_username,
-          })
-          .then(function (response) {
-            if (response.data.success) {
-              this_app.vendor = response.data.data.vendor;
-              console.log(JSON.parse(this_app.vendor.working_hours));
-              console.log(moment().format('dddd').toLowerCase());
-            } else {
-              // // console.log("it's a failure!");
-            }
-
-            this_app.loading = false;
+      let this_app = this;
+      axios
+        .post(process.env.api_url + "/guest/get_vendor", {
+          vendor_username: this.vendor_username
+        })
+        .then(function(response) {
+          if (response.data.success) {
+            this_app.vendor = response.data.data.vendor;
             this_app.checkWorkingHours();
-          })
-          .catch(function (error) {
-            // console.log(error);
-          });
-      },
-
-      checkWorkingHours: function(){
-        console.log('entered checkWorkingHours function');
-
-        let workingHours = JSON.parse(this.vendor.working_hours);
-        let today = moment().format('dddd').toLowerCase();
-        let todayVendor = workingHours[today][0];
-        let now = moment().format('hhmm');
-        let isNowOpen = moment(now).isBetween(todayVendor['open'], todayVendor['close']);
-
-        if( !todayVendor['isOpen'] || (todayVendor['isOpen'] && !isNowOpen) ){
-          this.inOperation = false;
-          console.log('isOpen = FALSE');
-        }
-        else{
-          this.inOperation = true;
-          console.log('isOpen = TRUE');
-        }
-
-      },
-
-      request_video_token: function () {
-        this.screen_status = "video_connecting";
-        this.loading = true;
-        let this_app = this;
-
-        axios
-          .post(process.env.api_url + "/guest/request_token")
-          .then(function (response) {
-            if (response.data.success) {
-              this_app.guest_token = response.data.data.token;
-              this_app.get_services();
-            } else {
-              // // console.log("it's a failure!");
-            }
-
+            this_app.checkCustomerView();
             this_app.loading = false;
-          })
-          .catch(function (error) {
-            // console.log(error);
-          });
-      },
+          } else {
+            // // console.log("it's a failure!");
+          }
 
-      get_services: function () {
-        this.screen_status = "getting_services";
-        this.loading = true;
+          this_app.loading = false;
+        })
+        .catch(function(error) {
+          // console.log(error);
+        });
+    },
 
-        let this_app = this;
-        axios
-          .post(process.env.api_url + "/calls/get_services", {
-            guest_token: this.guest_token,
-            vendor_id: this.vendor.id,
-          })
-          .then(function (response) {
-            if (response.data.success) {
-              this_app.services_list = response.data.data.services;
-              this_app.screen_status = "services_list";
-            } else {
-              // console.log("it's a failure!");
-            }
+    checkCustomerView: function() {
+      console.log("entered checkCustomerView");
+      console.log("View:", this.vendor.is_customer_view_enabled);
+      if (this.vendor.is_customer_view_enabled) {
+        this.isCustomerViewEnabled = true;
+        console.log("View is Enabled");
+      }
+    },
 
+    checkWorkingHours: function() {
+      console.log("entered checkWorkingHours function");
+
+      let workingHours = JSON.parse(this.vendor.working_hours);
+      let today = moment()
+        .format("dddd")
+        .toLowerCase();
+      let todayVendor = workingHours[today][0];
+      let now = moment().format("hhmm");
+      let isNowOpen = moment(now).isBetween(
+        todayVendor["open"],
+        todayVendor["close"]
+      );
+
+      if (!todayVendor["isOpen"] || (todayVendor["isOpen"] && !isNowOpen)) {
+        this.inOperation = false;
+        console.log("isOpen = FALSE");
+      } else {
+        this.inOperation = true;
+        console.log("isOpen = TRUE");
+      }
+    },
+
+    request_video_token: function() {
+      this.screen_status = "video_connecting";
+      this.loading = true;
+      let this_app = this;
+
+      axios
+        .post(process.env.api_url + "/guest/request_token")
+        .then(function(response) {
+          if (response.data.success) {
+            this_app.guest_token = response.data.data.token;
+            this_app.get_services();
+          } else {
+            // // console.log("it's a failure!");
+          }
+
+          this_app.loading = false;
+        })
+        .catch(function(error) {
+          // console.log(error);
+        });
+    },
+
+    get_services: function() {
+      this.screen_status = "getting_services";
+      this.loading = true;
+
+      let this_app = this;
+      axios
+        .post(process.env.api_url + "/calls/get_services", {
+          guest_token: this.guest_token,
+          vendor_id: this.vendor.id
+        })
+        .then(function(response) {
+          if (response.data.success) {
+            this_app.services_list = response.data.data.services;
+            this_app.screen_status = "services_list";
+          } else {
+            // console.log("it's a failure!");
+          }
+
+          this_app.loading = false;
+        })
+        .catch(function(error) {
+          // console.log(error);
+        });
+    },
+
+    start_call: function(service = null) {
+      if (service != null) {
+        this.selected_service = service;
+      }
+
+      this.screen_status = "starting_call";
+      this.loading = true;
+
+      let this_app = this;
+      axios
+        .post(process.env.api_url + "/calls/start_call", {
+          guest_token: this.guest_token,
+          service_id: this.selected_service.id,
+          custom_fields_values: this.vendor.custom_fields
+        })
+        .then(function(response) {
+          if (response.data.success) {
+            // console.log(response.data.data);
+
+            this_app.call_id = response.data.data.call_id;
+
+            this_app.call = response.data.data.call_info.call;
+            this_app.queue_count = response.data.data.call_info.queue_count;
+            this_app.estimated_waiting_time =
+              response.data.data.call_info.estimated_waiting_time;
+            this_app.estimated_waiting_time = humanizeDuration(
+              this_app.estimated_waiting_time,
+              {
+                round: true,
+                units: ["h", "m"]
+              }
+            );
+
+            this_app.screen_status = "call_waiting_for_agent";
+
+            // call the socket
+            const params = {
+              user_type: "guest",
+              user_token: this_app.guest_token,
+              call_id: this_app.call_id
+            };
+
+            this_app.$socket.emit("start_socket", params);
+            // console.log("start_socket", params);
+          } else {
+            // // console.log("it's a failure!");
+          }
+
+          this_app.loading = false;
+        })
+        .catch(function(error) {
+          // console.log(error);
+        });
+    },
+
+    //cancel call is used only when the call has not been connected yet.
+    cancel_call: function() {
+      this.loading = true;
+      this.call = null;
+      // this.$refs.call_box.end_call();
+
+      let this_app = this;
+
+      axios
+        .post(process.env.api_url + "/calls/end_call", {
+          guest_token: this.guest_token,
+          call_id: this.call_id
+        })
+        .then(function(response) {
+          console.log("Passed End Call API endpoint. Below is the response");
+          console.log(response);
+          if (response.data.success) {
+            console.log("Entered Cancel Call");
+            this_app.screen_status = "services_list";
             this_app.loading = false;
-          })
-          .catch(function (error) {
-            // console.log(error);
-          });
-      },
+            this_app.selected_service = null;
+          } else {
+            // console.log("it's a failure!");
+          }
+        })
+        .catch(function(error) {
+          // console.log(error);
+          this_app.loading = false;
+        });
+    },
 
-      start_call: function (service = null) {
-        if (service != null) {
-          this.selected_service = service;
-        }
+    // end_call is used when both parties are actually in the call.
+    end_call: function() {
+      console.log("rating: ", this.rating);
+      this.rating = 0;
+      this.loading = true;
+      this.call = null;
+      this.$refs.call_box.end_call();
 
-        this.screen_status = "starting_call";
-        this.loading = true;
+      let this_app = this;
 
-        let this_app = this;
-        axios
-          .post(process.env.api_url + "/calls/start_call", {
-            guest_token: this.guest_token,
-            service_id: this.selected_service.id,
-            custom_fields_values: this.vendor.custom_fields,
-          })
-          .then(function (response) {
-            if (response.data.success) {
-              // console.log(response.data.data);
-
-              this_app.call_id = response.data.data.call_id;
-
-              this_app.call = response.data.data.call_info.call;
-              this_app.queue_count = response.data.data.call_info.queue_count;
-              this_app.estimated_waiting_time =
-                response.data.data.call_info.estimated_waiting_time;
-              this_app.estimated_waiting_time = humanizeDuration(
-                this_app.estimated_waiting_time,
-                {
-                  round: true,
-                  units: ["h", "m"],
-                }
-              );
-
-              this_app.screen_status = "call_waiting_for_agent";
-
-              // call the socket
-              const params = {
-                user_type: "guest",
-                user_token: this_app.guest_token,
-                call_id: this_app.call_id,
-              };
-
-              this_app.$socket.emit("start_socket", params);
-              // console.log("start_socket", params);
-            } else {
-              // // console.log("it's a failure!");
-            }
-
+      axios
+        .post(process.env.api_url + "/calls/end_call", {
+          guest_token: this.guest_token,
+          call_id: this.call_id
+        })
+        .then(function(response) {
+          console.log("Passed End Call API endpoint. Below is the response");
+          console.log(response);
+          if (response.data.success) {
+            console.log("Entered Cancel Call");
+            this_app.screen_status = "call_ended";
             this_app.loading = false;
-          })
-          .catch(function (error) {
-            // console.log(error);
-          });
-      },
+            this_app.selected_service = null;
+          } else {
+            console.log("it's a failure!");
+          }
+        })
+        .catch(function(error) {
+          // console.log(error);
+          this_app.loading = false;
+        });
+    },
+    join_call_by_token(token) {
+      const this_app = this;
 
-      //cancel call is used only when the call has not been connected yet.
-      cancel_call: function () {
-        this.loading = true;
-        this.call = null;
-        // this.$refs.call_box.end_call();
+      this.screen_status = "video_connecting";
+      this.loading = true;
 
-        let this_app = this;
+      axios
+        .post(process.env.api_url + "/guest/request_token")
+        .then(function(response) {
+          if (response.data.success) {
+            this_app.guest_token = response.data.data.token;
 
-        axios
-          .post(process.env.api_url + "/calls/end_call", {
-            guest_token: this.guest_token,
-            call_id: this.call_id,
-          })
-          .then(function (response) {
-            console.log("Passed End Call API endpoint. Below is the response");
-            console.log(response);
-            if (response.data.success) {
-              console.log("Entered Cancel Call");
-              this_app.screen_status = "services_list";
-              this_app.loading = false;
-              this_app.selected_service = null;
-            } else {
-              // console.log("it's a failure!");
-            }
-          })
-          .catch(function (error) {
-            // console.log(error);
-            this_app.loading = false;
-          });
-      },
+            const params = {
+              guest_token: this_app.guest_token,
+              request_call_token: token
+            };
 
-      // end_call is used when both parties are actually in the call.
-      end_call: function () {
-        console.log("rating: ", this.rating);
-        this.rating = 0;
-        this.loading = true;
-        this.call = null;
-        this.$refs.call_box.end_call();
+            axios
+              .post(process.env.api_url + "/calls/join", params)
+              .then(response => {
+                console.log(response);
 
-        let this_app = this;
+                this_app.screen_status = "call_waiting_for_agent";
+                this_app.call_id = response.data.data.call_id;
 
-        axios
-          .post(process.env.api_url + "/calls/end_call", {
-            guest_token: this.guest_token,
-            call_id: this.call_id,
-          })
-          .then(function (response) {
-            console.log("Passed End Call API endpoint. Below is the response");
-            console.log(response);
-            if (response.data.success) {
-              console.log("Entered Cancel Call");
-              this_app.screen_status = "call_ended";
-              this_app.loading = false;
-              this_app.selected_service = null;
-            } else {
-              console.log("it's a failure!");
-            }
-          })
-          .catch(function (error) {
-            // console.log(error);
-            this_app.loading = false;
-          });
-      },
-      join_call_by_token(token) {
-        const this_app = this;
+                // call the socket
+                const params = {
+                  user_type: "guest",
+                  user_token: this_app.guest_token,
+                  call_id: this_app.call_id
+                };
 
-        this.screen_status = "video_connecting";
-        this.loading = true;
+                this_app.$socket.emit("start_socket", params);
+                console.log("start_socket", params);
 
-        axios
-          .post(process.env.api_url + "/guest/request_token")
-          .then(function (response) {
-            if (response.data.success) {
-              this_app.guest_token = response.data.data.token;
-
-              const params = {
-                guest_token: this_app.guest_token,
-                request_call_token: token,
-              };
-
-              axios
-                .post(process.env.api_url + "/calls/join", params)
-                .then((response) => {
-                  console.log(response);
-
-                  this_app.screen_status = "call_waiting_for_agent";
-                  this_app.call_id = response.data.data.call_id
-
-                  // call the socket
-                  const params = {
-                    user_type: "guest",
-                    user_token: this_app.guest_token,
-                    call_id: this_app.call_id,
-                  };
-
-                  this_app.$socket.emit("start_socket", params);
-                  console.log("start_socket", params);
-
-                  this_app.on_call_update(response.data.data.call_info);
-                  this_app.loading = false;
-                }).catch((err) => {
+                this_app.on_call_update(response.data.data.call_info);
+                this_app.loading = false;
+              })
+              .catch(err => {
                 console.log(err);
                 this_app.loading = false;
               });
 
-              setTimeout(function () {
-                console.log(this_app.screen_status);
-                // if (this_app.screen_status == 'call_waiting_for_agent' || this_app.screen_status == 'in_call') {
-                this_app.refresh_call();
-                // }
-              }, 1000);
+            setTimeout(function() {
+              console.log(this_app.screen_status);
+              // if (this_app.screen_status == 'call_waiting_for_agent' || this_app.screen_status == 'in_call') {
+              this_app.refresh_call();
+              // }
+            }, 1000);
+          } else {
+            this_app.loading = false;
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
 
-            } else {
-              this_app.loading = false;
-            }
+    refresh_call() {
+      let this_app = this;
 
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-
-      },
-
-      refresh_call() {
-
-        let this_app = this;
-
-        axios.post(process.env.api_url + '/calls/join', {
+      axios
+        .post(process.env.api_url + "/calls/join", {
           guest_token: this.guest_token,
           request_call_token: this.$route.query.token
-        }).then((response) => {
+        })
+        .then(response => {
           console.log(response);
 
           this_app.screen_status = "call_waiting_for_agent";
-          this_app.call_id = response.data.data.call_id
+          this_app.call_id = response.data.data.call_id;
 
           // call the socket
           const params = {
             user_type: "guest",
             user_token: this_app.guest_token,
-            call_id: this_app.call_id,
+            call_id: this_app.call_id
           };
 
           this_app.$socket.emit("start_socket", params);
@@ -636,89 +682,81 @@
           this_app.on_call_update(response.data.data.call_info);
           this_app.loading = false;
 
-
-          setTimeout(function () {
+          setTimeout(function() {
             console.log(this_app.screen_status);
-            if (this_app.call.status != 'started' && this_app.call.status != 'ended') {
+            if (
+              this_app.call.status != "started" &&
+              this_app.call.status != "ended"
+            ) {
               this_app.refresh_call();
             }
           }, 1000);
-
-        }).catch((err) => {
+        })
+        .catch(err => {
           console.log(err);
           this_app.loading = false;
         });
-      }
-      ,
+    },
+    on_call_update(call_info) {
+      const this_app = this;
 
+      console.log("on_call_update:", call_info);
 
-      on_call_update(call_info) {
-        const this_app = this;
+      this_app.call = call_info.call;
+      this_app.queue_count = call_info.queue_count;
+      this_app.estimated_waiting_time = call_info.estimated_waiting_time;
+      this_app.estimated_waiting_time = humanizeDuration(
+        this_app.estimated_waiting_time,
+        {
+          round: true,
+          units: ["h", "m"]
+        }
+      );
 
-        console.log("on_call_update:", call_info);
-
-        this_app.call = call_info.call;
-        this_app.queue_count = call_info.queue_count;
-        this_app.estimated_waiting_time = call_info.estimated_waiting_time;
-        this_app.estimated_waiting_time = humanizeDuration(
-          this_app.estimated_waiting_time,
-          {
-            round: true,
-            units: ["h", "m"],
+      if (this_app.call != null && this_app.call.status === "started") {
+        this_app.screen_status = "in_call";
+      } else if (call_info.errors != null && call_info.errors.length > 0) {
+        if (call_info.errors[0] === "call_ended") {
+          if (undefined !== this_app.$refs.call_box) {
+            this_app.$refs.call_box.end_call();
           }
-        );
-
-        if (this_app.call != null && this_app.call.status === "started") {
-          this_app.screen_status = "in_call";
-
-        } else if (call_info.errors != null && call_info.errors.length > 0) {
-          if (call_info.errors[0] === "call_ended") {
-            if (undefined !== this_app.$refs.call_box) {
-              this_app.$refs.call_box.end_call();
-            }
-            this_app.screen_status = "call_ended";
-            this_app.rating = 0;
-            this_app.call = null;
-            this_app.selected_service = null;
-          }
+          this_app.screen_status = "call_ended";
+          this_app.rating = 0;
+          this_app.call = null;
+          this_app.selected_service = null;
         }
       }
     }
-    ,
+  },
+  created() {
+    let this_app = this;
+    this_app.call_token = this_app.$route.query.token;
+    console.log("this.token", this_app.call_token);
 
-    created() {
-      let this_app = this;
-      this_app.call_token = this_app.$route.query.token
-      console.log('this.token', this_app.call_token);
+    this_app.vendor_username = this_app.$route.params.vendor_username;
 
-      this_app.vendor_username = this_app.$route.params.vendor_username;
+    // TODO: verify the vendor username first before getting the vendor data
+    this_app.load_data();
 
-      // TODO: verify the vendor username first before getting the vendor data
-      this_app.load_data();
-
-      if (this_app.call_token != null) {
-        this.join_call_by_token(this.$route.query.token);
-        console.log('join_call_by_token');
-      }
-    },
-
-    mounted() {
-
-    },
-
-    sockets: {
-      connect: function () {
-        console.log('sockets: connected!')
-      },
-      on_update: function (data) {
-        console.log('sockets: on_update:', data)
-
-        let this_app = this;
-
-        this_app.on_call_update(data.data);
-      }
+    if (this_app.call_token != null) {
+      this.join_call_by_token(this.$route.query.token);
+      console.log("join_call_by_token");
     }
-    ,
+  },
+
+  mounted() {},
+
+  sockets: {
+    connect: function() {
+      console.log("sockets: connected!");
+    },
+    on_update: function(data) {
+      console.log("sockets: on_update:", data);
+
+      let this_app = this;
+
+      this_app.on_call_update(data.data);
+    }
   }
-  ;
+};
 </script>
