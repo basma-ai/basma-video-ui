@@ -86,8 +86,8 @@ export default {
       let thisApp = this;
 
       this.localTracks.forEach((track) => {
-        // console.log('In mute function code');
-        // console.log(JSON.stringify(track));
+        
+        // (JSON.stringify(track));
         try {
           if (track.kind == "video") {
             if (track.isEnabled) {
@@ -99,7 +99,7 @@ export default {
             }
           }
         } catch (ex) {
-          // console.log(ex.toString());
+          // (ex.toString());
         }
       });
     },
@@ -107,8 +107,8 @@ export default {
       let thisApp = this;
 
       this.localTracks.forEach((track) => {
-        // console.log('In mute function code');
-        // console.log(JSON.stringify(track));
+        
+        // (JSON.stringify(track));
         try {
           if (track.kind == "audio") {
             if (track.isEnabled) {
@@ -120,7 +120,7 @@ export default {
             }
           }
         } catch (ex) {
-          // console.log(ex.toString());
+          // (ex.toString());
         }
       });
     },
@@ -134,8 +134,8 @@ export default {
       }
 
       this.localTracks.forEach((track) => {
-        console.log("in localTracks.foreach");
-        console.log(JSON.stringify(track));
+        
+        (JSON.stringify(track));
         try {
           if (track.isEnabled) {
             track.disable();
@@ -148,7 +148,7 @@ export default {
             thisApp.localMicIsEnabled = true;
           }
         } catch (ex) {
-          console.log(ex.toString());
+          (ex.toString());
         }
       });
     },
@@ -160,27 +160,27 @@ export default {
       }
 
       room.participants.forEach((participant) => {
-        // console.log("PARTICIPANT");
-        // console.log(JSON.stringify(participant));
+        
+        // (JSON.stringify(participant));
 
         if (!this_app.found_remote_track) {
         }
-        // console.log(`Participant "${participant.identity}" is connected to the Room`);
+        
 
         setTimeout(function () {
           participant.tracks.forEach((publication) => {
-            // console.log("PUBLICATION");
-            // console.log(JSON.stringify(publication));
+            
+            // (JSON.stringify(publication));
 
             if (publication.isSubscribed) {
-              // console.log("I am inside IF(publication.isSubscribed)");
+              // ("I am inside IF(publication.isSubscribed)");
               const track = publication.track;
 
               if (track == null) {
-                // console.log("track is null");
+                
                 this_app.check_remote(room);
               } else {
-                // console.log("track is not null");
+                
                 this_app.found_remote_track = true;
                 //document.getElementById('remote-media-div').innerHTML = "";
                 document
@@ -189,7 +189,7 @@ export default {
                 this_app.isVideoLoaded = true;
               }
             } else {
-              // console.log("I am inside ELSE(publication.isSubscribed)");
+              // ("I am inside ELSE(publication.isSubscribed)");
               this_app.check_remote(room);
             }
           });
@@ -198,7 +198,7 @@ export default {
     },
   },
   created() {
-    // console.log("here me, in created");
+    
 
     // check if isIos
     if (process.client) {
@@ -233,10 +233,10 @@ export default {
         });
       })
       .then((room) => {
-        console.log(`Connected to Room: ${room.name}`);
+        
 
         room.localParticipant.tracks.forEach((a)=>{
-          console.log('room.localParticipant.tracks', a)
+          ('room.localParticipant.tracks', a)
           if (a.kind === "video") {
             const localMediaContainer = document.getElementById("local-media");
             localMediaContainer.innerHTML = "";
@@ -244,15 +244,15 @@ export default {
           }
         })
 
-        console.log("PARTICIPANTS");
+        
         thisApp.room = room;
         thisApp.check_remote(room);
 
         // Attach the Participant's Media to a <div> element.
         room.on("participantConnected", (participant) => {
           if (!thisApp.call_ended) {
-            console.log("A participant has been connected");
-            console.log(`Participant "${participant.identity}" connected`);
+            
+            
 
             participant.tracks.forEach((publication) => {
               if (publication.isSubscribed) {
@@ -276,7 +276,7 @@ export default {
 
         // Attach the Participant's Media to a <div> element.
         room.on("participantDisconnected", (participant) => {
-          console.log(`Participant disconnected: ${participant.identity}`);
+          
           document.getElementById("remote-media-div").innerHTML = ""
         });
 

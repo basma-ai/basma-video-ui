@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div v-if="loading">
-        LOADING
-    </div>
+    <v-container class="text-center" v-if="initialLoading">
+      <v-progress-circular :size="70" color="amber" indeterminate>
+      </v-progress-circular>
+    </v-container>
     <v-container v-if="inOperation && isCustomerViewEnabled">
       <!-- Check if the user is using iOS but not Safari -->
       <v-overlay :value="isItIOS && !isItMobileSafari">
@@ -252,7 +253,7 @@
       </div>
     </v-container>
 
-    <v-container v-if="!inOperation">
+    <v-container v-if="!inOperation && !initialLoading">
       <v-overlay>
         <v-card color="#FFFFFF" height="100%" width="100%">
           <!-- <v-card-title class="justify-center"> -->
@@ -276,7 +277,7 @@
       </v-overlay>
     </v-container>
 
-    <v-container v-if="!isCustomerViewEnabled">
+    <v-container v-if="!isCustomerViewEnabled && !initialLoading">
       <v-overlay>
         <v-card color="#FFFFFF" height="100%" width="100%">
           <!-- <v-card-title class="justify-center"> -->
@@ -324,6 +325,7 @@ export default {
       v => v.length == 8 || "Phone must be 8 digits only",
       v => !!v || "Phone is required!"
     ],
+    initialLoading: false,
     loading: false,
     vendor: {},
     screen_status: "main",
@@ -354,7 +356,7 @@ export default {
   methods: {
     submitRating: function(event) {
       this.rating = event.rating;
-      console.log("submit rating:", this.rating);
+      ("submit rating:", this.rating);
       let this_app = this;
       axios
         .post(process.env.api_url + "/calls/submit_rating", {
@@ -368,13 +370,13 @@ export default {
           this_app.call_id = 0;
         })
         .catch(function(error) {
-          // console.log(error);
+          // (error);
         });
     },
 
     load_data: function() {
-      console.log("in load_data");
-      this.loading = true;
+      ("in load_data");
+      this.initialLoading = true;
 
       // const { sortBy, descending, page, rowsPerPage } = this.pagination;
 
@@ -388,29 +390,29 @@ export default {
             this_app.vendor = response.data.data.vendor;
             this_app.checkWorkingHours();
             this_app.checkCustomerView();
-            this_app.loading = false;
+            this_app.initialLoading = false;
           } else {
-            // // console.log("it's a failure!");
+            // // ("it's a failure!");
           }
 
-          this_app.loading = false;
+          this_app.initialLoading = false;
         })
         .catch(function(error) {
-          // console.log(error);
+          // (error);
         });
     },
 
     checkCustomerView: function() {
-      console.log("entered checkCustomerView");
-      console.log("View:", this.vendor.is_customer_view_enabled);
+      
+      
       if (this.vendor.is_customer_view_enabled) {
         this.isCustomerViewEnabled = true;
-        console.log("View is Enabled");
+        
       }
     },
 
     checkWorkingHours: function() {
-      console.log("entered checkWorkingHours function");
+      
 
       let workingHours = JSON.parse(this.vendor.working_hours);
       let today = moment()
@@ -425,10 +427,10 @@ export default {
 
       if (!todayVendor["isOpen"] || (todayVendor["isOpen"] && !isNowOpen)) {
         this.inOperation = false;
-        console.log("isOpen = FALSE");
+        
       } else {
         this.inOperation = true;
-        console.log("isOpen = TRUE");
+        
       }
     },
 
@@ -444,13 +446,13 @@ export default {
             this_app.guest_token = response.data.data.token;
             this_app.get_services();
           } else {
-            // // console.log("it's a failure!");
+            // 
           }
 
           this_app.loading = false;
         })
         .catch(function(error) {
-          // console.log(error);
+          
         });
     },
 
@@ -469,13 +471,13 @@ export default {
             this_app.services_list = response.data.data.services;
             this_app.screen_status = "services_list";
           } else {
-            // console.log("it's a failure!");
+            
           }
 
           this_app.loading = false;
         })
         .catch(function(error) {
-          // console.log(error);
+          
         });
     },
 
@@ -496,7 +498,7 @@ export default {
         })
         .then(function(response) {
           if (response.data.success) {
-            // console.log(response.data.data);
+            
 
             this_app.call_id = response.data.data.call_id;
 
@@ -522,15 +524,15 @@ export default {
             };
 
             this_app.$socket.emit("start_socket", params);
-            // console.log("start_socket", params);
+            
           } else {
-            // // console.log("it's a failure!");
+            // 
           }
 
           this_app.loading = false;
         })
         .catch(function(error) {
-          // console.log(error);
+          
         });
     },
 
@@ -548,26 +550,26 @@ export default {
           call_id: this.call_id
         })
         .then(function(response) {
-          console.log("Passed End Call API endpoint. Below is the response");
-          console.log(response);
+          
+          
           if (response.data.success) {
-            console.log("Entered Cancel Call");
+            
             this_app.screen_status = "services_list";
             this_app.loading = false;
             this_app.selected_service = null;
           } else {
-            // console.log("it's a failure!");
+            
           }
         })
         .catch(function(error) {
-          // console.log(error);
+          
           this_app.loading = false;
         });
     },
 
     // end_call is used when both parties are actually in the call.
     end_call: function() {
-      console.log("rating: ", this.rating);
+      
       this.rating = 0;
       this.loading = true;
       this.call = null;
@@ -581,19 +583,19 @@ export default {
           call_id: this.call_id
         })
         .then(function(response) {
-          console.log("Passed End Call API endpoint. Below is the response");
-          console.log(response);
+          
+          
           if (response.data.success) {
-            console.log("Entered Cancel Call");
+            
             this_app.screen_status = "call_ended";
             this_app.loading = false;
             this_app.selected_service = null;
           } else {
-            console.log("it's a failure!");
+            
           }
         })
         .catch(function(error) {
-          // console.log(error);
+          
           this_app.loading = false;
         });
     },
@@ -617,7 +619,7 @@ export default {
             axios
               .post(process.env.api_url + "/calls/join", params)
               .then(response => {
-                console.log(response);
+                
 
                 this_app.screen_status = "call_waiting_for_agent";
                 this_app.call_id = response.data.data.call_id;
@@ -630,18 +632,18 @@ export default {
                 };
 
                 this_app.$socket.emit("start_socket", params);
-                console.log("start_socket", params);
+                
 
                 this_app.on_call_update(response.data.data.call_info);
                 this_app.loading = false;
               })
               .catch(err => {
-                console.log(err);
+                
                 this_app.loading = false;
               });
 
             setTimeout(function() {
-              console.log(this_app.screen_status);
+              
               // if (this_app.screen_status == 'call_waiting_for_agent' || this_app.screen_status == 'in_call') {
               this_app.refresh_call();
               // }
@@ -651,7 +653,7 @@ export default {
           }
         })
         .catch(function(error) {
-          console.log(error);
+          
         });
     },
 
@@ -664,7 +666,7 @@ export default {
           request_call_token: this.$route.query.token
         })
         .then(response => {
-          console.log(response);
+          
 
           this_app.screen_status = "call_waiting_for_agent";
           this_app.call_id = response.data.data.call_id;
@@ -677,13 +679,13 @@ export default {
           };
 
           this_app.$socket.emit("start_socket", params);
-          console.log("start_socket", params);
+          
 
           this_app.on_call_update(response.data.data.call_info);
           this_app.loading = false;
 
           setTimeout(function() {
-            console.log(this_app.screen_status);
+            
             if (
               this_app.call.status != "started" &&
               this_app.call.status != "ended"
@@ -693,14 +695,14 @@ export default {
           }, 1000);
         })
         .catch(err => {
-          console.log(err);
+          
           this_app.loading = false;
         });
     },
     on_call_update(call_info) {
       const this_app = this;
 
-      console.log("on_call_update:", call_info);
+      
 
       this_app.call = call_info.call;
       this_app.queue_count = call_info.queue_count;
@@ -731,7 +733,7 @@ export default {
   created() {
     let this_app = this;
     this_app.call_token = this_app.$route.query.token;
-    console.log("this.token", this_app.call_token);
+    
 
     this_app.vendor_username = this_app.$route.params.vendor_username;
 
@@ -740,7 +742,7 @@ export default {
 
     if (this_app.call_token != null) {
       this.join_call_by_token(this.$route.query.token);
-      console.log("join_call_by_token");
+      
     }
   },
 
@@ -748,10 +750,10 @@ export default {
 
   sockets: {
     connect: function() {
-      console.log("sockets: connected!");
+      
     },
     on_update: function(data) {
-      console.log("sockets: on_update:", data);
+      
 
       let this_app = this;
 
