@@ -38,6 +38,28 @@
         </v-card>
       </v-overlay>
 
+      <v-overlay :value="!inOperation">
+        <v-card color="#FFFFFF" height="100%" width="100%">
+          <!-- <v-card-title class="justify-center"> -->
+          <!-- <v-icon large left>
+            mdi-apple-safari
+          </v-icon> -->
+          <!-- <span -->
+          <!-- style="text-align: center;"
+          class="title font-weight-bold"
+          >😁 Basma Alert 😁 -->
+          <!-- </span> -->
+          <!-- </v-card-title> -->
+
+          <v-card-text class="headline">
+            <p style="text-align: justify; color: black">Ops!..</p>
+            <p style="text-align: justify; color: black">
+              The branch is now closed.
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-overlay>
+
       <div style="text-align: center;">
         <v-card
           :loading="loading"
@@ -248,10 +270,12 @@
   import {isIOS, isMobileSafari} from "mobile-device-detect";
 
   const humanizeDuration = require("humanize-duration");
+  const moment = require('moment');
 
   export default {
     data: () => ({
       isItIOS: isIOS,
+      inOperation: false,
       isItMobileSafari: isMobileSafari,
       formValid: false,
       nameRules: [
@@ -327,16 +351,38 @@
           .then(function (response) {
             if (response.data.success) {
               this_app.vendor = response.data.data.vendor;
-              // console.log(this_app.vendor);
+              console.log(JSON.parse(this_app.vendor.working_hours));
+              console.log(moment().format('dddd').toLowerCase());
             } else {
               // // console.log("it's a failure!");
             }
 
             this_app.loading = false;
+            this_app.checkWorkingHours();
           })
           .catch(function (error) {
             // console.log(error);
           });
+      },
+
+      checkWorkingHours: function(){
+        console.log('entered checkWorkingHours function');
+
+        let workingHours = JSON.parse(this.vendor.working_hours);
+        let today = moment().format('dddd').toLowerCase();
+        let todayVendor = workingHours[today][0];
+        let now = moment().format('hhmm');
+        let isNowOpen = moment(now).isBetween(todayVendor['open'], todayVendor['close']);
+
+        if( !todayVendor['isOpen'] || (todayVendor['isOpen'] && !isNowOpen) ){
+          this.inOperation = false;
+          console.log('isOpen = FALSE');
+        }
+        else{
+          this.inOperation = true;
+          console.log('isOpen = TRUE');
+        }
+
       },
 
       request_video_token: function () {
