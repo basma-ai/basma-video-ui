@@ -4,7 +4,8 @@
       <v-progress-circular :size="70" color="amber" indeterminate>
       </v-progress-circular>
     </v-container>
-    <v-container v-if="inOperation && isCustomerViewEnabled">
+    <!-- <v-container v-if="inOperation && isCustomerViewEnabled"> -->
+      <v-container v-if="sCustomerViewEnabled">
       <!-- Check if the user is using iOS but not Safari -->
       <v-overlay :value="isItIOS && !isItMobileSafari">
         <v-card color="#FFFFFF" height="100%" width="100%">
