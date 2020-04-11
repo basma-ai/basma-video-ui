@@ -47,7 +47,6 @@
             <div v-if="screen_status != 'call_waiting_for_agent'">
               <img id="vendor-logo" :src="vendor.logo_url"/>
               <br/><br/>
-              <p>HELLLOOOOOOOOOOOOO</p>
             </div>
 
             <!-- Main Screen -->
