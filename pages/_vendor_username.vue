@@ -352,7 +352,6 @@
     methods: {
       submitRating: function (event) {
         this.rating = event.rating;
-        "submit rating:", this.rating;
         let this_app = this;
         axios
           .post(process.env.api_url + "/calls/submit_rating", {
@@ -366,12 +365,12 @@
             this_app.call_id = 0;
           })
           .catch(function (error) {
-            // (error);
+
           });
       },
 
       load_data: function () {
-        ("in load_data");
+
         this.initialLoading = true;
 
         // const { sortBy, descending, page, rowsPerPage } = this.pagination;
@@ -388,13 +387,13 @@
               this_app.checkCustomerView();
               this_app.initialLoading = false;
             } else {
-              // // ("it's a failure!");
+
             }
 
             this_app.initialLoading = false;
           })
           .catch(function (error) {
-            // (error);
+
           });
       },
 
@@ -509,7 +508,7 @@
 
               this_app.$socket.emit("start_socket", params);
             } else {
-              //
+
             }
 
             this_app.loading = false;

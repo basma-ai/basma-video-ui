@@ -86,8 +86,6 @@ export default {
       let thisApp = this;
 
       this.localTracks.forEach((track) => {
-        
-        // (JSON.stringify(track));
         try {
           if (track.kind == "video") {
             if (track.isEnabled) {
@@ -99,7 +97,6 @@ export default {
             }
           }
         } catch (ex) {
-          // (ex.toString());
         }
       });
     },
@@ -107,8 +104,6 @@ export default {
       let thisApp = this;
 
       this.localTracks.forEach((track) => {
-        
-        // (JSON.stringify(track));
         try {
           if (track.kind == "audio") {
             if (track.isEnabled) {
@@ -120,7 +115,6 @@ export default {
             }
           }
         } catch (ex) {
-          // (ex.toString());
         }
       });
     },
@@ -134,8 +128,6 @@ export default {
       }
 
       this.localTracks.forEach((track) => {
-        
-        (JSON.stringify(track));
         try {
           if (track.isEnabled) {
             track.disable();
@@ -148,7 +140,6 @@ export default {
             thisApp.localMicIsEnabled = true;
           }
         } catch (ex) {
-          (ex.toString());
         }
       });
     },
@@ -160,24 +151,18 @@ export default {
       }
 
       room.participants.forEach((participant) => {
-        
-        // (JSON.stringify(participant));
 
-        if (!this_app.found_remote_track) {
-        }
-        
+        if (!this_app.found_remote_track) {}
 
         setTimeout(function () {
           participant.tracks.forEach((publication) => {
-            
+
             if (publication.isSubscribed) {
               const track = publication.track;
 
               if (track == null) {
-                
                 this_app.check_remote(room);
               } else {
-                
                 this_app.found_remote_track = true;
                 document
                   .getElementById("remote-media-div")
@@ -193,18 +178,11 @@ export default {
     },
   },
   created() {
-    
 
     if (process.client) {
       this.isIos =
         /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
-
-    // createLocalVideoTrack().then((track) => {
-    //   const localMediaContainer = document.getElementById("local-media");
-    //   document.getElementById("local-media").innerHTML = "";
-    //   localMediaContainer.prepend(track.attach());
-    // });
 
     let token = this.connection_token;
 
@@ -222,10 +200,9 @@ export default {
         });
       })
       .then((room) => {
-        
+
 
         room.localParticipant.tracks.forEach((a)=>{
-          ('room.localParticipant.tracks', a)
           if (a.kind === "video") {
             const localMediaContainer = document.getElementById("local-media");
             localMediaContainer.innerHTML = "";
@@ -233,15 +210,12 @@ export default {
           }
         })
 
-        
         thisApp.room = room;
         thisApp.check_remote(room);
 
         // Attach the Participant's Media to a <div> element.
         room.on("participantConnected", (participant) => {
           if (!thisApp.call_ended) {
-            
-            
 
             participant.tracks.forEach((publication) => {
               if (publication.isSubscribed) {
@@ -265,7 +239,6 @@ export default {
 
         // Attach the Participant's Media to a <div> element.
         room.on("participantDisconnected", (participant) => {
-          
           document.getElementById("remote-media-div").innerHTML = ""
         });
 
