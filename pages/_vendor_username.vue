@@ -20,7 +20,7 @@
           <!-- </v-card-title> -->
 
           <v-card-text class="headline">
-            <p style="text-align: justify; color: black">Ops!..</p>
+            <p style="text-align: justify; color: black">Ooops..!</p>
             <p style="text-align: justify; color: black">
               On iOS devices, the platform can be used only in Safari browser.
               Kindly use Safari for full compatibility.
@@ -268,7 +268,7 @@
           <!-- </v-card-title> -->
 
           <v-card-text class="headline">
-            <p style="text-align: justify; color: black">Ops!..</p>
+            <p style="text-align: justify; color: black">Oooops..!</p>
             <p style="text-align: justify; color: black">
               The branch is now closed.
             </p>
@@ -292,7 +292,7 @@
           <!-- </v-card-title> -->
 
           <v-card-text class="headline">
-            <p style="text-align: justify; color: black">Ops!..</p>
+            <p style="text-align: justify; color: black">Ooops..!</p>
             <p style="text-align: justify; color: black">
               You can't call {{ vendor_username }}
             </p>

@@ -1,8 +1,8 @@
 {
-  "name": "video-prototype",
+  "name": "basma-customer-view",
   "version": "1.0.0",
-  "description": "Video Call Centre Prototype",
-  "author": ".",
+  "description": "Basma Video Call Center",
+  "author": "Basma Team",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",

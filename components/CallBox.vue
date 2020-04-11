@@ -130,7 +130,7 @@ export default {
       if (this.room != null) {
         this.room.disconnect();
         this.room = null;
-        this.call_ended = true; //munther added this
+        this.call_ended = true;
       }
 
       this.localTracks.forEach((track) => {
@@ -170,10 +170,7 @@ export default {
         setTimeout(function () {
           participant.tracks.forEach((publication) => {
             
-            // (JSON.stringify(publication));
-
             if (publication.isSubscribed) {
-              // ("I am inside IF(publication.isSubscribed)");
               const track = publication.track;
 
               if (track == null) {
@@ -182,14 +179,12 @@ export default {
               } else {
                 
                 this_app.found_remote_track = true;
-                //document.getElementById('remote-media-div').innerHTML = "";
                 document
                   .getElementById("remote-media-div")
                   .prepend(track.attach());
                 this_app.isVideoLoaded = true;
               }
             } else {
-              // ("I am inside ELSE(publication.isSubscribed)");
               this_app.check_remote(room);
             }
           });
@@ -200,7 +195,6 @@ export default {
   created() {
     
 
-    // check if isIos
     if (process.client) {
       this.isIos =
         /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -215,11 +209,6 @@ export default {
     let token = this.connection_token;
 
     var thisApp = this;
-
-    // munther commented this
-    // if (this.call_ended) {
-    //   return true;
-    // }
 
     createLocalTracks({
       audio: true,
