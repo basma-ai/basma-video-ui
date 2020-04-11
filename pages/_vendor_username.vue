@@ -278,9 +278,10 @@
       call_id: 0,
       call: null,
       bye_gifs: [
-        "https://media.giphy.com/media/SV0q8t76HtGi9W9WQu/giphy.gif",
-        "https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif",
+        // "https://media.giphy.com/media/SV0q8t76HtGi9W9WQu/giphy.gif",
+        // "https://media.giphy.com/media/fMA8fQ06Q2wHxIX9ie/giphy.gif",
         "https://media.giphy.com/media/TfdeaxOGjOGzZ1DbBW/giphy.gif",
+        "https://media.giphy.com/media/IcdTrgVoYTK1PR2B6n/giphy.gif"
       ],
       rating: 0,
       call_token: null
