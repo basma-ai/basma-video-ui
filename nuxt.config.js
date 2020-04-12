@@ -17,11 +17,20 @@ module.exports = {
   */
   head: {
     titleTemplate: '%s',
-    title: 'Basma Video',
+    title: 'basma.ai - Video Call Center',
     meta: [
       {charset: 'utf-8'},
       {name: 'viewport', content: 'width=device-width, initial-scale=1'},
-      {hid: 'description', name: 'description', content: 'Basma Video Call Center'}
+      {hid: 'description', name: 'description', content: 'Basma video call center is a world class virtual branch that helps organizations serve customers remotely through a video call. Setup your video call center and transform your business digitally in less than 24 hours.'},
+      {name: 'og:site_name', content: 'basma.ai'},
+      {name: 'og:title', content: 'basma.ai - Video Call Center'},
+      {name: 'og:description', content: 'basma.ai video call center is a world class virtual branch that helps organizations serve customers remotely through a video call. Setup your video call center and transform your business digitally in less than 24 hours.'},
+      {name: 'og:image', content: 'https://basma-cdn.s3.me-south-1.amazonaws.com/meta-whatsapp.png'},
+      {name: 'og:type', content: 'website'},
+      {name: 'og:image:type', content: 'image/png'},
+      {name: 'og:image:width', content: '300'},
+      {name: 'og:image:height', content: '300'},
+      {name: 'og:url', content: 'http://basma.ai'},
     ],
     link: [
       {rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'}

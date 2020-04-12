@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-container class="text-center" v-if="initialLoading">
-      <v-progress-circular :size="70" color="amber" indeterminate>
+      <v-progress-circular style="margin-top: 20px" :size="70" color="amber" indeterminate>
       </v-progress-circular>
     </v-container>
 
-    <v-container v-if="inOperation && isCustomerViewEnabled">
+    <v-container v-if="!initialLoading">
       <!-- Check if the user is using iOS but not Safari -->
       <v-overlay :value="isItIOS && !isItMobileSafari">
         <v-card color="#FFFFFF" height="100%" width="100%">
@@ -108,7 +108,7 @@
 
             <!-- Getting Vendor Screen -->
             <div v-if="screen_status == 'getting_services'">
-              Getting Services List..
+              يتم جلب الخدمات الآن..
             </div>
 
             <!-- Services List -->
@@ -125,25 +125,26 @@
               <br/><br/><br/>
 
               <v-btn @click="screen_status = 'main'" outlined
-              >Start Again
+              >البدأ من جديد
               </v-btn>
             </div>
 
             <!-- Video Connecting Screen -->
             <div v-if="screen_status == 'video_connecting'">
-              Connecting you..
+              يتم الاتصال الآن بالفيديو..
             </div>
 
             <!-- Starting a Call -->
             <div v-if="screen_status == 'starting_call'">
-              Starting a call..
+              يتم الاتصال الآن..
             </div>
 
             <!-- Waiting for an Agent -->
             <div v-if="screen_status == 'call_waiting_for_agent'">
-              <h1 style="margin-bottom: 20px;">#{{ queue_count + 1 }}</h1>
 
-              <p>You are now in line</p>
+              <p>مكالمتك تهمنا.. انتظر قليلاً حتى يتم الرد على مكاملتك.. انت في الترتيب رقم</p>
+
+              <h1 style="margin-bottom: 20px;">#{{ queue_count + 1 }}</h1>
 
               <!-- This is to show the queue line -->
               <div v-if="queue_count != 0">
@@ -168,7 +169,7 @@
               </div>
 
               <v-btn @click="cancel_call()">
-                Cancel Call
+                انهاء المكالمة
               </v-btn>
             </div>
 
@@ -181,7 +182,7 @@
                     call.connection_guest_token != null
                 "
               >
-                <v-chip outlined style="margin-bottom: 15px"
+                <v-chip outlined style="margin-bottom: 15px; direction: rtl;"
                 >
                   <v-avatar
                   >
@@ -191,7 +192,7 @@
                     >
                   </v-avatar
                   >
-                  You are being served by {{ call.vu.name }}
+                  يتم خدمتك الآن من قبل {{ call.vu.name }}
                 </v-chip
                 >
 
@@ -205,7 +206,7 @@
                 </CallBox>
                 <br/><br/>
 
-                <v-btn @click="end_call()">End Call</v-btn>
+                <v-btn @click="end_call()">انهاء المكالمة</v-btn>
               </div>
             </div>
 
@@ -213,7 +214,7 @@
             <div v-if="screen_status == 'call_ended'">
               <div style="text-align: center; font-size: 15px;">
                 <div v-if="rating == 0">
-                  <h3>Kindly rate our service :)</h3>
+                  <h3>تقييمك لمستوى الخدمة يهمنا.. ما هو مدى سعادتك للخدمة؟</h3>
                   <br/>
 
                   <!-- rating component -->
@@ -225,13 +226,13 @@
 
                 <!-- show the message & button once the user completes the rating-->
                 <div v-if="rating != 0">
-                  <h3>Thanks for calling .. Goodbye!</h3>
+                  <h3>شكراً لك.. مع السلامة</h3>
                   <br/>
                   <v-btn
                     v-if="call_token == null"
                     @click="screen_status = 'main'"
                   >
-                    Back to Home
+                    العودة للصفحة الرئيسية
                   </v-btn>
                 </div>
 
