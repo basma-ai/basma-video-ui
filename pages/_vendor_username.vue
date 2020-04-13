@@ -214,7 +214,7 @@
             <div v-if="screen_status == 'call_ended'">
               <div style="text-align: center; font-size: 15px;">
                 <div v-if="rating == 0">
-                  <h3>تقييمك لمستوى الخدمة يهمنا.. ما هو مدى سعادتك للخدمة؟</h3>
+                  <h3>تقييمك لمستوى الخدمة يهمنا.. ما مدى رضاك بالخدمة؟</h3>
                   <br/>
 
                   <!-- rating component -->
