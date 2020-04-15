@@ -679,15 +679,13 @@
           );
         }
 
-        if (undefined != data.id){
-          this_app.call = data;
+        if (undefined != data.call){
+          this_app.call = data.call;
         }
 
         if (this_app.call != null && this_app.call.status === "started") {
           this_app.screen_status = "in_call";
-
         } else if (this_app.call != null && this_app.call.status === "ended") {
-          // console.log("ended from agent")
           if (undefined !== this_app.$refs.call_box) {
             this_app.$refs.call_box.end_call();
           }
@@ -696,15 +694,12 @@
           this_app.show_rating = true;
           this_app.call = null;
           this_app.selected_service = null;
-
         } else if (data.call_info.errors != null && data.call_info.errors.length > 0 && data.call_info.errors[0] === "call_ended") {
-          // console.log("call ended")
           this_app.screen_status = "call_ended";
           this_app.rating = 0;
           this_app.show_rating = data.show_rating;
           this_app.call = null;
           this_app.selected_service = null;
-
         }
 
       }
