@@ -21,10 +21,10 @@ module.exports = {
     meta: [
       {charset: 'utf-8'},
       {name: 'viewport', content: 'width=device-width, initial-scale=1'},
-      {hid: 'description', name: 'description', content: 'Basma video call center is a world class virtual branch that helps organizations serve customers remotely through a video call. Setup your video call center and transform your business digitally in less than 24 hours.'},
+      {hid: 'description', name: 'description', content: 'Basma video call center is a world class virtual branch that helps organizations serve customers remotely through a video call. Setup your video call center and transform your business digitally in less than 5 minutes.'},
       {name: 'og:site_name', content: 'basma.ai'},
       {name: 'og:title', content: 'basma.ai - Video Call Center'},
-      {name: 'og:description', content: 'basma.ai video call center is a world class virtual branch that helps organizations serve customers remotely through a video call. Setup your video call center and transform your business digitally in less than 24 hours.'},
+      {name: 'og:description', content: 'basma.ai video call center is a world class virtual branch that helps organizations serve customers remotely through a video call. Setup your video call center and transform your business digitally in less than 5 minutes.'},
       {name: 'og:image', content: 'https://basma-cdn.s3.me-south-1.amazonaws.com/meta-whatsapp.png'},
       {name: 'og:type', content: 'website'},
       {name: 'og:image:type', content: 'image/png'},

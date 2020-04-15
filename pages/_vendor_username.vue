@@ -675,16 +675,14 @@
 
         if (this_app.call != null && this_app.call.status === "started") {
           this_app.screen_status = "in_call";
-        } else if (call_info.errors != null && call_info.errors.length > 0) {
-          if (call_info.errors[0] === "call_ended") {
-            if (undefined !== this_app.$refs.call_box) {
-              this_app.$refs.call_box.end_call();
-            }
-            this_app.screen_status = "call_ended";
-            this_app.rating = 0;
-            this_app.call = null;
-            this_app.selected_service = null;
+        } else if ((this_app.call != null && this_app.call.status === "ended") || (call_info.errors != null && call_info.errors.length > 0 && call_info.errors[0] === "call_ended")) {
+          if (undefined !== this_app.$refs.call_box) {
+            this_app.$refs.call_box.end_call();
           }
+          this_app.screen_status = "call_ended";
+          this_app.rating = 0;
+          this_app.call = null;
+          this_app.selected_service = null;
         }
       }
     },
