@@ -213,8 +213,8 @@
             <!-- Call Ended -->
             <div v-if="screen_status == 'call_ended'">
               <div style="text-align: center; font-size: 15px;">
-                <div v-if="rating == 0">
-                  <h3>تقييمك لمستوى الخدمة يهمنا.. ما هو مدى سعادتك للخدمة؟</h3>
+                <div v-if="show_rating">
+                  <h3>تقييمك لمستوى الخدمة يهمنا.. ما مدى رضاك بالخدمة؟</h3>
                   <br/>
 
                   <!-- rating component -->
@@ -225,7 +225,7 @@
                 </div>
 
                 <!-- show the message & button once the user completes the rating-->
-                <div v-if="rating != 0">
+                <div v-if="!show_rating">
                   <h3>شكراً لك.. مع السلامة</h3>
                   <br/>
                   <v-btn
@@ -333,6 +333,7 @@
       queue_count: 100,
       estimated_waiting_time: 0,
       selected_service: null,
+      show_rating: false,
       call_id: 0,
       call: null,
       bye_gifs: [
@@ -352,8 +353,11 @@
 
     methods: {
       submitRating: function (event) {
+        let this_app = this
+
         this.rating = event.rating;
-        let this_app = this;
+        this.show_rating = false;
+
         axios
           .post(process.env.api_url + "/calls/submit_rating", {
             guest_token: this_app.guest_token,
@@ -547,6 +551,7 @@
       // end_call is used when both parties are actually in the call.
       end_call: function () {
         this.rating = 0;
+        this.show_rating = true;
         this.loading = true;
         this.call = null;
         this.$refs.call_box.end_call();
@@ -602,7 +607,7 @@
 
                   this_app.$socket.emit("start_socket", params);
 
-                  this_app.on_call_update(response.data.data.call_info);
+                  this_app.on_call_update(response.data.data);
                   this_app.loading = false;
                 })
                 .catch(err => {
@@ -643,15 +648,14 @@
 
             this_app.$socket.emit("start_socket", params);
 
-            this_app.on_call_update(response.data.data.call_info);
+            this_app.on_call_update(response.data.data);
             this_app.loading = false;
 
             setTimeout(function () {
-              if (
-                this_app.call.status != "started" &&
-                this_app.call.status != "ended"
-              ) {
-                this_app.refresh_call();
+              if(null != this_app.call) {
+                if (this_app.call.status != "started" && this_app.call.status != "ended") {
+                  this_app.refresh_call();
+                }
               }
             }, 1000);
           })
@@ -659,31 +663,50 @@
             this_app.loading = false;
           });
       },
-      on_call_update(call_info) {
+      on_call_update(data) {
         const this_app = this;
 
-        this_app.call = call_info.call;
-        this_app.queue_count = call_info.queue_count;
-        this_app.estimated_waiting_time = call_info.estimated_waiting_time;
-        this_app.estimated_waiting_time = humanizeDuration(
-          this_app.estimated_waiting_time,
-          {
-            round: true,
-            units: ["h", "m"]
-          }
-        );
+        if (undefined != data.call_info){
+          this_app.call = data.call_info.call;
+          this_app.queue_count = data.call_info.queue_count;
+          this_app.estimated_waiting_time = data.call_info.estimated_waiting_time;
+          this_app.estimated_waiting_time = humanizeDuration(
+            this_app.estimated_waiting_time,
+            {
+              round: true,
+              units: ["h", "m"]
+            }
+          );
+        }
+
+        if (undefined != data.id){
+          this_app.call = data;
+        }
 
         if (this_app.call != null && this_app.call.status === "started") {
           this_app.screen_status = "in_call";
-        } else if ((this_app.call != null && this_app.call.status === "ended") || (call_info.errors != null && call_info.errors.length > 0 && call_info.errors[0] === "call_ended")) {
+
+        } else if (this_app.call != null && this_app.call.status === "ended") {
+          // console.log("ended from agent")
           if (undefined !== this_app.$refs.call_box) {
             this_app.$refs.call_box.end_call();
           }
           this_app.screen_status = "call_ended";
           this_app.rating = 0;
+          this_app.show_rating = true;
           this_app.call = null;
           this_app.selected_service = null;
+
+        } else if (data.call_info.errors != null && data.call_info.errors.length > 0 && data.call_info.errors[0] === "call_ended") {
+          // console.log("call ended")
+          this_app.screen_status = "call_ended";
+          this_app.rating = 0;
+          this_app.show_rating = data.show_rating;
+          this_app.call = null;
+          this_app.selected_service = null;
+
         }
+
       }
     },
     created() {
