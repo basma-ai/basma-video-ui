@@ -202,7 +202,7 @@
                     :disabled="feedback.length >300"
                     color="success"
                     @click="submitRating()"
-                  >Submit</v-btn>
+                  >{{$t('submit')}}</v-btn>
                 </div>
 
                 <!-- show the message & button once the user completes the rating-->
