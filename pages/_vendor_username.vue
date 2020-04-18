@@ -331,7 +331,7 @@ export default {
         .then(function(response) {
           this_app.guest_token = null;
           this_app.call_id = 0;
-          this.show_rating = false;
+          this_app.show_rating = false;
         })
         .catch(function(error) {});
     },
