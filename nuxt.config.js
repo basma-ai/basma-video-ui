@@ -55,6 +55,10 @@ module.exports = {
       ssr: false
     },
     {
+      src: '~/plugins/vuesax',
+      ssr: false
+    },
+    {
       src: '~/plugins/socket.io',
       ssr: false
     },
