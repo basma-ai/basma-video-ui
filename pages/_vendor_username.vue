@@ -316,7 +316,6 @@ export default {
   methods: {
     setRating: function(event) {
       this.rating = event.rating;
-      this.show_rating = false;
     },
 
     submitRating: function() {
@@ -332,6 +331,7 @@ export default {
         .then(function(response) {
           this_app.guest_token = null;
           this_app.call_id = 0;
+          this.show_rating = false;
         })
         .catch(function(error) {});
     },
