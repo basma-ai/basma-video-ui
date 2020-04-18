@@ -10,11 +10,8 @@
       <v-overlay :value="isItIOS && !isItMobileSafari">
         <v-card color="#FFFFFF" height="100%" width="100%">
           <v-card-text class="headline">
-            <p style="text-align: justify; color: black">Ooops..!</p>
-            <p style="text-align: justify; color: black">
-              On iOS devices, the platform can be used only in Safari browser.
-              Kindly use Safari for full compatibility.
-            </p>
+            <p style="text-align: justify; color: black">{{$t('ooops')}}</p>
+            <p style="text-align: justify; color: black">{{$t('unsupportedBrowser')}}</p>
           </v-card-text>
 
           <v-layout justify-center>
@@ -84,7 +81,7 @@
             </div>
 
             <!-- Getting Vendor Screen -->
-            <div v-if="screen_status == 'getting_services'">يتم جلب الخدمات الآن..</div>
+            <div v-if="screen_status == 'getting_services'">{{$t('gettingServices')}}</div>
 
             <!-- Services List -->
             <div v-if="screen_status == 'services_list'">
@@ -99,21 +96,18 @@
               <br />
               <br />
 
-              <v-btn @click="screen_status = 'main'" outlined>البدأ من جديد</v-btn>
+              <v-btn @click="screen_status = 'main'" outlined>{{$t('startAgain')}}</v-btn>
             </div>
 
             <!-- Video Connecting Screen -->
-            <div v-if="screen_status == 'video_connecting'">يتم الاتصال الآن بالفيديو..</div>
+            <div v-if="screen_status == 'video_connecting'">{{$t('videoConnecting')}}</div>
 
             <!-- Starting a Call -->
-            <div v-if="screen_status == 'starting_call'">يتم الاتصال الآن..</div>
+            <div v-if="screen_status == 'starting_call'">{{$t('startingCall')}}</div>
 
             <!-- Waiting for an Agent -->
             <div v-if="screen_status == 'call_waiting_for_agent'">
-              <p>
-                مكالمتك تهمنا.. انتظر قليلاً حتى يتم الرد على مكاملتك.. انت في
-                الترتيب رقم
-              </p>
+              <p>{{$t('callWaiting')}}</p>
 
               <h1 style="margin-bottom: 20px;">#{{ queue_count + 1 }}</h1>
 
@@ -135,7 +129,7 @@
                 <img :src="vendor.logo_url" />
               </div>
 
-              <v-btn @click="cancel_call()">انهاء المكالمة</v-btn>
+              <v-btn @click="cancel_call()">{{$t('endCall')}}</v-btn>
             </div>
 
             <!-- In Call -->
@@ -151,7 +145,7 @@
                   <v-avatar>
                     <v-icon color="#FFB600">mdi-account-circle</v-icon>
                   </v-avatar>
-                  يتم خدمتك الآن من قبل {{ call.vu.name }}
+                  {{$t('servedBy')}} {{ call.vu.name }}
                 </v-chip>
 
                 <CallBox
@@ -164,7 +158,7 @@
                 <br />
                 <br />
 
-                <v-btn @click="end_call()">انهاء المكالمة</v-btn>
+                <v-btn @click="end_call()">{{$t('endCall')}}</v-btn>
               </div>
             </div>
 
@@ -172,7 +166,7 @@
             <div v-if="screen_status == 'call_ended'">
               <div style="text-align: center; font-size: 15px;">
                 <div v-if="show_rating">
-                  <h3>تقييمك لمستوى الخدمة يهمنا.. ما مدى رضاك بالخدمة؟</h3>
+                  <h3>{{$t('ratingHeader')}}</h3>
                   <br />
 
                   <!-- rating component -->
@@ -213,12 +207,12 @@
 
                 <!-- show the message & button once the user completes the rating-->
                 <div v-if="!show_rating">
-                  <h3>شكراً لك.. مع السلامة</h3>
+                  <h3>{{$t('thankYou')}}</h3>
                   <br />
                   <v-btn
                     v-if="call_token == null"
                     @click="screen_status = 'main'"
-                  >العودة للصفحة الرئيسية</v-btn>
+                  >{{$t('backToMain')}}</v-btn>
                 </div>
 
                 <br />
@@ -249,8 +243,8 @@
       <v-overlay>
         <v-card color="#FFFFFF" height="100%" width="100%">
           <v-card-text class="headline">
-            <p style="text-align: justify; color: black">Oooops..!</p>
-            <p style="text-align: justify; color: black">The branch is now closed.</p>
+            <p style="text-align: justify; color: black">{{$t('ooops')}}</p>
+            <p style="text-align: justify; color: black">{{$t('branchClosed')}}</p>
           </v-card-text>
         </v-card>
       </v-overlay>
@@ -260,8 +254,8 @@
       <v-overlay>
         <v-card color="#FFFFFF" height="100%" width="100%">
           <v-card-text class="headline">
-            <p style="text-align: justify; color: black">Ooops..!</p>
-            <p style="text-align: justify; color: black">You can't call {{ vendor_username }}</p>
+            <p style="text-align: justify; color: black">{{$t('ooops')}}</p>
+            <p style="text-align: justify; color: black">{{$t('cantCall')}}</p>
           </v-card-text>
         </v-card>
       </v-overlay>
@@ -274,6 +268,9 @@ import CallBox from "@/components/CallBox.vue";
 import AwesomeRating from "../components/AwesomeRating";
 import { isIOS, isMobileSafari } from "mobile-device-detect";
 import { type } from "vuesax";
+import Vue from "vue";
+import VueI18n from "vue-i18n";
+import i18n from "@/plugins/i18n";
 
 const humanizeDuration = require("humanize-duration");
 const moment = require("moment");
