@@ -176,7 +176,17 @@
                   <br />
 
                   <!-- rating component -->
-                  <awesome-rating @rating_set="setRating($event)"></awesome-rating>
+                  <!-- <awesome-rating @rating_set="setRating($event)"></awesome-rating> -->
+                  <v-rating
+                    v-model="rating"
+                    :length="5"
+                    :empty-icon="'mdi-heart-outline'"
+                    :full-icon="'mdi-heart'"
+                    :hover="true"
+                    :size="70"
+                    :color="'#FFB600'"
+                    :background-color="'grey lighten-1'"
+                  ></v-rating>
                   <br />
 
                   <v-textarea
