@@ -8,7 +8,7 @@ export default {
   startAgain: "Start Agian",
   videoConnecting: "Connecting Video...",
   startingCall: "Starting Call...",
-  callWaiting: `Your call is valuable .. Kindly wait until an agent is available
+  callWaiting: `Your call is valuable .. Kindly wait until an agent is available.
                 Your ticket order is`,
   endCall: "End Call!",
   servedBy: "You are being served by: ",
