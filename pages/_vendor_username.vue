@@ -264,7 +264,7 @@
       </v-overlay>
     </v-container> -->
 
-    <v-container v-if="!isCustomerViewEnabled && !initialLoading">
+    <v-container v-if="!isCustomerViewEnabled && !initialLoading && call_token == null">
       <v-overlay>
         <v-card color="#FFFFFF" height="100%" width="100%">
           <v-card-text class="headline">
