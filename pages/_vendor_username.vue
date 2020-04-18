@@ -1,16 +1,10 @@
 <template>
   <div>
     <v-container class="text-center" v-if="initialLoading">
-      <v-progress-circular
-        style="margin-top: 20px"
-        :size="70"
-        color="amber"
-        indeterminate
-      >
-      </v-progress-circular>
+      <v-progress-circular style="margin-top: 20px" :size="70" color="amber" indeterminate></v-progress-circular>
     </v-container>
 
-<!-- initial loading is used to show loading animation until all vendor data is retrieved from db -->
+    <!-- initial loading is used to show loading animation until all vendor data is retrieved from db -->
     <v-container v-if="!initialLoading">
       <!-- Check if the user is using iOS but not Safari -->
       <v-overlay :value="isItIOS && !isItMobileSafari">
@@ -39,14 +33,12 @@
       </v-overlay>
 
       <div style="text-align: center;">
-        <v-card
-          :loading="loading"
-          style="width: 100%; max-width: 900px; display: inline-block;"
-        >
+        <v-card :loading="loading" style="width: 100%; max-width: 900px; display: inline-block;">
           <div class="text-center" style="padding: 20px;">
             <div v-if="screen_status != 'call_waiting_for_agent'">
               <img id="vendor-logo" :src="vendor.logo_url" />
-              <br /><br />
+              <br />
+              <br />
             </div>
 
             <!-- Main Screen -->
@@ -56,25 +48,20 @@
                 <v-container style="text-align: justify;">
                   <div style="display: inline-block; width: 100%;">
                     <!-- read the fields from the db, and then show them according to their type -->
-                    <div
-                      v-for="(field, index) in vendor.custom_fields"
-                      v-bind:key="field.id"
-                    >
+                    <div v-for="(field, index) in vendor.custom_fields" v-bind:key="field.id">
                       <v-text-field
                         v-if="field.type === 'text'"
                         v-model="field.value"
                         :label="field.label + (field.is_mandatory ? '*' : '')"
                         :rules="field.is_mandatory ? requiredRules : []"
-                      >
-                      </v-text-field>
+                      ></v-text-field>
 
                       <v-text-field
                         v-if="field.type === 'number'"
                         v-model="field.value"
                         :label="field.label + (field.is_mandatory ? '*' : '')"
                         :rules="field.is_mandatory ? requiredRules : []"
-                      >
-                      </v-text-field>
+                      ></v-text-field>
 
                       <v-checkbox
                         v-if="field.type === 'boolean'"
@@ -82,29 +69,22 @@
                         :label="field.label + (field.is_mandatory ? '*' : '')"
                         :rules="field.is_mandatory ? requiredRules : []"
                         style="text-align: justify;"
-                      >
-                      </v-checkbox>
+                      ></v-checkbox>
                     </div>
                   </div>
                 </v-container>
 
-                <br /><br />
+                <br />
+                <br />
 
-                <v-btn
-                  large
-                  :disabled="!formValid"
-                  color="success"
-                  @click="request_video_token"
-                >
+                <v-btn large :disabled="!formValid" color="success" @click="request_video_token">
                   <v-icon top>fas fa-video</v-icon>
                 </v-btn>
               </v-form>
             </div>
 
             <!-- Getting Vendor Screen -->
-            <div v-if="screen_status == 'getting_services'">
-              يتم جلب الخدمات الآن..
-            </div>
+            <div v-if="screen_status == 'getting_services'">يتم جلب الخدمات الآن..</div>
 
             <!-- Services List -->
             <div v-if="screen_status == 'services_list'">
@@ -113,26 +93,20 @@
                 :key="service.id"
                 @click="start_call(service)"
                 style="margin: 10px;"
-              >
-                {{ service.name }}
-              </v-btn>
+              >{{ service.name }}</v-btn>
 
-              <br /><br /><br />
+              <br />
+              <br />
+              <br />
 
-              <v-btn @click="screen_status = 'main'" outlined
-                >البدأ من جديد
-              </v-btn>
+              <v-btn @click="screen_status = 'main'" outlined>البدأ من جديد</v-btn>
             </div>
 
             <!-- Video Connecting Screen -->
-            <div v-if="screen_status == 'video_connecting'">
-              يتم الاتصال الآن بالفيديو..
-            </div>
+            <div v-if="screen_status == 'video_connecting'">يتم الاتصال الآن بالفيديو..</div>
 
             <!-- Starting a Call -->
-            <div v-if="screen_status == 'starting_call'">
-              يتم الاتصال الآن..
-            </div>
+            <div v-if="screen_status == 'starting_call'">يتم الاتصال الآن..</div>
 
             <!-- Waiting for an Agent -->
             <div v-if="screen_status == 'call_waiting_for_agent'">
@@ -146,12 +120,8 @@
               <!-- This is to show the queue line -->
               <div v-if="queue_count != 0">
                 <div style="margin-bottom: 20px;">
-                  <b style="font-size: 23px;" v-for="n in queue_count">
-                    😁
-                  </b>
-                  <b style="font-size: 23px;">
-                    😇
-                  </b>
+                  <b style="font-size: 23px;" v-for="n in queue_count">😁</b>
+                  <b style="font-size: 23px;">😇</b>
                 </div>
 
                 <p v-if="estimated_waiting_time != 0"></p>
@@ -165,9 +135,7 @@
                 <img :src="vendor.logo_url" />
               </div>
 
-              <v-btn @click="cancel_call()">
-                انهاء المكالمة
-              </v-btn>
+              <v-btn @click="cancel_call()">انهاء المكالمة</v-btn>
             </div>
 
             <!-- In Call -->
@@ -181,7 +149,7 @@
               >
                 <v-chip outlined style="margin-bottom: 15px; direction: rtl;">
                   <v-avatar>
-                    <v-icon color="#FFB600">mdi-account-circle </v-icon>
+                    <v-icon color="#FFB600">mdi-account-circle</v-icon>
                   </v-avatar>
                   يتم خدمتك الآن من قبل {{ call.vu.name }}
                 </v-chip>
@@ -192,9 +160,9 @@
                   :connection_token="call.connection_guest_token"
                   :room_name="'call-' + call.id"
                   style="width: 100%;"
-                >
-                </CallBox>
-                <br /><br />
+                ></CallBox>
+                <br />
+                <br />
 
                 <v-btn @click="end_call()">انهاء المكالمة</v-btn>
               </div>
@@ -208,10 +176,29 @@
                   <br />
 
                   <!-- rating component -->
-                  <awesome-rating
-                    @rating_set="submitRating($event)"
-                  ></awesome-rating>
+                  <awesome-rating @rating_set="setRating($event)"></awesome-rating>
                   <br />
+
+                  <v-textarea
+                    v-model="feedback"
+                    counter
+                    :rules="feedbackRule"
+                    :label="'Your kind feedback :)'"
+                    rows="3"
+                    row-height="20"
+                    :auto-grow="true"
+                    :clearable="true"
+                    :outlined="true"
+                    :rounded="true"
+                    :solo="true"
+                  ></v-textarea>
+
+                  <v-btn
+                    large
+                    :disabled="feedback.length >300"
+                    color="success"
+                    @click="submitRating()"
+                  >Submit</v-btn>
                 </div>
 
                 <!-- show the message & button once the user completes the rating-->
@@ -221,13 +208,11 @@
                   <v-btn
                     v-if="call_token == null"
                     @click="screen_status = 'main'"
-                  >
-                    العودة للصفحة الرئيسية
-                  </v-btn>
+                  >العودة للصفحة الرئيسية</v-btn>
                 </div>
 
                 <br />
-                <br /><br />
+                <br />
                 <img
                   :src="bye_gifs[Math.floor(Math.random() * bye_gifs.length)]"
                   style="width: 100%; max-width: 300px;"
@@ -246,32 +231,27 @@
           href="http://basma.ai"
           target="_blank"
           style="color: #FFB600; text-decoration: none;"
-          >basma.ai</a
-        >
+        >basma.ai</a>
       </div>
     </v-container>
 
-    <!-- <v-container v-if="!inOperation && !initialLoading">
+    <v-container v-if="!inOperation && !initialLoading">
       <v-overlay>
         <v-card color="#FFFFFF" height="100%" width="100%">
           <v-card-text class="headline">
             <p style="text-align: justify; color: black">Oooops..!</p>
-            <p style="text-align: justify; color: black">
-              The branch is now closed.
-            </p>
+            <p style="text-align: justify; color: black">The branch is now closed.</p>
           </v-card-text>
         </v-card>
       </v-overlay>
-    </v-container> -->
+    </v-container>
 
     <v-container v-if="!isCustomerViewEnabled && !initialLoading && call_token == null">
       <v-overlay>
         <v-card color="#FFFFFF" height="100%" width="100%">
           <v-card-text class="headline">
             <p style="text-align: justify; color: black">Ooops..!</p>
-            <p style="text-align: justify; color: black">
-              You can't call {{ vendor_username }}
-            </p>
+            <p style="text-align: justify; color: black">You can't call {{ vendor_username }}</p>
           </v-card-text>
         </v-card>
       </v-overlay>
@@ -283,14 +263,15 @@ import axios from "axios";
 import CallBox from "@/components/CallBox.vue";
 import AwesomeRating from "../components/AwesomeRating";
 import { isIOS, isMobileSafari } from "mobile-device-detect";
+import { type } from "vuesax";
 
 const humanizeDuration = require("humanize-duration");
-// const moment = require("moment");
+const moment = require("moment");
 
 export default {
   data: () => ({
     isItIOS: isIOS,
-    inOperation: true,
+    inOperation: false,
     isCustomerViewEnabled: false,
     isItMobileSafari: isMobileSafari,
     formValid: false,
@@ -322,6 +303,8 @@ export default {
       "https://media.giphy.com/media/IcdTrgVoYTK1PR2B6n/giphy.gif"
     ],
     rating: 0,
+    feedback: "",
+    feedbackRule: [v => v.length <= 300 || "Max 300 characters"],
     call_token: null
   }),
 
@@ -331,18 +314,20 @@ export default {
   },
 
   methods: {
-    submitRating: function(event) {
-      let this_app = this;
-
+    setRating: function(event) {
       this.rating = event.rating;
       this.show_rating = false;
+    },
+
+    submitRating: function() {
+      let this_app = this;
 
       axios
         .post(process.env.api_url + "/calls/submit_rating", {
           guest_token: this_app.guest_token,
           call_id: this_app.call_id,
           rating: this_app.rating,
-          feedback_text: ""
+          feedback_text: this_app.feedback
         })
         .then(function(response) {
           this_app.guest_token = null;
@@ -364,7 +349,7 @@ export default {
         .then(function(response) {
           if (response.data.success) {
             this_app.vendor = response.data.data.vendor;
-            // this_app.checkWorkingHours();
+            this_app.checkWorkingHours();
             this_app.checkCustomerView();
             this_app.initialLoading = false;
           } else {
@@ -376,28 +361,38 @@ export default {
     },
 
     checkCustomerView: function() {
-      console.log(this.vendor.is_customer_view_enabled);
       if (this.vendor.is_customer_view_enabled) {
         this.isCustomerViewEnabled = true;
       }
     },
 
     checkWorkingHours: function() {
-      let workingHours = JSON.parse(this.vendor.working_hours);
+      let vendorWorkingHours = JSON.parse(this.vendor.working_hours);
       let today = moment()
         .format("dddd")
         .toLowerCase();
-      let todayVendor = workingHours[today][0];
-      let now = moment().format("hhmm");
-      let isNowOpen = moment(now).isBetween(
-        todayVendor["open"],
-        todayVendor["close"]
-      );
+      let now = moment().format("HHmm");
 
-      if (!todayVendor["isOpen"] || (todayVendor["isOpen"] && !isNowOpen)) {
-        this.inOperation = false;
-      } else {
-        this.inOperation = true;
+      let vendorTodayHours = vendorWorkingHours[today];
+
+      for (let timeSlot of vendorTodayHours) {
+        //if vendor is open today, then check its open and close hours
+        if (timeSlot["isOpen"]) {
+          if (
+            (timeSlot["open"] == "24hrs" && timeSlot["close"] == "24hrs") ||
+            (timeSlot["open"] == "" && timeSlot["close"] == "")
+          ) {
+            this.inOperation = true;
+            break;
+          }
+          //if vendor is open, but not for 24hrs, then check if current time is between open & close?
+          else if (moment(now).isBetween(timeSlot["open"], timeSlot["close"])) {
+            this.inOperation = true;
+            break;
+          }
+        } else {
+          //do nothing, go to next timeSlot
+        }
       }
     },
 
