@@ -43,7 +43,7 @@ module.exports = {
       { name: "og:image:type", content: "image/png" },
       { name: "og:image:width", content: "300" },
       { name: "og:image:height", content: "300" },
-      { name: "og:url", content: "http://basma.ai" }
+      { name: "og:url", content: "https://basma.ai" }
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
