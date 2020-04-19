@@ -106,7 +106,7 @@ module.exports = {
           }
         ],
         lazy: true,
-        langDir: "lang/",
+        langDir: "translations/locales/",
         defaultLocale: "en"
       }
     ]
