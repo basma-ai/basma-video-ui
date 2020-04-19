@@ -166,28 +166,21 @@
             <div v-if="screen_status == 'call_ended'">
               <div style="text-align: center; font-size: 15px;">
                 <div v-if="show_rating">
-                  <h3>{{$t('ratingHeader')}}</h3>
+                  <!-- <h3>{{$t('ratingHeader')}}</h3> -->
                   <br />
 
                   <!-- rating component -->
-                  <!-- <awesome-rating @rating_set="setRating($event)"></awesome-rating> -->
-                  <v-rating
-                    v-model="rating"
-                    :length="5"
-                    :empty-icon="'mdi-heart-outline'"
-                    :full-icon="'mdi-heart'"
-                    :hover="true"
-                    :size="70"
-                    :color="'#FFB600'"
-                    :background-color="'grey lighten-1'"
-                  ></v-rating>
+                  <h3>{{$t('ratingMsg')}}</h3>
+                  <br />
+                  <awesome-rating @rating_set="setRating($event)"></awesome-rating>
+                  <br />
                   <br />
 
                   <v-textarea
                     v-model="feedback"
                     counter
                     :rules="feedbackRule"
-                    :label="'Your kind feedback :)'"
+                    :label="$t('feedbackMsg')"
                     rows="3"
                     row-height="20"
                     :auto-grow="true"
@@ -500,7 +493,6 @@ export default {
     cancel_call: function() {
       this.loading = true;
       this.call = null;
-      // this.$refs.call_box.end_call();
 
       let this_app = this;
 
@@ -589,7 +581,6 @@ export default {
               });
 
             setTimeout(function() {
-              // if (this_app.screen_status == 'call_waiting_for_agent' || this_app.screen_status == 'in_call') {
               this_app.refresh_call();
               // }
             }, 1000);

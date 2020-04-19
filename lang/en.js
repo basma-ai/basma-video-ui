@@ -22,5 +22,8 @@ export default {
                 Your ticket order is`,
   servedBy: "You are being served by: ",
   ratingHeader: "Your feedback is very important, how good was the service?",
+  ratingMsg:
+    "Select the face that best describes your feeling about the service",
+  feedbackMsg: "Type any feedback you have on the service or the agent",
   thankYou: "Thank you, Goodbye!"
 };
