@@ -36,6 +36,15 @@
               <img id="vendor-logo" :src="vendor.logo_url" />
               <br />
               <br />
+              <div>
+                <h3>Change Language</h3>
+                <nuxt-link
+                  v-for="locale in $i18n.locales"
+                  v-if="locale.code !== $i18n.locale"
+                  :key="locale.code"
+                  :to="switchLocalePath(locale.code)"
+                >{{ locale.name }}</nuxt-link>
+              </div>
             </div>
 
             <!-- Main Screen -->
@@ -60,6 +69,7 @@
                         :rules="field.is_mandatory ? requiredRules : []"
                       ></v-text-field>
 
+                      <!-- this is for checkbox, boolen -> checkbox -->
                       <v-checkbox
                         v-if="field.type === 'boolean'"
                         v-model="field.value"
@@ -262,8 +272,7 @@ import AwesomeRating from "../components/AwesomeRating";
 import { isIOS, isMobileSafari } from "mobile-device-detect";
 import { type } from "vuesax";
 import Vue from "vue";
-import VueI18n from "vue-i18n";
-import i18n from "@/plugins/i18n";
+import i18n from "@/plugins/i18n.js";
 
 const humanizeDuration = require("humanize-duration");
 const moment = require("moment");
@@ -340,8 +349,6 @@ export default {
 
     load_data: function() {
       this.initialLoading = true;
-
-      // const { sortBy, descending, page, rowsPerPage } = this.pagination;
 
       let this_app = this;
       axios
