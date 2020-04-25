@@ -21,7 +21,7 @@
     "nuxt": "^2.0.0",
     "nuxt-i18n": "^6.9.1",
     "socket.io-client": "^2.3.0",
-    "twilio-video": "^2.2.0",
+    "twilio-video": "^2.3.0",
     "vue-feedback-reaction": "^1.2.0",
     "vue-socket.io": "^3.0.7",
     "vue-web-cam": "^1.9.0",
