@@ -74,6 +74,9 @@ module.exports = {
     {
       src: "~/plugins/i18n",
       ssr: false
+    },
+    { src: "~/plugins/vuex-persist",
+      ssr: false
     }
   ],
 
@@ -88,28 +91,6 @@ module.exports = {
     "@nuxtjs/axios",
     "@nuxtjs/dotenv",
     "vue-web-cam/nuxt",
-    [
-      "nuxt-i18n",
-      {
-        locales: [
-          {
-            name: "English",
-            code: "en",
-            iso: "en-US",
-            file: "en.js"
-          },
-          {
-            name: "Arabic",
-            code: "ar",
-            iso: "ar-AR",
-            file: "ar.js"
-          }
-        ],
-        lazy: true,
-        langDir: "translations/locales/",
-        defaultLocale: "en"
-      }
-    ]
   ],
   /*
    ** Axios module configuration
@@ -171,10 +152,20 @@ module.exports = {
   /*
    ** Build configuration
    */
+  /*
+   ** Build configuration
+   */
   build: {
+    vendor: ["vue-i18n"],
+    transpile: ["vuetify/lib"],
     /*
      ** You can extend webpack config here
      */
     extend(config, ctx) {}
+  },
+
+  router: {
+    // customize nuxt.js router (vue-router).
+    middleware: "i18n" // middleware all pages of the application
   }
 };

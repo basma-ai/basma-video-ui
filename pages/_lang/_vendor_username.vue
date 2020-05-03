@@ -38,12 +38,12 @@
               <br />
               <div>
                 <h3>Change Language</h3>
-                <nuxt-link
-                  v-for="locale in $i18n.locales"
-                  v-if="locale.code !== $i18n.locale"
-                  :key="locale.code"
-                  :to="switchLocalePath(locale.code)"
-                >{{ locale.name }}</nuxt-link>
+                <v-btn v-if="$i18n.locale === 'en'" flat :to="'/ar/'+vendor_username">
+                  عربي
+                </v-btn>
+                <v-btn v-if="$i18n.locale === 'ar'" flat :to="'/en/'+vendor_username">
+                  English
+                </v-btn>
               </div>
             </div>
 
@@ -165,6 +165,7 @@
                   :room_name="'call-' + call.id"
                   style="width: 100%;"
                 ></CallBox>
+                <ChatBox ref="chatbox" :user_token="guest_token" :call_id="call.id" style="margin-bottom: 15px"></ChatBox>
                 <br />
                 <br />
 
@@ -268,11 +269,11 @@
 <script>
 import axios from "axios";
 import CallBox from "@/components/CallBox.vue";
-import AwesomeRating from "../components/AwesomeRating";
+import ChatBox from '@/components/chat-box/ChatBox.vue'
+import AwesomeRating from "../../components/AwesomeRating";
 import { isIOS, isMobileSafari } from "mobile-device-detect";
 import { type } from "vuesax";
 import Vue from "vue";
-import i18n from "@/plugins/i18n.js";
 
 const humanizeDuration = require("humanize-duration");
 const moment = require("moment");
@@ -319,6 +320,7 @@ export default {
 
   components: {
     CallBox,
+    ChatBox,
     AwesomeRating
   },
 
@@ -679,6 +681,7 @@ export default {
         this_app.call = null;
         this_app.selected_service = null;
       }
+
     }
   },
   created() {
@@ -702,7 +705,11 @@ export default {
     on_update: function(data) {
       let this_app = this;
 
-      this_app.on_call_update(data.data);
+      if(data.type == "call_info"){
+        this_app.on_call_update(data.data);
+      }else if (data.type == "message") {
+        this_app.$refs.chatbox.addChat(data.data);
+      }
     }
   }
 };

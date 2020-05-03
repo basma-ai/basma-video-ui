@@ -239,7 +239,7 @@ export default {
 
         // Attach the Participant's Media to a <div> element.
         room.on("participantDisconnected", (participant) => {
-          document.getElementById("remote-media-div").innerHTML = ""
+          // document.getElementById("remote-media-div").innerHTML = ""
         });
 
       });

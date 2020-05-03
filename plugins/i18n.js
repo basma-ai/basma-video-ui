@@ -1,14 +1,23 @@
-import Vue from "vue";
-import VueI18n from "vue-i18n";
+import Vue from "vue"
+import VueI18n from "vue-i18n"
+Vue.use(VueI18n)
 
-Vue.use(VueI18n);
-
-export const i18n = new VueI18n({
-  locale: "en", // set locale
-  fallbackLocale: "en", // set fallback locale
-  // set locale messages
-  messages: {
-    en: require("@/translations/locales/en.js"),
-    ar: require("@/translations/locales/ar.js")
+export default ({ app, store }) => {
+  // Set i18n instance on app
+  // This way we can use it in middleware and pages asyncData/fetch
+  app.i18n = new VueI18n({
+    locale: store.state.locale,
+    fallbackLocale: "en",
+    messages: {
+      en: require("@/locales/en.json"),
+      ar: require("@/locales/ar.json")
+    }
+  })
+  app.i18n.path = link => {
+    if (app.i18n.locale === app.i18n.fallbackLocale) {
+      return `/en/${link}`
+    }
+    return `/${app.i18n.locale}/${link}`
   }
-});
+}
+

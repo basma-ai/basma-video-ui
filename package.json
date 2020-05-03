@@ -19,13 +19,15 @@
     "mobile-device-detect": "^0.3.3",
     "moment": "^2.24.0",
     "nuxt": "^2.0.0",
-    "nuxt-i18n": "^6.9.1",
     "socket.io-client": "^2.3.0",
-    "twilio-video": "^2.2.0",
+    "twilio-video": "^2.3.0",
     "vue-feedback-reaction": "^1.2.0",
+    "vue-i18n": "^8.17.4",
+    "vue-perfect-scrollbar": "^0.2.1",
     "vue-socket.io": "^3.0.7",
     "vue-web-cam": "^1.9.0",
-    "vuesax": "^3.11.13"
+    "vuesax": "^3.11.13",
+    "vuex-persist": "^2.2.0"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.12.0",
