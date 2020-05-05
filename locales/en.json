@@ -4,18 +4,19 @@
   "branchClosed": "The branch is now closed!",
   "cantCall": "You can't use this feature as it's disabled by the service provider.",
 
-  "startAgain": "Start Agian",
-  "endCall": "End Call",
+  "startAgain": "Start again",
+  "endCall": "End call",
   "backToMain": "Back to Main",
   "submit": "Submit",
 
-  "gettingServices": "Getting Services...",
-  "videoConnecting": "Connecting Video...",
-  "startingCall": "Starting Call...",
-  "callWaiting": "Your call is valuable .. Kindly wait until an agent is available. Your ticket order is",
+  "gettingServices": "Getting services...",
+  "videoConnecting": "Connecting video...",
+  "startingCall": "Starting call...",
+  "callWaiting": "Your call is valuable.. kindly wait until an agent is available. Your ticket order is",
   "servedBy": "You are being served by: ",
   "ratingHeader": "Your feedback is very important, how good was the service?",
   "ratingMsg": "Select the face that best describes your feeling about the service",
   "feedbackMsg": "Type any feedback you have on the service or the agent",
-  "thankYou": "Thank you, Goodbye!"
+  "thankYou": "Thank you, Goodbye!",
+  "continue": "Continue"
 }

@@ -75,7 +75,16 @@ module.exports = {
       src: "~/plugins/i18n",
       ssr: false
     },
-    { src: "~/plugins/vuex-persist",
+    {
+      src: "~/plugins/vuex-persist",
+      ssr: false
+    },
+    {
+      src: "~/plugins/validate",
+      ssr: false
+    },
+    {
+      src: "~/plugins/components",
       ssr: false
     }
   ],
@@ -91,7 +100,26 @@ module.exports = {
     "@nuxtjs/axios",
     "@nuxtjs/dotenv",
     "vue-web-cam/nuxt",
+    "nuxt-i18n"
   ],
+
+  i18n: {
+    strategy: 'prefix_and_default',
+    locales: [
+      {
+        code: 'ar',
+        file: 'ar.json'
+      },
+      {
+        code: 'en',
+        file: 'en.json'
+      },
+    ],
+    langDir: 'locales/',
+    defaultLocale: 'en',
+    lazy: true,
+  },
+
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
@@ -164,8 +192,8 @@ module.exports = {
     extend(config, ctx) {}
   },
 
-  router: {
-    // customize nuxt.js router (vue-router).
-    middleware: "i18n" // middleware all pages of the application
-  }
+  // router: {
+  //   // customize nuxt.js router (vue-router).
+  //   middleware: "i18n" // middleware all pages of the application
+  // }
 };

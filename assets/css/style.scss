@@ -78,8 +78,11 @@
 }
 
 #vendor-logo {
-  max-width: 160px;
-  height: auto
+  margin-bottom: 20px;
+  img {
+    max-width: 160px;
+    height: auto
+  }
 }
 
 #breathing {
@@ -118,4 +121,16 @@
     transform: scale(1.2);
   }
 }
+
+.w-full {
+  width: 100% !important;
+}
+
+#change-lang {
+  position: absolute;
+  display: block;
+  right: 10px;
+  top: 10px;
+}
+
 
