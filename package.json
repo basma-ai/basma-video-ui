@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
+    "animate.css": "^4.0.0",
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
     "humanize-duration": "^3.22.0",

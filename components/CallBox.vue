@@ -10,6 +10,9 @@
       </div>
 
       <div id="controls">
+        <div @click="confirm_end_call">
+          <vs-button radius icon="close" type="filled" color="danger"></vs-button>
+        </div>
         <div @click="toggle_mute_camera">
           <vs-button radius icon="videocam" type="filled" color="primary" v-if="localCamIsEnabled"></vs-button>
           <vs-button radius icon="videocam_off" type="filled" color="danger" v-if="!localCamIsEnabled"></vs-button>
@@ -119,6 +122,19 @@
             }
           } catch (ex) {
 
+          }
+        })
+      },
+      confirm_end_call: function() {
+        let this_app = this;
+
+        this_app.$vs.dialog({
+          type: 'confirm',
+          color: 'danger',
+          title: `Confirm`,
+          text: 'Are you sure you want to end the call?',
+          accept: function () {
+            this_app.$emit("endCall");
           }
         })
       },

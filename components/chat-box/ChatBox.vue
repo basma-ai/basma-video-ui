@@ -8,8 +8,8 @@
           </div>
         </VuePerfectScrollbar>
         <div class="chat__input flex p-4 bg-white">
-          <vs-input class="flex-1" placeholder="Type Your Message" v-model="typedMessage" @keyup.enter="sendMsg" />
-          <vs-button class="ml-4" type="border" @click="sendMsg">Send</vs-button>
+          <vs-input class="flex-1" placeholder="Type Your Message.." v-model="typedMessage" @keyup.enter="sendMsg" />
+          <vs-button radius icon="send" type="filled" @click="sendMsg" color="secondary"></vs-button>
         </div>
       </template>
     </div>
@@ -41,6 +41,8 @@
     methods: {
       sendMsg() {
         if (!this.typedMessage) return
+
+        let this_app = this;
 
         const params = {
           "guest_token": this.user_token,

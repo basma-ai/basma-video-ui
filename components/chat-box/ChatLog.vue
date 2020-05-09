@@ -9,8 +9,8 @@
 <!--          user_type: "vu"-->
 <!--          value: "sd"-->
 
-            <div class="flex items-start" :class="[{'flex-row-reverse' : isMe(msg.user_type)}]">
-                <div class="msg break-words relative shadow-md rounded py-3 px-4 mb-2 rounded-lg max-w-sm" :class="{'bg-primary-gradient text-white': isMe(msg.user_type), 'border border-solid border-transparent bg-white': !isMe(msg.user_type)}">
+            <div class="flex items-start" :class="[{'flex-row-reverse animate__animated animate__fadeInRight' : isMe(msg.user_type)}]">
+                <div class="msg break-words relative shadow-md rounded px-4 mb-2 rounded-lg max-w-sm" :class="{'bg-primary-gradient text-white': isMe(msg.user_type), 'border border-solid border-transparent bg-white': !isMe(msg.user_type)}">
                     <span>{{ msg.value }}</span>
                 </div>
             </div>

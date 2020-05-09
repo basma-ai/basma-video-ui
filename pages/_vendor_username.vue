@@ -156,9 +156,10 @@
                   :connection_token="call.connection_guest_token"
                   :room_name="'call-' + call.id"
                   style="width: 100%;"
+                  @endCall="end_call"
                 ></CallBox>
-<!--                <ChatBox ref="chatbox" :user_token="guest_token" :call_id="call.id"-->
-<!--                         style="margin-bottom: 15px"></ChatBox>-->
+                <ChatBox ref="chatbox" :user_token="guest_token" :call_id="call.id"
+                         style="margin-bottom: 15px"></ChatBox>
               </div>
             </div>
 
@@ -221,7 +222,7 @@
         </v-card>
       </div>
 
-      <div style="text-align: center; color: #626262; margin-top: 20px">
+      <div :class="{'hide-on-mobile': screen_status == 'in_call'}" style="text-align: center; color: #626262; margin-top: 20px">
         powered by
         <a
           href="http://basma.ai"
@@ -416,7 +417,7 @@
         let this_app = this;
 
         axios
-          .post(process.env.api_url + "/guest/request_token")
+          .post(process.env.api_url + "/guest/request_token", {"vendor_id": this.vendor.id})
           .then(function (response) {
             if (response.data.success) {
               this_app.guest_token = response.data.data.token;
@@ -621,13 +622,13 @@
             this_app.call_id = response.data.data.call_id;
 
             // call the socket
-            const params = {
-              user_type: "guest",
-              user_token: this_app.guest_token,
-              call_id: this_app.call_id
-            };
+            // const params = {
+            //   user_type: "guest",
+            //   user_token: this_app.guest_token,
+            //   call_id: this_app.call_id
+            // };
 
-            this_app.$socket.emit("start_socket", params);
+            // this_app.$socket.emit("start_socket", params);
 
             this_app.on_call_update(response.data.data);
             this_app.loading = false;
@@ -747,13 +748,85 @@
 </script>
 
 <style lang="scss">
+  div#controls {
+    bottom: 50px !important;
+    z-index: 1;
+  }
+
+  #in-call {
+    position: relative;
+  }
+
+  #chat-app {
+    bottom: 0;
+    margin-bottom: 0px !important;
+    padding-bottom: 10px !important;
+    position: absolute;
+    width: 100%;
+    background: rgb(0, 0, 0);
+    background: -moz-linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0) 95%);
+    background: -webkit-linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0) 95%);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 212, 255, 0) 95%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000", endColorstr="#00d4ff", GradientType=1);
+
+    .chat-content-scroll-area {
+      min-height: 40px;
+      max-height: 210px;
+      overflow-y: scroll;
+      .msg-grp-container {
+        text-align: left;
+        color: #fff;
+        span {
+          font-size: 14px;
+        }
+        .flex-row-reverse {
+          color: #FFB600;
+        }
+      }
+    }
+    .vs-input-primary {
+      float: left;
+      /*left: 10px;*/
+      margin-left: 10px;
+      margin-right: 10px;
+      /* Firefox */
+      width: -moz-calc(100% - 68px);
+      /* WebKit */
+      width: -webkit-calc(100% - 68px);
+      /* Opera */
+      width: -o-calc(100% - 68px);
+      /* Standard */
+      width: calc(100% - 68px);
+
+      input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid #aaa !important;
+        border-radius: 30px !important;
+        color: #fff;
+        padding-left: 20px;
+      }
+
+      .input-span-placeholder {
+        color: #ffffff75;
+        padding: 10px 20px;
+        text-align: left;
+      }
+    }
+
+    button {
+      float: right;
+      right: 11px;
+    }
+  }
+
   @media only screen and (max-width: 600px) {
     .in-call {
       height: 100%;
 
       #vendor-logo {
         z-index: 1;
-        position: relative;
+        position: absolute;
+        width: 100%;
         top: 10px;
         margin: 0;
 
@@ -793,6 +866,8 @@
                   top: 0;
                   left: 0;
                   background: #000;
+                  overflow: hidden;
+                  border: none !important;
 
                   #timer {
                     opacity: 0.8;
