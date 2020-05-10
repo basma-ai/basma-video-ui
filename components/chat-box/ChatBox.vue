@@ -4,7 +4,7 @@
       <template>
         <VuePerfectScrollbar class="chat-content-scroll-area" :settings="settings">
           <div class="chat__log" ref="chatLog">
-            <chat-log :chatData="chatData"></chat-log>
+            <chat-log :user_token="user_token" :chatData="chatData"></chat-log>
           </div>
         </VuePerfectScrollbar>
         <div class="chat__input flex p-4 bg-white">
@@ -39,25 +39,32 @@
     computed: {
     },
     methods: {
+      fileUploaded(file) {
+        this.postMessage(file.type, file.id);
+      },
       sendMsg() {
-        if (!this.typedMessage) return
-
         let this_app = this;
 
+        if (!this.typedMessage) return
+
+        this.postMessage('text', this.typedMessage, function() {
+          this_app.typedMessage = '';
+        })
+
+      },
+      postMessage(type, value, onDone = null) {
         const params = {
           "guest_token": this.user_token,
           "call_id": this.call_id,
-          "message_type": "text",
-          "value": this.typedMessage
+          "message_type": type,
+          "value": value
         };
 
-        axios
-          .post(process.env.api_url + "/calls/send_message", params)
-          .then(function(response) {
-            this_app.typedMessage = '';
-          })
-          .catch(function(error) {});
-
+        axios.post(process.env.api_url + "/calls/send_message", params).then(function (res) {
+          if(onDone != null) {
+            onDone()
+          }
+        }.bind(this));
       },
       addChat(chat){
         this.chatData.push(chat)

@@ -670,6 +670,7 @@
 
         if (this_app.call != null && this_app.call.status === "started") {
           this_app.screen_status = "in_call";
+          return;
         } else if (this_app.call != null && this_app.call.status === "ended") {
           if (undefined !== this_app.$refs.call_box) {
             this_app.$refs.call_box.end_call();
@@ -679,8 +680,11 @@
           this_app.show_rating = true;
           this_app.call = null;
           this_app.selected_service = null;
-        } else if (
-          null != data.call_info.errors &&
+          return;
+        }
+
+        if (
+          undefined != data.call_info.errors &&
           data.call_info.errors.length > 0 &&
           data.call_info.errors[0] === "call_ended"
         ) {
@@ -750,6 +754,7 @@
 <style lang="scss">
   div#controls {
     bottom: 50px !important;
+    /*margin-bottom: 0 !important;*/
     z-index: 1;
   }
 
@@ -759,7 +764,7 @@
 
   #chat-app {
     bottom: 0;
-    margin-bottom: 0px !important;
+    margin-bottom: 0 !important;
     padding-bottom: 10px !important;
     position: absolute;
     width: 100%;
@@ -777,7 +782,7 @@
         text-align: left;
         color: #fff;
         span {
-          font-size: 14px;
+          /*font-size: 14px;*/
         }
         .flex-row-reverse {
           color: #FFB600;
@@ -788,15 +793,15 @@
       float: left;
       /*left: 10px;*/
       margin-left: 10px;
-      margin-right: 10px;
+      /*margin-right: 10px;*/
       /* Firefox */
-      width: -moz-calc(100% - 68px);
+      width: -moz-calc(100% - 70px);
       /* WebKit */
-      width: -webkit-calc(100% - 68px);
+      width: -webkit-calc(100% - 70px);
       /* Opera */
-      width: -o-calc(100% - 68px);
+      width: -o-calc(100% - 70px);
       /* Standard */
-      width: calc(100% - 68px);
+      width: calc(100% - 70px);
 
       input {
         background: rgba(255, 255, 255, 0.1);
@@ -815,7 +820,8 @@
 
     button {
       float: right;
-      right: 11px;
+      margin-right: 10.5px;
+      right: 0;
     }
   }
 
@@ -871,6 +877,10 @@
 
                   #timer {
                     opacity: 0.8;
+                  }
+
+                  #controls {
+                    position: fixed !important;
                   }
 
                   #local-media {
