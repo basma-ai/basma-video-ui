@@ -10,3 +10,9 @@ Vue.component('multiselect', Multiselect)
 
 // adding moment globally
 Vue.use(require('vue-moment'))
+
+import FeatherIcon  from '../components/FeatherIcon.vue'
+Vue.component(FeatherIcon.name, FeatherIcon)
+
+import VueSignaturePad from 'vue-signature-pad';
+Vue.use(VueSignaturePad);

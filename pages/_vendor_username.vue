@@ -206,7 +206,7 @@
                   <br/>
                   <v-btn
                     v-if="call_token == null"
-                    @click="screen_status = 'main'"
+                    @click="backToMain"
                   >{{$t('backToMain')}}
                   </v-btn>
                   <br>
@@ -295,6 +295,12 @@
     },
 
     methods: {
+      backToMain() {
+        if(process.client) {
+          location.reload();
+        }
+      },
+
       startRingtone() {
         this.ringtone_audio = new Audio('https://basma-cdn.s3.me-south-1.amazonaws.com/assets/audio/customer_default_ringtone.mp3');
 
@@ -683,16 +689,18 @@
           return;
         }
 
-        if (
-          undefined != data.call_info.errors &&
-          data.call_info.errors.length > 0 &&
-          data.call_info.errors[0] === "call_ended"
-        ) {
-          this_app.screen_status = "call_ended";
-          this_app.rating = 0;
-          this_app.show_rating = data.show_rating;
-          this_app.call = null;
-          this_app.selected_service = null;
+        if (undefined != data.call_info) {
+          if (
+            undefined != data.call_info.errors &&
+            data.call_info.errors.length > 0 &&
+            data.call_info.errors[0] === "call_ended"
+          ) {
+            this_app.screen_status = "call_ended";
+            this_app.rating = 0;
+            this_app.show_rating = data.show_rating;
+            this_app.call = null;
+            this_app.selected_service = null;
+          }
         }
 
       }
@@ -744,7 +752,11 @@
         if (data.type == "call_info") {
           this_app.on_call_update(data.data);
         } else if (data.type == "message") {
-          this_app.$refs.chatbox.addChat(data.data);
+          if (data.data.message_type == "signature_request"){
+            this_app.$refs.chatbox.openSignature();
+          } else {
+            this_app.$refs.chatbox.addChat(data.data);
+          }
         }
       }
     }
@@ -795,13 +807,13 @@
       margin-left: 10px;
       /*margin-right: 10px;*/
       /* Firefox */
-      width: -moz-calc(100% - 70px);
+      width: -moz-calc(100% - 120px);
       /* WebKit */
-      width: -webkit-calc(100% - 70px);
+      width: -webkit-calc(100% - 120px);
       /* Opera */
-      width: -o-calc(100% - 70px);
+      width: -o-calc(100% - 120px);
       /* Standard */
-      width: calc(100% - 70px);
+      width: calc(100% - 120px);
 
       input {
         background: rgba(255, 255, 255, 0.1);
@@ -880,7 +892,7 @@
                   }
 
                   #controls {
-                    position: fixed !important;
+                    position: absolute !important;
                   }
 
                   #local-media {

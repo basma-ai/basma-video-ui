@@ -1,6 +1,6 @@
 <template>
   <div id="chat-app" class="border border-solid d-theme-border-grey-light rounded relative overflow-hidden">
-    <div class="chat__bg chat-content-area" >
+    <div class="chat__bg chat-content-area">
       <template>
         <VuePerfectScrollbar class="chat-content-scroll-area" :settings="settings">
           <div class="chat__log" ref="chatLog">
@@ -8,37 +8,69 @@
           </div>
         </VuePerfectScrollbar>
         <div class="chat__input flex p-4 bg-white">
-          <vs-input class="flex-1" placeholder="Type Your Message.." v-model="typedMessage" @keyup.enter="sendMsg" />
+          <vs-input class="flex-1" placeholder="Type Your Message.." v-model="typedMessage" @keyup.enter="sendMsg"/>
           <vs-button radius icon="send" type="filled" @click="sendMsg" color="secondary"></vs-button>
+          <FileUpload ref="file_upload" class="ml-2" belongs_to="calls" :belongs_to_id="call_id"
+                      @uploaded="fileUploaded"></FileUpload>
         </div>
       </template>
     </div>
+    <vs-popup title="Please sign below" :active.sync="showPopup">
+      <div id="signature_pad">
+        <VueSignaturePad width="100%" height="200px" ref="signaturePad"/>
+        <vs-button color="success" type="filled" @click="saveSignature">Send</vs-button>
+        <vs-button color="dark" type="border" @click="resetSignature">Reset</vs-button>
+      </div>
+    </vs-popup>
+
   </div>
 </template>
 
 <script>
-  import ChatLog             from './ChatLog.vue'
+  import ChatLog from './ChatLog.vue'
+  import FileUpload from './FileUpload.vue'
   import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 
   import axios from "axios";
 
   export default {
-    props: ['user_token','call_id'],
-    data () {
+    props: ['user_token', 'call_id'],
+    data() {
       return {
-        typedMessage         : '',
-        settings             : {
-          maxScrollbarLength : 60,
-          wheelSpeed         : 0.70
+        typedMessage: '',
+        settings: {
+          maxScrollbarLength: 60,
+          wheelSpeed: 0.70
         },
-        chatData: []
+        chatData: [],
+        showPopup: false
       }
     },
-    watch: {
-    },
-    computed: {
-    },
+    watch: {},
+    computed: {},
     methods: {
+      openSignature() {
+        this.showPopup = true;
+      },
+      resetSignature() {
+        this.$refs.signaturePad.clearSignature();
+      },
+      saveSignature() {
+        const {isEmpty, data} = this.$refs.signaturePad.saveSignature();
+        console.log(isEmpty);
+        console.log(data);
+        if (!isEmpty) {
+          this.showPopup = false;
+          this.$refs.file_upload.upload_file(this.user_token,
+            "calls",
+            this.call_id, data,
+            "signature.png", function (file) {
+              this.postMessage(file.type, file.id);
+            });
+        } else {
+          console.log("empty!! why???")
+        }
+      },
       fileUploaded(file) {
         this.postMessage(file.type, file.id);
       },
@@ -47,7 +79,7 @@
 
         if (!this.typedMessage) return
 
-        this.postMessage('text', this.typedMessage, function() {
+        this.postMessage('text', this.typedMessage, function () {
           this_app.typedMessage = '';
         })
 
@@ -61,20 +93,21 @@
         };
 
         axios.post(process.env.api_url + "/calls/send_message", params).then(function (res) {
-          if(onDone != null) {
+          if (onDone != null) {
             onDone()
           }
         }.bind(this));
       },
-      addChat(chat){
+      addChat(chat) {
         this.chatData.push(chat)
       },
     },
     components: {
       VuePerfectScrollbar,
-      ChatLog
+      ChatLog,
+      FileUpload
     },
-    created () {
+    created() {
     },
   }
 </script>

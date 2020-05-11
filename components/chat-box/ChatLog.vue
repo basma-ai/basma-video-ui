@@ -8,7 +8,7 @@
              :class="{'bg-primary-gradient text-white': isMe(msg.user_type), 'border border-solid border-transparent bg-white': !isMe(msg.user_type)}">
           <div class="speech-bubble">
             <span v-if="msg.message_type == 'text'">{{ msg.value }}</span>
-            <ChatFile v-if="msg.message_type == 'image'" :guest_token="user_token" :file_id="msg.value"></ChatFile>
+            <span v-else><ChatFile :file_type="msg.message_type" :guest_token="user_token" :file_id="msg.value"></ChatFile></span>
           </div>
         </div>
       </div>
