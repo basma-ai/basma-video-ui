@@ -10,14 +10,14 @@
         <div class="chat__input flex p-4 bg-white">
           <vs-input class="flex-1" placeholder="Type Your Message.." v-model="typedMessage" @keyup.enter="sendMsg"/>
           <vs-button radius icon="send" type="filled" @click="sendMsg" color="secondary"></vs-button>
-          <FileUpload ref="file_upload" class="ml-2" belongs_to="calls" :belongs_to_id="call_id"
+          <FileUpload ref="file_upload" class="ml-2" belongs_to="calls" :user_token="user_token" :belongs_to_id="call_id"
                       @uploaded="fileUploaded"></FileUpload>
         </div>
       </template>
     </div>
     <vs-popup title="Please sign below" :active.sync="showPopup">
       <div id="signature_pad">
-        <VueSignaturePad width="100%" height="200px" ref="signaturePad"/>
+        <VueSignaturePad v-if="showSignature" width="100%" height="200px" ref="signaturePad"/>
         <vs-button color="success" type="filled" @click="saveSignature">Send</vs-button>
         <vs-button color="dark" type="border" @click="resetSignature">Reset</vs-button>
       </div>
@@ -43,7 +43,8 @@
           wheelSpeed: 0.70
         },
         chatData: [],
-        showPopup: false
+        showPopup: false,
+        showSignature: false
       }
     },
     watch: {},
@@ -51,6 +52,12 @@
     methods: {
       openSignature() {
         this.showPopup = true;
+        let this_app = this;
+
+        setTimeout(function() {
+          this_app.showSignature = true;
+          this.$refs.signaturePad.clearSignature();
+        }, 500);
       },
       resetSignature() {
         this.$refs.signaturePad.clearSignature();
