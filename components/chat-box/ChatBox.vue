@@ -56,7 +56,7 @@
 
         setTimeout(function() {
           this_app.showSignature = true;
-          this.$refs.signaturePad.clearSignature();
+          this_app.$refs.signaturePad.clearSignature();
         }, 500);
       },
       resetSignature() {
@@ -64,10 +64,12 @@
       },
       saveSignature() {
         const {isEmpty, data} = this.$refs.signaturePad.saveSignature();
-        console.log(isEmpty);
-        console.log(data);
+        // console.log(isEmpty);
+        // console.log(data);
+        this.showPopup = false;
+        this.showSignature = false;
+
         if (!isEmpty) {
-          this.showPopup = false;
           this.$refs.file_upload.upload_file(this.user_token,
             "calls",
             this.call_id, data,
