@@ -358,7 +358,7 @@
           });
       },
 
-      load_data: function () {
+      load_data: function (onDone = null) {
         this.initialLoading = true;
 
         let this_app = this;
@@ -372,6 +372,9 @@
               this_app.checkWorkingHours();
               this_app.checkCustomerView();
               this_app.initialLoading = false;
+              if (onDone != null) {
+                onDone()
+              }
             } else {
             }
 
@@ -571,7 +574,7 @@
         this.loading = true;
 
         axios
-          .post(process.env.api_url + "/guest/request_token")
+          .post(process.env.api_url + "/guest/request_token", {"vendor_id": this.vendor.id})
           .then(function (response) {
             if (response.data.success) {
               this_app.guest_token = response.data.data.token;
@@ -716,11 +719,12 @@
       this_app.vendor_username = this_app.$route.params.vendor_username;
 
       // TODO: verify the vendor username first before getting the vendor data
-      this_app.load_data();
+      this_app.load_data(function(){
+        if (this_app.call_token != null) {
+          this_app.join_call_by_token(this_app.$route.query.token);
+        }
+      });
 
-      if (this_app.call_token != null) {
-        this.join_call_by_token(this.$route.query.token);
-      }
     },
 
     beforeDestroy() {
