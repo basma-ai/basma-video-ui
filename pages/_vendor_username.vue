@@ -506,7 +506,7 @@
                 }
               );
 
-              this_app.screen_status = "call_waiting_for_agent";
+              this_app.screen_status = "waiting_for_agent";
 
               // call the socket
               const params = {
@@ -637,7 +637,7 @@
             request_call_token: this.$route.query.token
           })
           .then(response => {
-            this_app.screen_status = "call_waiting_for_agent";
+            this_app.screen_status = "waiting_for_agent";
             this_app.call_id = response.data.data.call_id;
 
             // call the socket
@@ -744,7 +744,7 @@
 
     watch: {
       screen_status: function (val) {
-        if (val == 'call_waiting_for_agent') {
+        if (val == 'waiting_for_agent') {
           this.startRingtone();
         } else {
           if (null != this.ringtone_audio) {
