@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="call_box">
-
       <div v-if="timer != 0" id="timer">{{ timer | moment("mm:ss") }}</div>
 
       <div id="local-media"></div>
@@ -28,18 +27,13 @@
 
 
 <script>
-  import Vue from 'vue'
-  import CamPreview from '@/components/CamPreview.vue';
   import Loading from '@/components/Loading.vue';
-  import {isIOS} from 'mobile-device-detect';
-
-  const {connect, createLocalTracks, createLocalVideoTrack, LocalVideoTrack} = require('twilio-video');
+  const {connect, createLocalTracks} = require('twilio-video');
 
   export default {
     props: ['connection_token', 'room_name'],
     data: () => ({
       found_remote_track: false,
-      isItIos: isIOS,
       localTrack: false,
       remoteTrack: '',
       activeRoom: '',
@@ -51,12 +45,10 @@
       timer: 0
     }),
     components: {
-      CamPreview,
       Loading
     },
     methods: {
       toggle_mute_camera: function () {
-
         let this_app = this;
 
         if (undefined != this.localTracks) {
@@ -76,54 +68,54 @@
             }
           })
         }
-
       },
       toggle_mute_mic: function () {
-
         let this_app = this;
 
-        this.localTracks.forEach((track) => {
-          try {
-            if (track.kind == 'audio') {
-              if (track.isEnabled) {
-                track.disable();
-                this_app.localMicIsEnabled = false;
-              } else {
-                track.enable();
-                this_app.localMicIsEnabled = true;
+        if (undefined != this.localTracks) {
+          this.localTracks.forEach((track) => {
+            try {
+              if (track.kind == 'audio') {
+                if (track.isEnabled) {
+                  track.disable();
+                  this_app.localMicIsEnabled = false;
+                } else {
+                  track.enable();
+                  this_app.localMicIsEnabled = true;
+                }
               }
+            } catch (ex) {
+
             }
-          } catch (ex) {
-
-          }
-        })
-
+          })
+        }
       },
       end_call: function () {
         let this_app = this;
-        this_app.ringtone_switch = false;
 
         if (this.room != null) {
           this.room.disconnect();
           this.room = null;
         }
 
-        this.localTracks.forEach((track) => {
-          try {
-            if (track.isEnabled) {
-              track.disable();
-              track.stop();
-              const attachedElements = track.detach();
-              attachedElements.forEach(element => element.remove());
-              this_app.localMicIsEnabled = false;
-            } else {
-              track.enable();
-              this_app.localMicIsEnabled = true;
-            }
-          } catch (ex) {
+        if (undefined != this.localTracks) {
+          this.localTracks.forEach((track) => {
+            try {
+              if (track.isEnabled) {
+                track.disable();
+                track.stop();
+                const attachedElements = track.detach();
+                attachedElements.forEach(element => element.remove());
+                this_app.localMicIsEnabled = false;
+              } else {
+                track.enable();
+                this_app.localMicIsEnabled = true;
+              }
+            } catch (ex) {
 
-          }
-        })
+            }
+          })
+        }
       },
       confirm_end_call: function() {
         let this_app = this;
@@ -138,118 +130,125 @@
           }
         })
       },
-      check_remote: function (room) {
-
-        let this_app = this;
-        room.participants.forEach(participant => {
-
-          if (!this_app.found_remote_track) {}
-
-          setTimeout(function () {
-            participant.tracks.forEach(publication => {
-
-              if (publication.isSubscribed) {
-
-                const track = publication.track;
-
-                if (track == null) {
-
-                  this_app.check_remote(room);
-                } else {
-
-                  this_app.found_remote_track = true;
-                  //document.getElementById('remote-media-div').innerHTML = "";
-                  document.getElementById('remote-media-div').appendChild(track.attach());
-                  this_app.isVideoLoaded = true;
-                }
-
-              } else {
-                this_app.check_remote(room);
-              }
-            });
-          }, 5000);
-
-        });
-      },
       add_one_sec_to_timer: function () {
         let this_app = this;
 
         if (this_app.isVideoLoaded) {
-          setTimeout( function () {
+          setTimeout(function () {
             this_app.timer++;
             this_app.add_one_sec_to_timer();
-          },1000);
-        }else{
+          }, 1000);
+        } else {
           this.timer = 0
         }
-      }
+      },
+      attach_participant(participant) {
+        let this_app = this;
+        let remoteDiv = document.getElementById('remote-media-div')
+
+        let participant_element = document.getElementById(participant.sid)
+        if(participant_element == null) {
+          participant_element = document.createElement('div')
+          participant_element.id = participant.sid
+          participant_element.className += 'participant'
+
+          remoteDiv.append(participant_element)
+
+          participant.tracks.forEach(publication => {
+            if (publication.isSubscribed) {
+              const track = publication.track;
+              this_app.attach_track(track, participant)
+              this_app.isVideoLoaded = true;
+            }
+          });
+
+          participant.on('trackSubscribed', track => {
+            this_app.attach_track(track, participant)
+            this_app.isVideoLoaded = true;
+          });
+
+        }
+
+
+      },
+      detach_participant(participant) {
+        let participant_element = document.getElementById(participant.sid)
+        if(participant_element != null) {
+          participant_element.remove()
+        }
+      },
+      attach_track(track, participant) {
+        let remoteDiv = document.getElementById(participant.sid)
+        let trackElement = track.attach()
+        trackElement.id = track.sid
+
+        remoteDiv.append(trackElement)
+      },
     },
     watch: {
-      isVideoLoaded(isTrue) {
+      isVideoLoaded() {
         this.add_one_sec_to_timer();
       }
     },
     created() {
-      // check if isIos
-      if (process.client) {
-        this.isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      }
-
-      let token = this.connection_token;
-
       let this_app = this;
 
       createLocalTracks({
         audio: true,
         video: {width: 640}
       }).then(localTracks => {
-
         this_app.localTracks = localTracks;
-        return connect(token, {
-          name: this.room_name,
+        return connect(this_app.connection_token, {
+          name: this_app.room_name,
           tracks: localTracks
         });
-
       }).then(room => {
 
-        room.localParticipant.tracks.forEach((a) => {
-          if (a.kind === "video") {
+        // this_app.$log4js.debug(`Successfully joined a Room: ${room}`);
+
+        this_app.room = room;
+
+        // Attach local video track to the preview
+        room.localParticipant.tracks.forEach((publication) => {
+          const track = publication.track;
+
+          if (track.kind === "video") {
             const localMediaContainer = document.getElementById("local-media");
-            // localMediaContainer.innerHTML = "";
-            localMediaContainer.prepend(a.track.attach());
+            localMediaContainer.innerHTML = "";
+            localMediaContainer.prepend(track.attach());
           }
         })
 
-        this_app.room = room;
-        this_app.check_remote(room);
+        // Log your Client's LocalParticipant in the Room
+        const localParticipant = room.localParticipant;
+        // this_app.$log4js.debug(`Connected to the Room as LocalParticipant "${localParticipant.identity}"`);
 
-        // Attach the Participant's Media to a <div> element.
+        // Log any Participants already connected to the Room
+        room.participants.forEach(participant => {
+          // this_app.$log4js.debug(`Participant "${participant.identity}" is connected to the Room`);
+
+          this_app.attach_participant(participant)
+        });
+
+        // Log new Participants as they connect to the Room
         room.on('participantConnected', participant => {
+          // this_app.$log4js.debug(`Participant "${participant}" has connected to the Room`);
+          // this_app.$log4js.debug(`Participant "${participant.identity}" has connected to the Room`);
 
-          participant.tracks.forEach(publication => {
-            if (publication.isSubscribed) {
-              const track = publication.track;
-              // document.getElementById('remote-media-div').innerHTML = "";
-              document.getElementById('remote-media-div').appendChild(track.attach());
-              this_app.isVideoLoaded = true;
-            }
-          });
-
-          participant.on('trackSubscribed', track => {
-            document.getElementById('remote-media-div').appendChild(track.attach());
-            this_app.isVideoLoaded = true;
-          });
+          this_app.attach_participant(participant)
         });
 
-        // Attach the Participant's Media to a <div> element.
-        room.on("participantDisconnected", (participant) => {
+        // Log Participants as they disconnect from the Room
+        room.on('participantDisconnected', participant => {
+          // this_app.$log4js.debug(`Participant "${participant}" has disconnected from the Room`);
+          // this_app.$log4js.debug(`Participant "${participant.identity}" has disconnected from the Room`);
 
-          // document.getElementById("remote-media-div").innerHTML = ""
+          // this_app.$log4js.debug(JSON.stringify(participant))
+
+          this_app.detach_participant(participant);
         });
-
       });
-
-    },
+    }
   }
 </script>
 <style lang="scss">

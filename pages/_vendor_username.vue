@@ -914,7 +914,9 @@
 
                   #remote-media-div {
                     height: inherit;
-
+                    div.participant {
+                      height: inherit;
+                    }
                     video {
                       max-height: 100% !important;
                     }
