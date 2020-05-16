@@ -13,6 +13,7 @@
   "videoConnecting": "Connecting you...",
   "startingCall": "Starting call...",
   "callWaiting": "Your call is valuable.. kindly wait until an agent is available. Your ticket order is",
+  "callWaitingNoRing": "Your call is valuable.. An agent will be with you shortly.",
   "servedBy": "You are being served by: ",
   "ratingHeader": "Your feedback is very important, how good was the service?",
   "ratingMsg": "Select the face that best describes your feeling about the service",

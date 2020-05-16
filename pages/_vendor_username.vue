@@ -68,7 +68,7 @@
           </div>
 
           <div class="text-center" style="padding: 20px;">
-            <div id="vendor-logo" v-if="screen_status != 'call_waiting_for_agent'">
+            <div id="vendor-logo" v-if="screen_status != 'waiting_for_agent' && screen_status != 'calling' && screen_status != 'waiting_for_agent_no_ring'">
               <img :src="vendor.logo_url"/>
             </div>
 
@@ -108,7 +108,7 @@
             <div v-if="screen_status == 'starting_call'">{{$t('startingCall')}}</div>
 
             <!-- Waiting for an Agent -->
-            <div v-if="screen_status == 'call_waiting_for_agent'">
+            <div v-if="screen_status == 'waiting_for_agent' || screen_status == 'calling'">
               <p>{{$t('callWaiting')}}</p>
 
               <h1 style="margin-bottom: 20px;">#{{ queue_count + 1 }}</h1>
@@ -127,7 +127,18 @@
                 </p>
               </div>
 
-              <div id="breathing">
+              <div class="breathing">
+                <img :src="vendor.logo_url"/>
+              </div>
+
+              <v-btn @click="cancel_call()">{{$t('endCall')}}</v-btn>
+            </div>
+
+            <!-- Waiting for an Agent No Ring -->
+            <div v-if="screen_status == 'waiting_for_agent_no_ring'">
+              <p>{{$t('callWaitingNoRing')}}</p>
+
+              <div class="breathing">
                 <img :src="vendor.logo_url"/>
               </div>
 
@@ -587,7 +598,6 @@
               axios
                 .post(process.env.api_url + "/calls/join", params)
                 .then(response => {
-                  this_app.screen_status = "call_waiting_for_agent";
                   this_app.call_id = response.data.data.call_id;
 
                   // call the socket
@@ -606,10 +616,10 @@
                   this_app.loading = false;
                 });
 
-              setTimeout(function () {
-                this_app.refresh_call();
-                // }
-              }, 1000);
+              // setTimeout(function () {
+              //   this_app.refresh_call();
+              //   // }
+              // }, 1000);
             } else {
               this_app.loading = false;
             }
@@ -662,6 +672,7 @@
 
         if (undefined != data.call_info) {
           this_app.call = data.call_info.call;
+          this_app.screen_status = this_app.call.status;
           this_app.queue_count = data.call_info.queue_count;
           this_app.estimated_waiting_time = data.call_info.estimated_waiting_time;
           this_app.estimated_waiting_time = humanizeDuration(
