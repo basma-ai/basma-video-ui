@@ -86,7 +86,11 @@ module.exports = {
     {
       src: "~/plugins/components",
       ssr: false
-    }
+    },
+    {
+      src: '~/plugins/ga.js',
+      ssr: false
+    },
   ],
 
   /*
