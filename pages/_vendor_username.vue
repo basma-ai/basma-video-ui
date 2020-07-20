@@ -166,6 +166,7 @@
                   ref="call_box"
                   :connection_token="call.connection_guest_token"
                   :room_name="'call-' + call.id"
+                  :can_end_call="true"
                   style="width: 100%;"
                   @endCall="end_call"
                 ></CallBox>
@@ -822,13 +823,13 @@
       margin-left: 10px;
       /*margin-right: 10px;*/
       /* Firefox */
-      width: -moz-calc(100% - 120px);
+      width: -moz-calc(100% - 130px);
       /* WebKit */
-      width: -webkit-calc(100% - 120px);
+      width: -webkit-calc(100% - 130px);
       /* Opera */
-      width: -o-calc(100% - 120px);
+      width: -o-calc(100% - 130px);
       /* Standard */
-      width: calc(100% - 120px);
+      width: calc(100% - 130px);
 
       input {
         background: rgba(255, 255, 255, 0.1);
@@ -836,18 +837,19 @@
         border-radius: 30px !important;
         color: #fff;
         padding-left: 20px;
+        height: 44px;
       }
 
       .input-span-placeholder {
         color: #ffffff75;
-        padding: 10px 20px;
+        padding: 12px 20px;
         text-align: left;
       }
     }
 
     button {
       float: right;
-      margin-right: 10.5px;
+      margin-right: 11px;
       right: 0;
     }
   }

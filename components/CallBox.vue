@@ -9,29 +9,31 @@
       </div>
 
       <div id="controls">
-        <div @click="confirm_end_call">
-          <vs-button radius icon="close" type="filled" color="danger"></vs-button>
+        <div v-if="can_end_call" @click="confirm_end_call">
+          <vs-button radius icon="close" size="large" type="filled" color="danger"></vs-button>
+        </div>
+        <div @click="toggle_flip_camera">
+          <vs-button radius icon="flip_camera_ios" size="large" type="filled" color="rgb(0, 0, 0, 0.4)"></vs-button>
         </div>
         <div @click="toggle_mute_camera">
-          <vs-button radius icon="videocam" type="filled" color="primary" v-if="localCamIsEnabled"></vs-button>
-          <vs-button radius icon="videocam_off" type="filled" color="danger" v-if="!localCamIsEnabled"></vs-button>
+          <vs-button radius icon="videocam" size="large" type="filled" color="rgb(0, 0, 0, 0.4)" v-if="localCamIsEnabled"></vs-button>
+          <vs-button radius icon="videocam_off" size="large" type="filled" color="danger" v-if="!localCamIsEnabled"></vs-button>
         </div>
         <div @click="toggle_mute_mic">
-          <vs-button radius icon="volume_up" type="filled" color="primary" v-if="localMicIsEnabled"></vs-button>
-          <vs-button radius icon="volume_off" type="filled" color="danger" v-if="!localMicIsEnabled"></vs-button>
+          <vs-button radius icon="volume_up" size="large" type="filled" color="rgb(0, 0, 0, 0.4)" v-if="localMicIsEnabled"></vs-button>
+          <vs-button radius icon="volume_off" size="large" type="filled" color="danger" v-if="!localMicIsEnabled"></vs-button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-
 <script>
   import Loading from '@/components/Loading.vue';
   const {connect, createLocalTracks} = require('twilio-video');
 
   export default {
-    props: ['connection_token', 'room_name'],
+    props: ['connection_token', 'room_name', 'can_end_call'],
     data: () => ({
       found_remote_track: false,
       localTrack: false,
@@ -48,6 +50,23 @@
       Loading
     },
     methods: {
+      toggle_flip_camera: function () {
+        let this_app = this;
+
+        if (undefined != this.localTracks) {
+          navigator.mediaDevices.enumerateDevices().then(devices => {
+            var videoInput = devices.find(device => device.kind === 'videoinput');
+            return createLocalTracks({ audio: true, video: { deviceId: videoInput.deviceId } });
+          }).then(localTracks => {
+            return connect(this_app.connection_token, {
+              name: this_app.room_name,
+              tracks: localTracks
+            });
+          }).then(room => {
+            console.log('Connected to room ' + room.name);
+          });
+        }
+      },
       toggle_mute_camera: function () {
         let this_app = this;
 
@@ -284,8 +303,8 @@
     max-height: 25%;
     float: left;
     left: 0;
-    border-bottom: 1px solid #DDD;
-    border-right: 1px solid #DDD;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    border-right: 1px solid rgba(0, 0, 0, 0.4);
   }
 
   #remote-media-div video {
@@ -301,14 +320,12 @@
     position: absolute;
     top: 10px;
     right: 8px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid #ffc13c;
+    background: rgba(0, 0, 0, 0.4);
     color: #fff;
     border-radius: 5px;
-    padding: 5px;
-    font-size: 1rem;
-    min-width: 60px;
+    padding: 5px 10px;
+    font-size: 1.2rem;
+    min-width: 70px;
     text-align: center;
   }
-
 </style>

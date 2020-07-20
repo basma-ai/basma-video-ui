@@ -9,7 +9,7 @@
         </VuePerfectScrollbar>
         <div class="chat__input flex p-4 bg-white">
           <vs-input class="flex-1" placeholder="Type Your Message.." v-model="typedMessage" @keyup.enter="sendMsg"/>
-          <vs-button radius icon="send" type="filled" @click="sendMsg" color="secondary"></vs-button>
+          <vs-button size="large" radius icon="send" type="filled" @click="sendMsg" color="secondary"></vs-button>
           <FileUpload ref="file_upload" class="ml-2" belongs_to="calls" :user_token="user_token" :belongs_to_id="call_id"
                       @uploaded="fileUploaded"></FileUpload>
         </div>
@@ -18,8 +18,8 @@
     <vs-popup title="Please sign below" :active.sync="showPopup">
       <div id="signature_pad">
         <VueSignaturePad v-if="showSignature" width="100%" height="200px" ref="signaturePad"/>
-        <vs-button color="success" type="filled" @click="saveSignature">Send</vs-button>
-        <vs-button color="dark" type="border" @click="resetSignature">Reset</vs-button>
+        <vs-button size="large" color="success" type="filled" @click="saveSignature">Send</vs-button>
+        <vs-button size="large" color="dark" type="border" @click="resetSignature">Reset</vs-button>
       </div>
     </vs-popup>
 

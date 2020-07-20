@@ -1,5 +1,5 @@
 <template>
-  <vs-button color="success" icon-pack="feather" icon="icon-paperclip" type="filled" radius class="file_box"
+  <vs-button size="large" color="success" icon-pack="feather" icon="icon-paperclip" type="filled" radius class="includeIconOnly file_box"
              @click="pick_file">
     <input :ref="'upload_file'+_uid" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.odt,.odf,.xls,.xlsx,.ppt,.pptx"
            @change="start_upload($event)">
