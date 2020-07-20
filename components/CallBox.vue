@@ -33,7 +33,7 @@
 
 <script>
   import Loading from '@/components/Loading.vue';
-  const {connect, createLocalTracks} = require('twilio-video');
+  const {connect, createLocalTracks, createLocalVideoTrack} = require('twilio-video');
 
   export default {
     props: ['connection_token', 'room_name', 'can_end_call'],
@@ -90,19 +90,35 @@
               console.error(error);
             });
 
-          createLocalTracks({
-            audio: true,
-            video: { deviceId: this_app.cameras[0].deviceId }
+          createLocalVideoTrack({
+            deviceId: {
+              exact: this_app.cameras[0].deviceId
+            }
           }).then(localTracks => {
+            this_app.localTrack.attach(video);
             this_app.localTracks = localTracks;
-            return connect(this_app.connection_token, {
-              name: this_app.room_name,
-              tracks: localTracks
-            });
+
+            // return connect(this_app.connection_token, {
+            //   name: this_app.room_name,
+            //   tracks: localTracks
+            // });
           }).then(room => {
-            this_app.configureTheRoomAfterJoining(room);
+            // this_app.configureTheRoomAfterJoining(room);
+
+            if (room) {
+              this_app.switchLocalTracks(room, this_app.localTrack);
+            }
           });
         }
+      },
+      switchLocalTracks(room, track) {
+        room.localParticipant.tracks.forEach(function(trackPublication) {
+          if (trackPublication.kind === track.kind) {
+            trackPublication.track.stop();
+            room.localParticipant.unpublishTrack(trackPublication.track);
+          }
+        });
+        room.localParticipant.publishTrack(track);
       },
       toggle_mute_camera: function () {
         let this_app = this;
