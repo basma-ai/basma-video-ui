@@ -9,6 +9,7 @@
       </div>
 
       <div id="controls">
+        {{cameras}}
         <div v-if="can_end_call" @click="confirm_end_call">
           <vs-button radius icon="close" size="large" type="filled" color="danger"></vs-button>
         </div>
@@ -44,7 +45,10 @@
       localCamIsEnabled: true,
       localMicIsEnabled: true,
       isVideoLoaded: false,
-      timer: 0
+      timer: 0,
+      cameras: [],
+      currentStream: null,
+      facingMode: 'user'
     }),
     components: {
       Loading
@@ -54,10 +58,41 @@
         let this_app = this;
 
         if (undefined != this.localTracks) {
-          navigator.mediaDevices.enumerateDevices().then(devices => {
-            var videoInput = devices.find(device => device.kind === 'videoinput');
-            return createLocalTracks({ audio: true, video: { deviceId: videoInput.deviceId } });
+          // if (typeof currentStream !== 'undefined') {
+          //   this_app.stopMediaTracks(currentStream);
+          // }
+
+          const videoConstraints = {};
+
+          if (this_app.facingMode === 'user') {
+            this_app.facingMode = 'environment'
+          } else {
+            this_app.facingMode = 'user'
+          }
+
+          videoConstraints.facingMode = this_app.facingMode;
+
+          const constraints = {
+            video: videoConstraints,
+            audio: false
+          };
+
+          navigator.mediaDevices
+            .getUserMedia(constraints)
+            .then(stream => {
+              console.log(stream)
+              return navigator.mediaDevices.enumerateDevices();
+            })
+            .then(this_app.gotDevices)
+            .catch(error => {
+              console.error(error);
+            });
+
+          createLocalTracks({
+            audio: true,
+            video: { deviceId: this_app.cameras[0].deviceId }
           }).then(localTracks => {
+            this_app.localTracks = localTracks;
             return connect(this_app.connection_token, {
               name: this_app.room_name,
               tracks: localTracks
@@ -203,6 +238,22 @@
 
         remoteDiv.append(trackElement)
       },
+      stopMediaTracks(stream) {
+        stream.getTracks().forEach(track => {
+          track.stop();
+        });
+      },
+      gotDevices(mediaDevices){
+        let this_app = this;
+        this_app.cameras = [];
+        let count = 1;
+        mediaDevices.forEach(mediaDevice => {
+          if (mediaDevice.kind === 'videoinput') {
+            let camera = {deviceId: mediaDevice.deviceId, label: mediaDevice.label || `Camera ${count++}`};
+            this_app.cameras.push(camera);
+          }
+        });
+      }
     },
     watch: {
       isVideoLoaded() {
@@ -212,10 +263,13 @@
     created() {
       let this_app = this;
 
+      navigator.mediaDevices.enumerateDevices().then(this_app.gotDevices);
+
       createLocalTracks({
         audio: true,
         video: {width: 640}
       }).then(localTracks => {
+        console.log('localTracks ' + JSON.stringify(localTracks));
         this_app.localTracks = localTracks;
         return connect(this_app.connection_token, {
           name: this_app.room_name,
