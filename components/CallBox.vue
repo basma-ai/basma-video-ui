@@ -9,6 +9,8 @@
       </div>
 
       <div id="controls">
+        {{cameraSide}}
+        {{facingMode}}
         {{cameras}}
         <div v-if="can_end_call" @click="confirm_end_call">
           <vs-button radius icon="close" size="large" type="filled" color="danger"></vs-button>
@@ -81,6 +83,9 @@
             .getUserMedia(constraints)
             .then(stream => {
               console.log(stream)
+              this_app.currentStream = stream;
+              const localMediaContainer = document.getElementById("local-media");
+              localMediaContainer.srcObject = stream;
               return navigator.mediaDevices.enumerateDevices();
             })
             .then(this_app.gotDevices)
@@ -88,18 +93,18 @@
               console.error(error);
             });
 
-          createLocalTracks({
-            audio: true,
-            video: { deviceId: this_app.cameras[0].deviceId }
-          }).then(localTracks => {
-            this_app.localTracks = localTracks;
-            return connect(this_app.connection_token, {
-              name: this_app.room_name,
-              tracks: localTracks
-            });
-          }).then(room => {
-            console.log('Connected to room ' + room.name);
-          });
+          // createLocalTracks({
+          //   audio: true,
+          //   video: { deviceId: this_app.cameras[0].deviceId }
+          // }).then(localTracks => {
+          //   this_app.localTracks = localTracks;
+          //   return connect(this_app.connection_token, {
+          //     name: this_app.room_name,
+          //     tracks: localTracks
+          //   });
+          // }).then(room => {
+          //   this_app.configureTheRoomAfterJoining(room);
+          // });
         }
       },
       toggle_mute_camera: function () {
@@ -223,7 +228,6 @@
 
         }
 
-
       },
       detach_participant(participant) {
         let participant_element = document.getElementById(participant.sid)
@@ -248,34 +252,14 @@
         this_app.cameras = [];
         let count = 1;
         mediaDevices.forEach(mediaDevice => {
-          if (mediaDevice.kind === 'videoinput') {
+          if (mediaDevice.kind === 'videoinput' && (mediaDevice.facingMode === this_app.facingMode || mediaDevice.label.toLowerCase().indexOf(this_app.cameraSide) >= 0 )) {
             let camera = {deviceId: mediaDevice.deviceId, label: mediaDevice.label || `Camera ${count++}`};
             this_app.cameras.push(camera);
           }
         });
-      }
-    },
-    watch: {
-      isVideoLoaded() {
-        this.add_one_sec_to_timer();
-      }
-    },
-    created() {
-      let this_app = this;
-
-      navigator.mediaDevices.enumerateDevices().then(this_app.gotDevices);
-
-      createLocalTracks({
-        audio: true,
-        video: {width: 640}
-      }).then(localTracks => {
-        console.log('localTracks ' + JSON.stringify(localTracks));
-        this_app.localTracks = localTracks;
-        return connect(this_app.connection_token, {
-          name: this_app.room_name,
-          tracks: localTracks
-        });
-      }).then(room => {
+      },
+      configureTheRoomAfterJoining(room){
+        let this_app = this;
 
         // this_app.$log4js.debug(`Successfully joined a Room: ${room}`);
 
@@ -320,6 +304,41 @@
 
           this_app.detach_participant(participant);
         });
+      }
+    },
+    computed: {
+      cameraSide() {
+        if (this.facingMode == "user") {
+          return "front"
+        }else{
+          return "back"
+        }
+      }
+    },
+    watch: {
+      isVideoLoaded() {
+        this.add_one_sec_to_timer();
+      }
+    },
+    created() {
+      let this_app = this;
+
+      navigator.mediaDevices.enumerateDevices().then(this_app.gotDevices);
+
+      createLocalTracks({
+        audio: true,
+        video: {width: 640}
+      }).then(localTracks => {
+        console.log('localTracks ' + JSON.stringify(localTracks));
+        this_app.localTracks = localTracks;
+        return connect(this_app.connection_token, {
+          name: this_app.room_name,
+          tracks: localTracks
+        });
+      }).then(room => {
+
+        this_app.configureTheRoomAfterJoining(room);
+
       });
     }
   }
