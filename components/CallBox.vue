@@ -9,13 +9,13 @@
       </div>
 
       <div id="controls">
-        {{cameraSide}}
-        {{facingMode}}
-        {{cameras}}
+<!--        {{cameraSide}}-->
+<!--        {{facingMode}}-->
+<!--        {{cameras}}-->
         <div v-if="can_end_call" @click="confirm_end_call">
           <vs-button radius icon="close" size="large" type="filled" color="danger"></vs-button>
         </div>
-        <div @click="toggle_flip_camera">
+        <div v-if="cameras.length > 0" @click="toggle_flip_camera">
           <vs-button radius icon="flip_camera_ios" size="large" type="filled" color="rgb(0, 0, 0, 0.4)"></vs-button>
         </div>
         <div @click="toggle_mute_camera">
@@ -66,10 +66,10 @@
 
           const videoConstraints = {};
 
-          if (this_app.facingMode === 'user') {
-            this_app.facingMode = 'environment'
-          } else {
+          if (this_app.facingMode === 'environment') {
             this_app.facingMode = 'user'
+          } else {
+            this_app.facingMode = 'environment'
           }
 
           videoConstraints.facingMode = this_app.facingMode;
@@ -94,31 +94,26 @@
             deviceId: {
               exact: this_app.cameras[0].deviceId
             }
-          }).then(localTracks => {
-            this_app.localTrack.attach(video);
-            this_app.localTracks = localTracks;
+          }).then(localVideoTrack => {
+            const localParticipant = this_app.room.localParticipant;
+            const tracks = Array.from(localParticipant.videoTracks.values()).map(
+              function(trackPublication) {
+                return trackPublication.track;
+              }
+            );
+            localParticipant.unpublishTracks(tracks);
+            tracks.forEach(function(track) {
+              if (track) { track.stop(); }
+            });
+            console.log(localParticipant.identity + " removed track: " + tracks[0].kind);
 
-            // return connect(this_app.connection_token, {
-            //   name: this_app.room_name,
-            //   tracks: localTracks
-            // });
-          }).then(room => {
-            // this_app.configureTheRoomAfterJoining(room);
-
-            if (room) {
-              this_app.switchLocalTracks(room, this_app.localTrack);
-            }
-          });
+            localParticipant.publishTrack(localVideoTrack);
+            console.log(localParticipant.identity + " added track: " + localVideoTrack.kind);
+            const localMediaContainer = document.getElementById('local-media');
+            localMediaContainer.innerHTML = "";
+            localMediaContainer.prepend(localVideoTrack.attach());
+          })
         }
-      },
-      switchLocalTracks(room, track) {
-        room.localParticipant.tracks.forEach(function(trackPublication) {
-          if (trackPublication.kind === track.kind) {
-            trackPublication.track.stop();
-            room.localParticipant.unpublishTrack(trackPublication.track);
-          }
-        });
-        room.localParticipant.publishTrack(track);
       },
       toggle_mute_camera: function () {
         let this_app = this;
@@ -229,14 +224,19 @@
           participant.tracks.forEach(publication => {
             if (publication.isSubscribed) {
               const track = publication.track;
-              this_app.attach_track(track, participant)
+              this_app.attach_tracks([track], participant)
               this_app.isVideoLoaded = true;
             }
           });
 
           participant.on('trackSubscribed', track => {
-            this_app.attach_track(track, participant)
+            this_app.attach_tracks([track], participant)
             this_app.isVideoLoaded = true;
+          });
+
+          // When a Participant removes a Track, detach it from the DOM.
+          participant.on('trackUnsubscribed', track => {
+            this_app.detach_tracks([track]);
           });
 
         }
@@ -248,12 +248,25 @@
           participant_element.remove()
         }
       },
-      attach_track(track, participant) {
+      detach_tracks(tracks) {
+        tracks.forEach(function(track) {
+          if (track) {
+            track.detach().forEach(function(detachedElement) {
+              detachedElement.remove();
+            });
+          }
+        });
+      },
+      attach_tracks(tracks, participant) {
         let remoteDiv = document.getElementById(participant.sid)
-        let trackElement = track.attach()
-        trackElement.id = track.sid
+        tracks.forEach(function(track) {
+          if (track) {
+            let trackElement = track.attach()
+            trackElement.id = track.sid
 
-        remoteDiv.append(trackElement)
+            remoteDiv.append(trackElement)
+          }
+        });
       },
       stopMediaTracks(stream) {
         stream.getTracks().forEach(track => {
@@ -317,6 +330,7 @@
 
           this_app.detach_participant(participant);
         });
+
       }
     },
     computed: {
