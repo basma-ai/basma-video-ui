@@ -60,9 +60,9 @@
         let this_app = this;
 
         if (undefined != this.localTracks) {
-          // if (typeof currentStream !== 'undefined') {
-          //   this_app.stopMediaTracks(currentStream);
-          // }
+          if (typeof currentStream !== 'undefined') {
+            this_app.stopMediaTracks(currentStream);
+          }
 
           const videoConstraints = {};
 
@@ -82,10 +82,7 @@
           navigator.mediaDevices
             .getUserMedia(constraints)
             .then(stream => {
-              console.log(stream)
               this_app.currentStream = stream;
-              const localMediaContainer = document.getElementById("local-media");
-              localMediaContainer.srcObject = stream;
               return navigator.mediaDevices.enumerateDevices();
             })
             .then(this_app.gotDevices)
@@ -93,18 +90,18 @@
               console.error(error);
             });
 
-          // createLocalTracks({
-          //   audio: true,
-          //   video: { deviceId: this_app.cameras[0].deviceId }
-          // }).then(localTracks => {
-          //   this_app.localTracks = localTracks;
-          //   return connect(this_app.connection_token, {
-          //     name: this_app.room_name,
-          //     tracks: localTracks
-          //   });
-          // }).then(room => {
-          //   this_app.configureTheRoomAfterJoining(room);
-          // });
+          createLocalTracks({
+            audio: true,
+            video: { deviceId: this_app.cameras[0].deviceId }
+          }).then(localTracks => {
+            this_app.localTracks = localTracks;
+            return connect(this_app.connection_token, {
+              name: this_app.room_name,
+              tracks: localTracks
+            });
+          }).then(room => {
+            this_app.configureTheRoomAfterJoining(room);
+          });
         }
       },
       toggle_mute_camera: function () {
