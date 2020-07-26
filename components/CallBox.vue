@@ -9,9 +9,6 @@
       </div>
 
       <div id="controls">
-<!--        {{cameraSide}}-->
-<!--        {{facingMode}}-->
-<!--        {{cameras}}-->
         <div v-if="can_end_call" @click="confirm_end_call">
           <vs-button radius icon="close" size="large" type="filled" color="danger"></vs-button>
         </div>
@@ -335,7 +332,7 @@
     },
     computed: {
       cameraSide() {
-        if (this.facingMode == "user") {
+        if (this.facingMode === "user") {
           return "front"
         }else{
           return "back"
