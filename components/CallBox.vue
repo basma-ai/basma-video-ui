@@ -4,7 +4,7 @@
       <div v-if="timer != 0" id="timer">{{ timer | moment("mm:ss") }}</div>
 
       <div id="local-media"></div>
-      <div id="remote-media-div">
+      <div id="remote-media-div" class="vs-row" style="display: flex; width: 100%;">
         <loading v-if="!isVideoLoaded"></loading>
       </div>
 
@@ -211,10 +211,11 @@
         let remoteDiv = document.getElementById('remote-media-div')
 
         let participant_element = document.getElementById(participant.sid)
+
         if(participant_element == null) {
           participant_element = document.createElement('div')
           participant_element.id = participant.sid
-          participant_element.className += 'participant'
+          participant_element.className += 'participant vs-col'
 
           remoteDiv.append(participant_element)
 
@@ -236,13 +237,17 @@
             this_app.detach_tracks([track]);
           });
 
+          this_app.render_gallery_view();
         }
-
       },
       detach_participant(participant) {
-        let participant_element = document.getElementById(participant.sid)
+        let this_app = this;
+
+        let participant_element = document.getElementById(participant.sid);
+
         if(participant_element != null) {
           participant_element.remove()
+          this_app.render_gallery_view();
         }
       },
       detach_tracks(tracks) {
@@ -303,6 +308,8 @@
         const localParticipant = room.localParticipant;
         // this_app.$log4js.debug(`Connected to the Room as LocalParticipant "${localParticipant.identity}"`);
 
+        this_app.participants_count = room.participants.length;
+
         // Log any Participants already connected to the Room
         room.participants.forEach(participant => {
           // this_app.$log4js.debug(`Participant "${participant.identity}" is connected to the Room`);
@@ -328,6 +335,19 @@
           this_app.detach_participant(participant);
         });
 
+      },
+      render_gallery_view(){
+        let participant_elements = document.getElementsByClassName('participant')
+
+        for(let participant_element of participant_elements) {
+          if (participant_elements.length > 1) {
+            participant_element.style.width = ''
+            participant_element.className = 'participant vs-col vs-xs-12 vs-lg-6'
+          }else {
+            participant_element.style.width = '100%'
+            participant_element.className = 'participant vs-col'
+          }
+        }
       }
     },
     computed: {
@@ -376,7 +396,7 @@
     height: inherit;
     /*background: #000;*/
     display: inline-block;
-    min-height: 425px;
+    min-height: 290px;
   }
 
   .call_box #controls {
