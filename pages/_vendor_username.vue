@@ -151,7 +151,7 @@
                 v-if="
                   call != null &&
                     call.status == 'started' &&
-                    call.connection_guest_token != null
+                    call.participants[0].info.twilio_participant_token != null
                 "
               >
                 <v-chip outlined style="margin-bottom: 15px; direction: rtl;">
@@ -164,7 +164,7 @@
                 <CallBox
                   v-if="screen_status == 'in_call'"
                   ref="call_box"
-                  :connection_token="call.connection_guest_token"
+                  :connection_token="call.participants[0].info.twilio_participant_token"
                   :room_name="'call-' + call.id"
                   :can_end_call="true"
                   style="width: 100%;"
