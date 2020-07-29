@@ -12,9 +12,9 @@
         <div v-if="can_end_call" @click="confirm_end_call">
           <vs-button radius icon="close" size="large" type="filled" color="danger"></vs-button>
         </div>
-        <div v-if="cameras.length > 0" @click="toggle_flip_camera">
-          <vs-button radius icon="flip_camera_ios" size="large" type="filled" color="rgb(0, 0, 0, 0.4)"></vs-button>
-        </div>
+<!--        <div v-if="cameras.length > 0" @click="toggle_flip_camera">-->
+<!--          <vs-button radius icon="flip_camera_ios" size="large" type="filled" color="rgb(0, 0, 0, 0.4)"></vs-button>-->
+<!--        </div>-->
         <div @click="toggle_mute_camera">
           <vs-button radius icon="videocam" size="large" type="filled" color="rgb(0, 0, 0, 0.4)" v-if="localCamIsEnabled"></vs-button>
           <vs-button radius icon="videocam_off" size="large" type="filled" color="danger" v-if="!localCamIsEnabled"></vs-button>
